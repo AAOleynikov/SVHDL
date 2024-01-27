@@ -2,76 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    <script>
-      // Инициализация mermaid
-      mermaid.initialize({ startOnLoad: true });
-    </script>
-    <title>Calculator</title>
+    <title>MVHDL</title>
   </head>
 
   <body>
-    <h1>Автоматический решатель РК3 ПОСАПр</h1>
+    <h1>
+      MVHDL - среда моделирования программируемых логических интегральных схем, созданная для курса "Схемотехника" РК6
+    </h1>
     Если что-то работает с ошибкой, пишите Жукову Георгию:
     <a href="https://vk.com/warycow1">vk: warycow1</a>
     <a href="https://t.me/dedxyk594">tg: @dedxyk594</a>
     <a href="https://github.com/DeDxYk594/DeDxYk594.github.io">github</a>
-    <br />
-    <div id="app">
-      <button @click="sss()">Поменять 0 и 1 местами</button>
-      <div
-        class="grid"
-        style="display: flex; flex-direction: column; width: 90%"
-      >
-        <div style="display: inline">
-          { {{sww?0:1}}^(
-
-          <input
-            size="1"
-            type="text"
-            v-model="p1"
-            @keyup.enter="calc()"
-          />n+<input size="1" type="text" v-model="q1" @keyup.enter="calc()" />
-
-          )* {{sww}}^(
-          <input
-            size="1"
-            type="text"
-            v-model="p2"
-            @keyup.enter="calc()"
-          />m+<input size="1" type="text" v-model="q2" @keyup.enter="calc()" />
-
-          )* {{sww?0:1}} ^(
-          <input
-            size="1"
-            type="text"
-            v-model="p3"
-            @keyup.enter="calc()"
-          />k+<input size="1" type="text" v-model="q3" @keyup.enter="calc()" />
-          )}
-        </div>
-        <button class="cell op" @click="calc()">Вычислить</button>
-      </div>
-      <div :style="{display:made?'block':'none'}">
-        <h1>Детерминированный автомат (ДКА)</h1>
-        <p>{{dstates}} состояний</p>
-        <div id="mermaid1" class="mermaid"></div>
-        <div id="table11"></div>
-        <div id="table12"></div>
-        <h1>Недетерминированный автомат (НКА)</h1>
-        <p>
-          {{nstates}} состояний (на {{dstates-nstates}} меньше, чем в
-          детерминированном)
-        </p>
-        <div id="mermaid2" class="mermaid"></div>
-        <div id="table21"></div>
-        <div id="table22"></div>
-      </div>
-      <div v-if="!made">Тут ничего нет :-()</div>
-    </div>
   </body>
-  <script src="index.js"></script>
 </html>
