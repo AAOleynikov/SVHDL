@@ -374,6 +374,18 @@
       </tbody>
     </table>
 
+
+		<div id="container" style="width:800px;height:600px;border:1px solid rgb(42, 209, 30)"></div>
+		<script src="monaco-editor/min/vs/loader.js"></script>
+		<script>
+			require.config({ paths: { vs: 'monaco-editor/min/vs' } });
+			require(['vs/editor/editor.main'], function () {
+				var editor = monaco.editor.create(document.getElementById('container'), {
+					value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+					language: 'javascript'
+				});
+			});
+		</script>
     <!-- (Irrelevant source removed.) -->
   </body>
 </html>
