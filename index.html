@@ -10,12 +10,14 @@
 
     <script src="src/jquery-3.6.1.min.js"></script>
 
-    <link
-      href="src/jquery-ui.css"
-      rel="stylesheet"
-    />
+    <link href="src/jquery-ui.css" rel="stylesheet" >
     <script src="src/jquery-ui.min.js"></script>
     <script src="src/jquery.ui-contextmenu.min.js"></script>
+
+    <style>
+      #resizable { width: 200px; height: 150px; padding: 5px; }
+      #resizable h3 { text-align: center; margin: 0; }
+      </style>
 
     <link href="src/skin-lion/ui.fancytree.css" rel="stylesheet" />
 
@@ -27,9 +29,18 @@
     <!--
   <script src="../../build/jquery.fancytree-all.min.js"></script>
 -->
-
-
-    <script type="text/javascript">
+<script>
+  $( function() {
+    $( "#resizable" ).resizable({
+      maxHeight: 250,
+      maxWidth: 350,
+      minHeight: 150,
+      minWidth: 200
+    });
+  } );
+  </script>
+ 
+      <script type="text/javascript">
       var CLIPBOARD = null;
 
       $(function() {
@@ -299,6 +310,9 @@
       Example: tree grid with keyboard navigation, DnD, and editing
       capabilites
     </h1>
+    <div id="resizable" class="ui-widget-content">
+      <h3 class="ui-widget-header">Resize larger / smaller</h3>
+    </div>
     <div class="description">
       Bringing it all together: this sample combines different extensions
       and custom events to implement an editable tree grid:
