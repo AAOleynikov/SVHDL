@@ -6,7 +6,7 @@
       content="text/html; charset=ISO-8859-1"
     />
 
-    <script defer src="src/jquery-3.6.1.min.js"></script>
+    <script src="src/jquery-3.6.1.min.js"></script>
 
     <link
       href="src/jquery-ui.css"
@@ -55,10 +55,10 @@
       $(function() {
         $("#tree")
           .fancytree({
-            checkbox: true,
+            checkbox: false,
             checkboxAutoHide: true,
             titlesTabbable: true, // Add all node titles to TAB chain
-            quicksearch: true, // Jump to nodes when pressing first character
+            quicksearch: false, // Jump to nodes when pressing first character
             // source: SOURCE,
             source: { url: "demo/ajax-tree-products.json" },
 
@@ -246,15 +246,6 @@
               return false;
             }
           });
-
-        /*
-         * Tooltips
-         */
-        // $("#tree").tooltip({
-        //   content: function () {
-        //     return $(this).attr("title");
-        //   }
-        // });
 
         /*
          * Context menu (https://github.com/mar10/jquery-ui-contextmenu)
