@@ -1,0 +1,38 @@
+/*file tree*/
+.ui-menu {
+    width: 180px;
+    font-size: 63%;
+  }
+  .ui-menu kbd {
+    /* Keyboard shortcuts for ui-contextmenu titles */
+    float: right;
+  }
+  /* custom alignment (set by 'renderColumns'' event) */
+  td.alignRight {
+    text-align: right;
+  }
+  td.alignCenter {
+    text-align: center;
+  }
+  td input[type="input"] {
+    width: 40px;
+  }
+
+.textcols {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 100%;
+}
+.textcols-item {
+	display: flex;
+	flex-direction: column;
+	flex-basis: 100%;
+	flex: 1;
+	height: 48%;
+	background: #fff2e1;
+}
+.textcols-item + .textcols-item {
+	margin-left: 4%;
+}
+
