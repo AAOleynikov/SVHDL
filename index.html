@@ -301,9 +301,7 @@
   <body class="example">
     <h1>
     </h1>
-    <div id="resizable" class="ui-widget-content">
-      <h3 class="ui-widget-header">Resize larger / smaller</h3>
-    </div>
+
     <div class="description">
       Bringing it all together: this sample combines different extensions
       and custom events to implement an editable tree grid:
@@ -364,18 +362,23 @@
   </div>
 
 	<div class="textcols-item">
-</div>
-<div id="container" style="width:800px;height:600px;border:1px solid rgb(42, 209, 30)"></div>
-<script src="monaco-editor/min/vs/loader.js"></script>
-<script>
-  require.config({ paths: { vs: 'monaco-editor/min/vs' } });
-  require(['vs/editor/editor.main'], function () {
-    var editor = monaco.editor.create(document.getElementById('container'), {
-      value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-      language: 'javascript',
-      automaticLayout: true
+
+    <div id="resizable" class="ui-widget-content">
+      <h3 class="ui-widget-header">Resize larger / smaller</h3>
+    </div>
+
+  </div>
+<div id="editor" class="ui-widget-content" style="width:800px;height:600px;border:1px solid rgb(42, 209, 30)"></div>
+  <script src="monaco-editor/min/vs/loader.js"></script>
+  <script>
+    require.config({ paths: { vs: 'monaco-editor/min/vs' } });
+    require(['vs/editor/editor.main'], function () {
+      var editor = monaco.editor.create(document.getElementById('container'), {
+        value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+        language: 'javascript',
+        automaticLayout: true
+        });
     });
-  });
 
   $( function() {
     $( "#editor" ).resizable({
@@ -385,9 +388,6 @@
       minWidth: 200
     });
   } );
-
-
-
 </script>
 </div>
 
