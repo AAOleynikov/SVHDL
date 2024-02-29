@@ -38,6 +38,10 @@
       minWidth: 200
     });
   } );
+
+
+
+
   </script>
  
       <script type="text/javascript">
@@ -305,10 +309,12 @@
     </script>
   </head>
 
+
+
+
   <body class="example">
     <h1>
-      Example: tree grid with keyboard navigation, DnD, and editing
-      capabilites
+      MVHDL - simple VHDL runner for 
     </h1>
     <div id="resizable" class="ui-widget-content">
       <h3 class="ui-widget-header">Resize larger / smaller</h3>
@@ -380,7 +386,8 @@
 			require(['vs/editor/editor.main'], function () {
 				var editor = monaco.editor.create(document.getElementById('container'), {
 					value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-					language: 'javascript'
+					language: 'javascript',
+          automaticLayout: true
 				});
 			});
 		</script>
