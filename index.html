@@ -44,32 +44,9 @@
         <input type="text" placeholder="Search here..." />
       </div>
     </nav>
-    <h>gg</h>
-    <h2>gg</h2>
-    <h3>gg</h3>
-    <!--File navigation tree-->
-    <table id="tree">
-      <colgroup>
-        <col width="30px" />
-        <col width="50px" />
-        <col width="350px" />
-      </colgroup>
-      <thead>
-        <tr>
-          <th></th>
-          <th>#</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Define a row template for all invariant markup: -->
-        <tr>
-          <td class="alignCenter"></td>
-          <td></td>
-          <td></td>
-        </tr>
-      </tbody>
-    </table>
+    
+
+
 
     <div id="editor" class="ui-widget-content"></div>
 
@@ -79,14 +56,18 @@
         height: 60%;
         border: 1px solid #ccc;
         position: absolute;
-        top: 80px;
         right: 0;
+        top: 85;
       }
     </style>
 
+<style> #tree {
+  position: absolute;
+  left: 0;
+  top: 80;
+} </style>
 
-
-      <script src="monaco-editor/min/vs/loader.js"></script>
+    <script src="monaco-editor/min/vs/loader.js"></script>
       <script>
         require.config({ paths: { vs: 'monaco-editor/min/vs' } });
         require(['vs/editor/editor.main'], function () {
@@ -99,10 +80,10 @@
 
       $( function() {
         $( "#editor" ).resizable({
-          maxHeight: 80%,
-          maxWidth: 100%,
-          minHeight: 30%,
-          minWidth: 0%,
+          maxHeight: 800,
+          maxWidth: 800,
+          minHeight: 900,
+          minWidth: 0,
           resize: function(event, ui) {
             // Resize the Monaco Editor
             editor.layout();
@@ -111,6 +92,33 @@
         $( "#editor" ).resizable("option", "handles", "w, s, sw");
     });
   </script>
+  
+      <!--File navigation tree-->
+      <table id="tree">
+        <colgroup>
+          <col width="30px" />
+          <col width="50px" />
+          <col width="350px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th></th>
+            <th>#</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Define a row template for all invariant markup: -->
+          <tr>
+            <td class="alignCenter"></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+
+
+
   
   </body>
 </html>
