@@ -7,74 +7,25 @@
     />
 
     <link rel="stylesheet" href="style.css">
-
     <script src="src/jquery-3.6.1.min.js"></script>
-
     <link href="src/jquery-ui.css" rel="stylesheet" >
     <script src="src/jquery-ui.min.js"></script>
     <script src="src/jquery.ui-contextmenu.min.js"></script>
-
-    <style>
-      #resizable { width: 200px; height: 150px; padding: 5px; }
-      #resizable h3 { text-align: center; margin: 0; }
-      </style>
-
+    
     <link href="src/skin-lion/ui.fancytree.css" rel="stylesheet" />
-
     <script src="src/jquery.fancytree.js"></script>
     <script src="src/jquery.fancytree.dnd5.js"></script>
     <script src="src/jquery.fancytree.edit.js"></script>
     <script src="src/jquery.fancytree.gridnav.js"></script>
     <script src="src/jquery.fancytree.table.js"></script>
-    <!--
-  <script src="../../build/jquery.fancytree-all.min.js"></script>
--->
-
-      <script src="tree_init.js"></script>
+    <script src="tree_init.js"></script>
   </head>
 
-
-
-
-  <body class="example">
+  <body class="MVHDL">
     <h1>
+      MVHDL - simple VHDL runner for BMSTU RK6 electrical engineering course
     </h1>
 
-    <div class="description">
-      Bringing it all together: this sample combines different extensions
-      and custom events to implement an editable tree grid:
-      <ul>
-        <li>'ext-dnd5' to re-order nodes using drag-and-drop.</li>
-        <li>
-          'ext-table' + 'ext-gridnav' to implement a tree grid.<br />
-          Try <kbd>UP / DOWN / LEFT / RIGHT</kbd>, <kbd>TAB</kbd>,
-          <kbd>Shift+TAB</kbd>
-          to navigate between grid cells. Note that embedded input
-          controls remain functional.
-        </li>
-        <li>
-          'ext-edit': inline editing.<br />
-          Try <kbd>F2</kbd> to rename a node.<br />
-          <kbd>Ctrl+N</kbd>, <kbd>Ctrl+Shift+N</kbd> to add nodes
-          (Quick-enter: add new nodes until [enter] is hit on an empty
-          title).
-        </li>
-        <li>
-          Extended keyboard shortcuts:<br />
-          <kbd>Ctrl+C</kbd>, <kbd>Ctrl+X</kbd>, <kbd>Ctrl+V</kbd> for
-          copy/paste,<br />
-          <kbd>Ctrl+UP</kbd>, <kbd>Ctrl+DOWN</kbd>,
-          <kbd>Ctrl+LEFT</kbd>, <kbd>Ctrl+RIGHT</kbd>
-          to move nodes around and change indentation.<br>
-          (On macOS, add <kbd>Shift</kbd> to the keystrokes.)
-        </li>
-      </ul>
-    </div>
-
-    <h1>Table Tree</h1>
-
-<div class="textcols">
-	<div class="textcols-item">
     <table id="tree">
       <colgroup>
         <col width="30px" />
@@ -97,37 +48,35 @@
         </tr>
       </tbody>
     </table>
-  </div>
-
-	<div class="textcols-item">
 
     <div id="resizable" class="ui-widget-content">
       <h3 class="ui-widget-header">Resize larger / smaller</h3>
     </div>
 
-  </div>
-<div id="editor" class="ui-widget-content" style="width:800px;height:600px;border:1px solid rgb(42, 209, 30)"></div>
+    </div>
+    
+  <div id="editor" class="ui-widget-content"></div>
+
   <script src="monaco-editor/min/vs/loader.js"></script>
   <script>
     require.config({ paths: { vs: 'monaco-editor/min/vs' } });
     require(['vs/editor/editor.main'], function () {
-      var editor = monaco.editor.create(document.getElementById('container'), {
-        value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+    var editor = monaco.editor.create(document.getElementById('editor'), {
+      value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
         language: 'javascript',
         automaticLayout: true
         });
-    });
+      });
 
-  $( function() {
-    $( "#editor" ).resizable({
-      maxHeight: 250,
-      maxWidth: 350,
-      minHeight: 150,
-      minWidth: 200
+    $( function() {
+      $( "#editor" ).resizable({
+        maxHeight: 250,
+        maxWidth: 350,
+        minHeight: 150,
+        minWidth: 200
+      });
     });
-  } );
-</script>
-</div>
-
+  </script>
+  
   </body>
 </html>

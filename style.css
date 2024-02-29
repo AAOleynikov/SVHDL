@@ -37,3 +37,6 @@
 }
 
 .editor { height: 100%; }
+
+#editor { width: 200px; height: 150px; padding: 5px; }
+#editor h3 { text-align: center; margin: 0; }
