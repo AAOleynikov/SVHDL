@@ -72,7 +72,19 @@
     </table>
 
     <div id="editor" class="ui-widget-content"></div>
-    
+    <style>
+      #editor- {
+        width: 200px;
+        height: 200px;
+        border: 1px solid #ccc;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+    </style>
+
+
+
       <script src="monaco-editor/min/vs/loader.js"></script>
       <script>
         require.config({ paths: { vs: 'monaco-editor/min/vs' } });
