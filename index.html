@@ -1,29 +1,42 @@
 <!DOCTYPE html>
-<!-- Coding by CodingLab | www.codinglabweb.com-->
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Navigation Bar with Search Box</title>
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css" />
-    <!-- Unicons CSS -->
+    <meta
+      http-equiv="content-type"
+      content="text/html; charset=ISO-8859-1"
+    />
+
+    <link rel="stylesheet" href="style.css">
+    <script src="src/jquery-3.6.1.min.js"></script>
+    <link href="src/jquery-ui.css" rel="stylesheet" >
+    <script src="src/jquery-ui.min.js"></script>
+    <script src="src/jquery.ui-contextmenu.min.js"></script>
+    
+    <link href="src/fancytree/skin-lion/ui.fancytree.css" rel="stylesheet" />
+    <script src="src/fancytree/jquery.fancytree.js"></script>
+    <script src="src/fancytree/jquery.fancytree.dnd5.js"></script>
+    <script src="src/fancytree/jquery.fancytree.edit.js"></script>
+    <script src="src/fancytree/jquery.fancytree.gridnav.js"></script>
+    <script src="src/fancytree/jquery.fancytree.table.js"></script>
+    <script src="src/fancytree/tree_init.js"></script>
+
+    <link href="src/navigation/nav_style.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
-    <script src="script.js" defer></script>
+    <script src="src/navigation/nav.js" defer></script>
+
   </head>
-  <body>
+
+  <body class="MVHDL">
+
     <nav class="nav">
       <i class="uil uil-bars navOpenBtn"></i>
-      <a href="#" class="logo">CodingLab</a>
+      <a href="https://github.com/AAOleynikov/MVHDL" class="logo">MVHDL</a>
 
       <ul class="nav-links">
         <i class="uil uil-times navCloseBtn"></i>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Products</a></li>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Contact Us</a></li>
+        <li><a href="https://t.me/azazelit"><img src="images/TG_icon.png" width="50" height="50" alt="TG icon"></a></li>
+        <li><a href="https://vk.com/donantoniochehonte"><img src="images/VK_icon.png" width="50" height="50" alt="VK icon"></a></li>
+        <li><a href="https://github.com/AAOleynikov"><img src="images/GIT_icon.png" width="50" height="50" alt="GIT icon"></a></li>
       </ul>
 
       <i class="uil uil-search search-icon" id="searchIcon"></i>
@@ -32,5 +45,54 @@
         <input type="text" placeholder="Search here..." />
       </div>
     </nav>
+
+    <!--File navigation tree-->
+    <table id="tree">
+      <colgroup>
+        <col width="30px" />
+        <col width="50px" />
+        <col width="350px" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th></th>
+          <th>#</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Define a row template for all invariant markup: -->
+        <tr>
+          <td class="alignCenter"></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <div id="editor" class="ui-widget-content"></div>
+
+    <script src="monaco-editor/min/vs/loader.js"></script>
+    <script>
+      require.config({ paths: { vs: 'monaco-editor/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+      var editor = monaco.editor.create(document.getElementById('editor'), {
+       value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+        language: 'javascript',
+        automaticLayout: true
+        });
+      });
+
+     $( function() {
+      $( "#editor" ).resizable({
+        maxHeight: 250,
+        maxWidth: 350,
+        minHeight: 150,
+        minWidth: 200
+      });
+    });
+  </script>
+  
   </body>
 </html>
