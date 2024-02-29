@@ -13,18 +13,16 @@
     <script src="src/jquery.ui-contextmenu.min.js"></script>
     
     <link href="src/skin-lion/ui.fancytree.css" rel="stylesheet" />
+    <script src="src/fancytree/jquery.fancytree.js"></script>
+    <script src="src/fancytree/jquery.fancytree.dnd5.js"></script>
+    <script src="src/fancytree/jquery.fancytree.edit.js"></script>
+    <script src="src/fancytree/jquery.fancytree.gridnav.js"></script>
+    <script src="src/fancytree/jquery.fancytree.table.js"></script>
+    <script src="src/fancytree/tree_init.js"></script>
 
-    <script src="src/jquery.fancytree.js"></script>
-    <script src="src/jquery.fancytree.dnd5.js"></script>
-    <script src="src/jquery.fancytree.edit.js"></script>
-    <script src="src/jquery.fancytree.gridnav.js"></script>
-    <script src="src/jquery.fancytree.table.js"></script>
-
-    <script src="tree_init.js"></script>
-    <link href="nav_style.css" rel="stylesheet"/>
-
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
-    <script src="script.js" defer></script>
+    <link href="src/navigation/nav_style.css" rel="stylesheet"/>
+    <link href="line.css" rel="stylesheet" />
+    <script src="src/navigation/nav.js" defer></script>
 
   </head>
 
@@ -71,21 +69,23 @@
         </tr>
       </tbody>
     </table>
+    <style>#tree {padding: 0px 200px;}</style>
 
-   <div id="editor" class="ui-widget-content"></div>
 
-  <script src="monaco-editor/min/vs/loader.js"></script>
-  <script>
-    require.config({ paths: { vs: 'monaco-editor/min/vs' } });
-    require(['vs/editor/editor.main'], function () {
-    var editor = monaco.editor.create(document.getElementById('editor'), {
-      value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+    <div id="editor" class="ui-widget-content"></div>
+
+    <script src="monaco-editor/min/vs/loader.js"></script>
+    <script>
+      require.config({ paths: { vs: 'monaco-editor/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+      var editor = monaco.editor.create(document.getElementById('editor'), {
+       value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
         language: 'javascript',
         automaticLayout: true
         });
       });
 
-    $( function() {
+     $( function() {
       $( "#editor" ).resizable({
         maxHeight: 250,
         maxWidth: 350,
