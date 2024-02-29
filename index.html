@@ -71,27 +71,32 @@
       </tbody>
     </table>
 
-    <div id="editor" class="ui-widget-content">
+    <div id="editor" class="ui-widget-content"></div>
+    
       <script src="monaco-editor/min/vs/loader.js"></script>
       <script>
         require.config({ paths: { vs: 'monaco-editor/min/vs' } });
         require(['vs/editor/editor.main'], function () {
         var editor = monaco.editor.create(document.getElementById('editor'), {
           value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-          language: 'javascript',
+          language: '',
           automaticLayout: true
           });
         });
 
-     $( function() {
-      $( "#editor" ).resizable({
-        maxHeight: 900,
-        maxWidth: 900,
-        minHeight: 150,
-        minWidth: 200
-      });
+      $( function() {
+        $( "#editor" ).resizable({
+          maxHeight: 900,
+          maxWidth: 900,
+          minHeight: 150,
+          minWidth: 200,
+          resize: function(event, ui) {
+            // Resize the Monaco Editor
+            editor.layout();
+          }
+        });
     });
   </script>
-  </div>
+  
   </body>
 </html>
