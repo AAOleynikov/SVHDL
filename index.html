@@ -21,20 +21,18 @@
     <script src="src/jquery.fancytree.table.js"></script>
 
     <script src="tree_init.js"></script>
-
     <link href="nav_style.css" rel="stylesheet"/>
+
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
     <script src="script.js" defer></script>
+
   </head>
 
   <body class="MVHDL">
 
-
-
-
     <nav class="nav">
       <i class="uil uil-bars navOpenBtn"></i>
-      <a href="https://github.com/AAOleynikov/MVHDL" class="logo">MVHDLппппппппппппппппппппппппппппппппппппппппппппппппппппппппп</a>
+      <a href="https://github.com/AAOleynikov/MVHDL" class="logo">MVHDL</a>
 
       <ul class="nav-links">
         <i class="uil uil-times navCloseBtn"></i>
@@ -43,8 +41,11 @@
         <li><a href="https://github.com/AAOleynikov"><img src="images/GIT_icon.png" width="50" height="50" alt="GIT icon"></a></li>
       </ul>
 
-
-
+      <i class="uil uil-search search-icon" id="searchIcon"></i>
+      <div class="search-box">
+        <i class="uil uil-search search-icon"></i>
+        <input type="text" placeholder="Search here..." />
+      </div>
     </nav>
 
     <!--File navigation tree-->
@@ -71,14 +72,7 @@
       </tbody>
     </table>
 
-
-    <div id="resizable" class="ui-widget-content">
-      <h3 class="ui-widget-header">Resize larger / smaller</h3>
-    </div>
-
-    </div>
-    
-  <div id="editor" class="ui-widget-content"></div>
+   <div id="editor" class="ui-widget-content"></div>
 
   <script src="monaco-editor/min/vs/loader.js"></script>
   <script>
