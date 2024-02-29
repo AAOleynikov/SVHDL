@@ -98,8 +98,7 @@
         });
 
       $( function() {
-        $( "#editor" ).resizable("option", "handles", "w, s, sw", 
-        {
+        $( "#editor" ).resizable({
           maxHeight: 900,
           maxWidth: 900,
           minHeight: 150,
@@ -109,6 +108,7 @@
             editor.layout();
           }
         });
+        $( "#editor" ).resizable("option", "handles", "w, s, sw");
     });
   </script>
   
