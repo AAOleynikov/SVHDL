@@ -71,30 +71,27 @@
       </tbody>
     </table>
 
-    <style>#tree {padding: 40;}</style>
-
-    <div id="editor" class="ui-widget-content"></div>
-
-    <script src="monaco-editor/min/vs/loader.js"></script>
-    <script>
-      require.config({ paths: { vs: 'monaco-editor/min/vs' } });
-      require(['vs/editor/editor.main'], function () {
-      var editor = monaco.editor.create(document.getElementById('editor'), {
-       value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-        language: 'javascript',
-        automaticLayout: true
+    <div id="editor" class="ui-widget-content">
+      <script src="monaco-editor/min/vs/loader.js"></script>
+      <script>
+        require.config({ paths: { vs: 'monaco-editor/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+        var editor = monaco.editor.create(document.getElementById('editor'), {
+          value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+          language: 'javascript',
+          automaticLayout: true
+          });
         });
-      });
 
      $( function() {
       $( "#editor" ).resizable({
-        maxHeight: 250,
-        maxWidth: 350,
+        maxHeight: 900,
+        maxWidth: 900,
         minHeight: 150,
         minWidth: 200
       });
     });
   </script>
-  
+  </div>
   </body>
 </html>
