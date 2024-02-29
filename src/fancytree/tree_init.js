@@ -8,7 +8,7 @@ $(function() {
       titlesTabbable: true, // Add all node titles to TAB chain
       quicksearch: false, // Jump to nodes when pressing first character
       // source: SOURCE,
-      source: { url: "ajax-tree-products.json" },
+      source: { url: "src/fancytree/ajax-tree-products.json" },
 
       extensions: ["edit", "dnd5", "table", "gridnav"],
 
@@ -49,7 +49,7 @@ $(function() {
       },
 
       lazyLoad: function(event, data) {
-        data.result = { url: "demo/ajax-tree-products.json" };
+        data.result = { url: "src/fancytree/ajax-tree-products.json" };
       },
       createNode: function(event, data) {
         var node = data.node,
