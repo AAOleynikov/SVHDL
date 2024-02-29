@@ -76,10 +76,10 @@
     <style>
       #editor {
         width: 80%;
-        height: 80%;
+        height: 60%;
         border: 1px solid #ccc;
         position: absolute;
-        top: 40px;
+        top: 80px;
         right: 0;
       }
     </style>
@@ -99,10 +99,10 @@
 
       $( function() {
         $( "#editor" ).resizable({
-          maxHeight: 900,
-          maxWidth: 900,
-          minHeight: 150,
-          minWidth: 200,
+          maxHeight: 80%,
+          maxWidth: 100%,
+          minHeight: 30%,
+          minWidth: 0%,
           resize: function(event, ui) {
             // Resize the Monaco Editor
             editor.layout();
