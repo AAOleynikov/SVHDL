@@ -3,11 +3,12 @@
     padding: 0;
     box-sizing: border-box;
   }
+
   body {
     background: #1b2c35;
+
   }
   .nav {
-    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
