@@ -31,43 +31,30 @@
       <a href="https://github.com/AAOleynikov"><img src="images/GIT_icon.png" width="50" height="50" alt="GIT icon"></a>
     </nav>
   
-      <table id="tree">
-        <colgroup>
-          <col width="30px" />
-          <col width="50px" />
-          <col width="350px" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th></th>
-            <th>#</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-
-          <tr>
-            <td class="alignCenter"></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
+    <table id="tree">
+      <colgroup>
+        <col width="30px" />
+        <col width="50px" />
+        <col width="350px" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th></th>
+          <th>file tree</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="alignCenter"></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
 
     <div id="editor" class="ui-widget-content"></div>
     
-    <style>
-      #editor {
-        width: 80%;
-        height: 80%;
-        right: 0;
-        top: 100%;
-        border: 1px solid #ccc;
-      }
-    </style>
-
-
-
     <script src="monaco-editor/min/vs/loader.js"></script>
       <script>
         require.config({ paths: { vs: 'monaco-editor/min/vs' } });
@@ -86,7 +73,6 @@
           minHeight: 900,
           minWidth: 0,
           resize: function(event, ui) {
-            // Resize the Monaco Editor
             editor.layout();
           }
         });
