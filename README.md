@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # mvhdl_front
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -27,3 +28,11 @@ npm run dev
 ```sh
 npm run build
 ```
+=======
+![RK6](https://github.com/AAOleynikov/MVHDL/assets/157613831/19e7d8c5-7ebb-46ea-9561-be825d3d8943)
+# MVHDL - simple VHDL runner for BMSTU RK6 electrical engineering course 
+
+
+
+
+>>>>>>> b463c77f653584fa78faa5febc188c6a44d73c05
