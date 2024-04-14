@@ -14,7 +14,6 @@ var tree = null;
 
 onMounted(() => {
   tree = createTree("#tree", {
-    checkbox: true,
     selectMode: 3,
     source: function (event, data) {
       return props["data"];

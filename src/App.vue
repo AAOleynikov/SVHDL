@@ -1,17 +1,19 @@
 <script setup>
-import { reactive } from "vue";
-import Editor from "./components/Editor.vue";
-//import FileTree from "./components/FileTree.vue";
+import { reactive, ref } from "vue";
+//import Editor from "./components/Editor.vue";
+import FileTree from "./components/FileTree.vue";
 import NavBar from "./components/NavBar.vue";
 import Button from "./components/ui/button/Button.vue";
+import VC from "./components/VC.vue";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import "./index.css";
-import vuePlugin from "@vitejs/plugin-vue";
-const mock = reactive([
+import "bootstrap-icons/font/bootstrap-icons.css";
+
+var mock = reactive([
   {
     title: "Books",
     expanded: true,
@@ -231,55 +233,40 @@ const mock = reactive([
   { title: "More...", folder: true, lazy: true },
 ]);
 
+//state: vhdl, post
+const state = ref("post");
+
 function clickB() {
-  console.log(mock);
+  mock.push({ title: "More...", folder: true });
 }
 </script>
 
 <template>
-  <NavBar />
-  <ResizablePanelGroup id="demo-group-1" direction="horizontal" class="border">
-    <ResizablePanel id="demo-panel-1" :default-size="40" :min-size="10">
-      <div
-        class="bg-slate-300 border-black overflow-auto h-full gap-3 flex flex-col"
+  <div class="h-screen max-h-screen flex flex-col">
+    <NavBar v-model:editor-state="state" />
+    <template v-if="state == 'vhdl'">
+      <ResizablePanelGroup
+        id="demo-group-1"
+        direction="horizontal"
+        class="border flex-grow"
       >
-        <Button>Запустить</Button>
-        <!-- <FileTree v-model:data="mock" /> -->
-      </div>
-    </ResizablePanel>
-    <ResizableHandle id="demo-handle-1" />
-    <ResizablePanel id="demo-panel-2" :min-size="40">
-      <div class="bg-green-500"><Editor /></div>
-    </ResizablePanel>
-  </ResizablePanelGroup>
-  <button @click="clickB">Добавить хуйню в дерево</button>
+        <ResizablePanel id="demo-panel-1" :default-size="40" :min-size="10">
+          <div class="border-black pt-2 overflow-auto gap-1 flex flex-col">
+            <Button>Запустить</Button>
+            <Button @click="clickB">Добавить хуйню в дерево</Button>
+            <FileTree v-model:data="mock" />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle id="demo-handle-1" />
+        <ResizablePanel id="demo-panel-2" :min-size="40" class="flex flex-col">
+          <Editor />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </template>
+    <template v-if="state == 'post'">
+      <VC />
+    </template>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<style scoped></style>
