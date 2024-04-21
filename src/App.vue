@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from "vue";
-//import Editor from "./components/Editor.vue";
+import Editor from "./components/Editor.vue";
 import FileTree from "./components/FileTree.vue";
 import NavBar from "./components/NavBar.vue";
 import Button from "./components/ui/button/Button.vue";
@@ -254,7 +254,7 @@ function clickB() {
           <div class="border-black pt-2 overflow-auto gap-1 flex flex-col">
             <Button>Запустить</Button>
             <Button @click="clickB">Добавить хуйню в дерево</Button>
-            <FileTree v-model:data="mock" />
+            <div><FileTree v-model:data="mock" /></div>
           </div>
         </ResizablePanel>
         <ResizableHandle id="demo-handle-1" />

@@ -24,12 +24,14 @@
     "radix-vue": "^1.5.3",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
+    "vcdrom": "^1.6.0",
     "vue": "^3.4.21",
     "vue-chartjs": "^5.3.0"
   },
   "devDependencies": {
     "@rollup/wasm-node": "4.13",
     "@vitejs/plugin-vue": "^5.0.4",
+    "antlr4": "^4.13.1-patch-1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
