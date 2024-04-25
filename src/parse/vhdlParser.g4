@@ -5,6 +5,8 @@ options { tokenVocab=vhdlLexer; }
  * Grammar extracted from the 2008 standard
  */
 
+
+
 any_keyword:
     KW_PROCESS
     | KW_CONTEXT
@@ -113,6 +115,7 @@ any_keyword:
     | KW_PORT
     | KW_NULL
 ;
+
 name_literal:
         identifier
        | operator_symbol
@@ -784,7 +787,7 @@ conditional_waveform_assignment:
 conditional_waveforms:
       waveform KW_WHEN condition
       ( KW_ELSE waveform KW_WHEN condition )*
-      ( KW_ELSE waveform | {_input->LA(1) != KW_ELSE}? )
+      ( KW_ELSE waveform | {_input.LA(1) != KW_ELSE}? )
 ;
 conditional_force_assignment:
       target CONASGN KW_FORCE ( force_mode )? conditional_expressions SEMI
@@ -792,7 +795,7 @@ conditional_force_assignment:
 conditional_expressions:
       expression KW_WHEN condition
       ( KW_ELSE expression KW_WHEN condition )*
-      ( KW_ELSE expression | {_input->LA(1) != KW_ELSE}? )
+      ( KW_ELSE expression | {_input.LA(1) != KW_ELSE}? )
 ;
 selected_signal_assignment:
       selected_waveform_assignment
@@ -835,7 +838,7 @@ if_statement:
               sequence_of_statements
           ( KW_ELSIF condition KW_THEN
               sequence_of_statements )*
-          ( KW_ELSE sequence_of_statements | | {_input->LA(1) != KW_ELSE}? )
+          ( KW_ELSE sequence_of_statements | | {_input.LA(1) != KW_ELSE}? )
           KW_END KW_IF ( label )? SEMI
 ;
 case_statement:
@@ -978,7 +981,7 @@ if_generate_statement:
     ( KW_ELSIF ( label COLON )? condition KW_GENERATE
         generate_statement_body )*
     ( KW_ELSE ( label COLON )? KW_GENERATE
-        generate_statement_body | {_input->LA(1) != KW_ELSE}? )
+        generate_statement_body | {_input.LA(1) != KW_ELSE}? )
     KW_END KW_GENERATE ( label )? SEMI
 ;
 case_generate_statement:
