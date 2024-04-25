@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-parsers":"node ./src/parse/build.js"
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.1",
@@ -21,12 +22,15 @@
     "jquery.fancytree": "^2.38.3",
     "less": "^4.2.0",
     "monaco-editor": "^0.47.0",
+    "monaco-editor-textmate": "^4.0.0",
+    "monaco-textmate": "^3.0.1",
+    "monaco-vscode-textmate-theme-converter": "^0.1.7",
+    "onigasm": "^2.2.5",
     "radix-vue": "^1.5.3",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "vcdrom": "^1.6.0",
-    "vue": "^3.4.21",
-    "vue-chartjs": "^5.3.0"
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@rollup/wasm-node": "4.13",

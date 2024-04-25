@@ -234,7 +234,7 @@ var mock = reactive([
 ]);
 
 //state: vhdl, post
-const state = ref("post");
+const state = ref("vhdl");
 
 function clickB() {
   mock.push({ title: "More...", folder: true });

@@ -1,0 +1,22 @@
+{
+	"scopeName": "source.vhdl",
+	"name": "vhdl",
+	"patterns": [
+		{
+			"include": "#comments"
+		}
+	],
+	"repository": {
+		"comments": {
+			"begin": "#|//",
+			"comment": "Inline Comments",
+			"name": "comment.line.vhdl",
+			"captures": {
+				"0": {
+					"name": "punctuation.definition.comment.vhdl"
+				}
+			},
+			"end": "$\n?"
+		}
+	}
+}
