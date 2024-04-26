@@ -20,17 +20,20 @@ watch(state, async (newState, oldState) => {
 
       <Tabs
         defaultValue="account"
-        className="w-[400px]"
+        className="w-[600px]"
         v-model:model-value="state"
       >
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="vhdl"
-            ><i class="bi bi-code-slash pr-2"></i> VHDL code
+            ><i class="bi-code-slash pr-2"></i> VHDL code
             editing</TabsTrigger
           >
-          <TabsTrigger value="sigs"
-            ><i class="bi bi-yelp pr-2"></i> Postprocessing</TabsTrigger
-          >
+          <TabsTrigger value="sigs">
+            <i class="bi-yelp pr-2"></i> Signal Setting
+          </TabsTrigger>
+          <TabsTrigger value="vcd">
+            <i class="bi-bar-chart-steps pr-2"></i> Postprocessing
+          </TabsTrigger>
         </TabsList>
       </Tabs>
       <div class="flex flex-row gap-3">

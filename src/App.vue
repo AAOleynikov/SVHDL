@@ -235,7 +235,7 @@ var mock = reactive([
   { title: "More...", folder: true, lazy: true },
 ]);
 
-//state: vhdl, sigs
+//Одно из следующих: vhdl, sigs, vcd
 const state = ref("vhdl");
 
 const code = ref(sampleCode);
@@ -251,7 +251,7 @@ watch(state, (newState, oldState) => {
     for (let arch of newData.architectures) {
       for (let sig of arch.signals) {
         fileParse.push(sig);
-        console.log("here")
+        console.log("here");
       }
     }
   }
@@ -286,6 +286,9 @@ function clickB() {
     </template>
     <template v-if="state == 'sigs'">
       <VC v-model="fileParse" />
+    </template>
+    <template v-if="state == 'vcd'">
+      <div>ЗДЕСЬ БУДЕТ МЯСО</div>
     </template>
   </div>
 </template>

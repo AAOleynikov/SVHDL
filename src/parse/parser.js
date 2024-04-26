@@ -61,7 +61,7 @@
 	Пересмотреть классовую архитектуру
 */
 
-/*
+/*  
 	Questions
 	
 	Какой формат лучше при инициализации сигналов:
@@ -78,66 +78,10 @@ import antlr4 from "antlr4";
 import vhdlLexer from "./build/vhdlLexer.js";
 import vhdlParser from "./build/vhdlParser.js";
 import vhdlParserListener from "./build/vhdlParserListener.js";
+import { vhdlFile,architecture,entity } from "@/lib/vhdlFile.ts";
 const { CommonTokenStream, InputStream } = antlr4;
 
-//Класс сущности
-class entity {
-  constructor(name) {
-    this.name = name;
-    this.ports = [];
-  }
-  appendPort(port_name, port_type) {
-    this.ports.push({ name: port_name, type: port_type });
-  }
-}
 
-//Класс архитектуры
-class architecture {
-  constructor(name, of) {
-    this.name = name;
-    this.of = of;
-    this.signals = [];
-  }
-  appendSignal(signal_name, signal_type) {
-    this.signals.push({ name: signal_name, type: signal_type });
-  }
-}
-
-//Класс vhdl-файла, объект этого класса будет содержать всю
-//информацию, включая стимуляторы колебаний
-class vhdlFile {
-  constructor() {
-    this.architectures = [];
-    this.header_declaration = "";
-  }
-  setHeader(header) {
-    this.header_declaration += header;
-  }
-  setEntity(new_entity) {
-    this.entity = JSON.parse(JSON.stringify(new_entity));
-  }
-  appendArchitecture(new_architecture) {
-    this.architectures.push(JSON.parse(JSON.stringify(new_architecture)));
-  }
-  setStimulusClock(
-    port_name,
-    period,
-    low_value,
-    high_value,
-    starts_with,
-    duty_cycle
-  ) {
-    var ind = this.entity.ports.findIndex((item) => item.name == port_name);
-    this.entity.ports[ind].stimulus = {
-      stimulus_type: "Clock",
-      low_value: low_value,
-      high_value: high_value,
-      starts_with: starts_with,
-      duty_cycle: duty_cycle,
-      period: period,
-    };
-  }
-}
 
 //перегружаем стандартные методы класса Listener для обработки
 export default class MVHDLListener extends vhdlParserListener {
