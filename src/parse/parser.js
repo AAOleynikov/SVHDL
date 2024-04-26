@@ -80,9 +80,6 @@ import vhdlParser from "./build/vhdlParser.js";
 import vhdlParserListener from "./build/vhdlParserListener.js";
 const { CommonTokenStream, InputStream } = antlr4;
 
-//var input = myEditor.getValue();  //FOR MONACO!!!!!!!!!!!!
-import { input } from "./test_input.js"; //тестовый ввод
-
 //Класс сущности
 class entity {
   constructor(name) {
@@ -142,13 +139,11 @@ class vhdlFile {
   }
 }
 
-//В этот объект будет записана вся распаршенная информация
-const vhdlFileTop = new vhdlFile();
-
 //перегружаем стандартные методы класса Listener для обработки
 export default class MVHDLListener extends vhdlParserListener {
-  constructor() {
+  constructor(_vhdlFileTop) {
     super();
+    this.vhdlFileTop = _vhdlFileTop;
   }
 
   exitEntity_declaration(ctx) {
@@ -195,7 +190,7 @@ export default class MVHDLListener extends vhdlParserListener {
         new_entity.appendPort(port_name, port_type);
       }
     }
-    vhdlFileTop.setEntity(new_entity);
+    this.vhdlFileTop.setEntity(new_entity);
   }
 
   exitContext_item(ctx) {
@@ -203,7 +198,7 @@ export default class MVHDLListener extends vhdlParserListener {
     var count_of_tokens = ctx.children[0].children.length;
     for (var i = 0; i < count_of_tokens; i++)
       text_with_sep += ctx.children[0].children[i].getText() + " ";
-    vhdlFileTop.setHeader(text_with_sep);
+    this.vhdlFileTop.setHeader(text_with_sep);
   }
 
   exitArchitecture_body(ctx) {
@@ -236,21 +231,25 @@ export default class MVHDLListener extends vhdlParserListener {
         }
       }
     }
-    vhdlFileTop.appendArchitecture(new_architecture);
+    this.vhdlFileTop.appendArchitecture(new_architecture);
   }
 }
 
-var chars = new InputStream(input, true);
-var lexer = new vhdlLexer(chars);
-var tokens = new CommonTokenStream(lexer);
-var parser = new vhdlParser(tokens);
-parser.buildParseTrees = true;
-var tree = parser.design_file();
-var listener = new MVHDLListener();
-antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
+export const processCode = (input) => {
+  //В этот объект будет записана вся распаршенная информация
+  const vhdlFileTop = new vhdlFile();
 
-//установка стимулятора в виде частотного генератора для сигнала K
-vhdlFileTop.setStimulusClock("K", 10, 0, 1, "low_value", 50);
+  var chars = new InputStream(input, true);
+  var lexer = new vhdlLexer(chars);
+  var tokens = new CommonTokenStream(lexer);
+  var parser = new vhdlParser(tokens);
+  parser.buildParseTrees = true;
+  var tree = parser.design_file();
+  var listener = new MVHDLListener(vhdlFileTop);
+  antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-console.log(JSON.stringify(vhdlFileTop));
-//console.log((vhdlFileTop));
+  //установка стимулятора в виде частотного генератора для сигнала K
+  vhdlFileTop.setStimulusClock("K", 10, 0, 1, "low_value", 50);
+
+  return vhdlFileTop;
+};

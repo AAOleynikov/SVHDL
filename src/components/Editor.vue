@@ -7,10 +7,14 @@ import { loadWASM } from "onigasm"; // peer dependency of 'monaco-textmate'
 import { Registry } from "monaco-textmate"; // peer dependency
 import { wireTmGrammars } from "monaco-editor-textmate";
 
-const sampleCode = "dfasdf";
-const code = ref(sampleCode);
+import { processCode } from "@/parse/parser.js";
+import { prototype } from "postcss/lib/previous-map";
 
-const editorRef = reactive({});
+import sampleCode from "@/sample.vhd?raw";
+
+const code = defineModel();
+
+const editorRef = reactive([]);
 const handleMount = (editor) => (editorRef.value = editor);
 
 async function liftOff() {
@@ -48,7 +52,9 @@ async function liftOff() {
 }
 
 // Загрузка TextMate VHDL
-onMounted(liftOff);
+onMounted(async () => {
+  await liftOff();
+});
 </script>
 
 <template>

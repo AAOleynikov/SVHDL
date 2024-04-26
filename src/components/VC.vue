@@ -1,6 +1,5 @@
 <script setup>
 import { ref, reactive } from "vue";
-import VCPlot from "@/components/VCPlot.vue";
 import SignalWizard from "@/components/SignalWizard.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,23 +20,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-const signals = reactive([
-  {
-    id: "Signal1",
-    type: "STD_SIGNAL",
-    data: [0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-  },
-]);
+
+const signals = defineModel();
 
 console.log("Hello!");
-
-const code = ref("this\nis\ntest\code\nfish");
 </script>
 
 <template>
   <div class="flex-grow flex flex-col pr-3 pl-3">
-    <span class="mb-2">Задать параметры симуляции <Button>Запустить</Button></span>
-    <SliderRoot
+    <span class="mb-2"
+      >Задать параметры симуляции <Button>Запустить</Button></span
+    >
+    <!-- <SliderRoot
       v-model="sliderValue"
       class="relative flex items-center select-none touch-none w-full"
       :max="100"
@@ -56,24 +50,21 @@ const code = ref("this\nis\ntest\code\nfish");
         class="block w-5 h-5 bg-white shadow-[0_2px_10px] shadow-blackA7 rounded-[10px] hover:bg-violet3 focus:outline-none focus:shadow-[0_0_0_5px] focus:shadow-blackA8"
         aria-label="Volume"
       />
-    </SliderRoot>
+    </SliderRoot> -->
+    <h2>{{ signals.length }} signals</h2>
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead class="w-[100px]">ID</TableHead>
           <TableHead>Type</TableHead>
           <TableHead>Signal</TableHead>
-          <TableHead>Plot</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow v-for="signal in signals">
-          <TableCell className="font-medium">{{ signal.id }}</TableCell>
+          <TableCell className="font-medium">{{ signal.name }}</TableCell>
           <TableCell>{{ signal.type }}</TableCell>
           <TableCell><SignalWizard /></TableCell>
-          <TableCell className="text-right">
-            <VCPlot />
-          </TableCell>
         </TableRow>
       </TableBody>
     </Table>

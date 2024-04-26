@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import Editor from "./components/Editor.vue";
 import FileTree from "./components/FileTree.vue";
 import NavBar from "./components/NavBar.vue";
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/resizable";
 import "./index.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import sampleCode from "@/sample.vhd?raw";
+import { processCode } from "@/parse/parser";
 
 var mock = reactive([
   {
@@ -233,8 +235,27 @@ var mock = reactive([
   { title: "More...", folder: true, lazy: true },
 ]);
 
-//state: vhdl, post
+//state: vhdl, sigs
 const state = ref("vhdl");
+
+const code = ref(sampleCode);
+
+// В установку сигналов
+const fileParse = reactive([]);
+
+watch(state, (newState, oldState) => {
+  if (oldState == "vhdl" && newState == "sigs") {
+    fileParse.value = [];
+    const newData = processCode(code.value);
+    console.log(newData);
+    for (let arch of newData.architectures) {
+      for (let sig of arch.signals) {
+        fileParse.push(sig);
+        console.log("here")
+      }
+    }
+  }
+});
 
 function clickB() {
   mock.push({ title: "More...", folder: true });
@@ -259,12 +280,12 @@ function clickB() {
         </ResizablePanel>
         <ResizableHandle id="demo-handle-1" />
         <ResizablePanel id="demo-panel-2" :min-size="40" class="flex flex-col">
-          <Editor />
+          <Editor v-model="code" />
         </ResizablePanel>
       </ResizablePanelGroup>
     </template>
-    <template v-if="state == 'post'">
-      <VC />
+    <template v-if="state == 'sigs'">
+      <VC v-model="fileParse" />
     </template>
   </div>
 </template>

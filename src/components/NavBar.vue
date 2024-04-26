@@ -28,7 +28,7 @@ watch(state, async (newState, oldState) => {
             ><i class="bi bi-code-slash pr-2"></i> VHDL code
             editing</TabsTrigger
           >
-          <TabsTrigger value="post"
+          <TabsTrigger value="sigs"
             ><i class="bi bi-yelp pr-2"></i> Postprocessing</TabsTrigger
           >
         </TabsList>

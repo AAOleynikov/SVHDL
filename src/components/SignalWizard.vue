@@ -2,6 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import {
   Popover,
   PopoverContent,
@@ -15,40 +17,54 @@ import {
       <Button variant="outline">Миандр 10Гц</Button>
     </PopoverTrigger>
     <PopoverContent className="w-80">
-      <div className="grid gap-4">
-        <div className="space-y-2">
-          <h4 className="font-medium leading-none">Dimensions</h4>
-          <p className="text-sm text-muted-foreground">
-            Set the dimensions for the layer.
-          </p>
-        </div>
-        <div className="grid gap-2">
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="width">Width</Label>
-            <Input id="width" defaultValue="100%" className="col-span-2 h-8" />
+      <Tabs default-value="const" class="w-[400px]">
+        <TabsList>
+          <TabsTrigger value="const"> Const </TabsTrigger>
+          <TabsTrigger value="miandr"> Миандр </TabsTrigger>
+        </TabsList>
+        <TabsContent value="const">
+          <div class="flex flex-row gap-3 items-center mt-3">
+            <Label>NEGATIVE</Label>
+            <Switch />
+            <Label>POSITIVE</Label>
           </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="maxWidth">Max. width</Label>
-            <Input
-              id="maxWidth"
-              defaultValue="300px"
-              className="col-span-2 h-8"
-            />
+        </TabsContent>
+        <TabsContent value="miandr">
+          <div>
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium leading-none">Параметры</h4>
+              </div>
+              <div className="grid gap-2">
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <Label htmlFor="width">Период</Label>
+                  <Input
+                    id="width"
+                    defaultValue="100n"
+                    className="col-span-2 h-8 w-20"
+                  />
+                </div>
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <Label htmlFor="maxWidth">Скважность</Label>
+                  <Input
+                    id="maxWidth"
+                    defaultValue="50%"
+                    className="col-span-2 h-8 w-20"
+                  />
+                </div>
+                <div className="grid grid-cols-3 items-center gap-4">
+                  <Label htmlFor="height">Сдвиг фазы</Label>
+                  <Input
+                    id="height"
+                    defaultValue="33n"
+                    className="col-span-2 h-8 w-20"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="height">Height</Label>
-            <Input id="height" defaultValue="25px" className="col-span-2 h-8" />
-          </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="maxHeight">Max. height</Label>
-            <Input
-              id="maxHeight"
-              defaultValue="none"
-              className="col-span-2 h-8"
-            />
-          </div>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </PopoverContent>
   </Popover>
 </template>
