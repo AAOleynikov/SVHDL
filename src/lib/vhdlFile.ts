@@ -49,7 +49,7 @@ export class architecture {
 }
 
 export class vhdlFile {
-  architectures: any[];
+  architectures: architecture[];
   header_declaration: string;
   entity: any;
 

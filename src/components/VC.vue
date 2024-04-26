@@ -10,6 +10,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { vhdlFile } from "@/lib/vhdlFile";
+
 import {
   Table,
   TableBody,
@@ -20,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const signals = defineModel();
+const vhdlf = defineModel();
 
 console.log("Hello!");
 </script>
@@ -30,7 +32,7 @@ console.log("Hello!");
     <span class="mb-2">
       Задать параметры симуляции <Button>Запустить</Button>
     </span>
-    <h2>{{ signals.length }} signals</h2>
+    <h2>Found {{ vhdlf.value.architectures.length }}</h2>
     <Table>
       <TableHeader>
         <TableRow>
@@ -41,12 +43,17 @@ console.log("Hello!");
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow v-for="signal in signals">
-          <TableCell className="font-medium">{{ signal.of }}</TableCell>
-          <TableCell className="font-medium">{{ signal.name }}</TableCell>
-          <TableCell>{{ signal.type }}</TableCell>
-          <TableCell><SignalWizard /></TableCell>
-        </TableRow>
+        <template v-for="architecture in vhdlf.value.architectures">
+          <TableRow>
+            <h2>Signals of architecture {{ architecture.name }}</h2>
+          </TableRow>
+          <TableRow v-for="signal in architecture.signals">
+            <TableCell className="font-medium">{{ signal.type }}</TableCell>
+            <TableCell className="font-medium">{{ signal.name }}</TableCell>
+            <TableCell>{{ signal.type }}</TableCell>
+            <TableCell><SignalWizard /></TableCell>
+          </TableRow>
+        </template>
       </TableBody>
     </Table>
   </div>
