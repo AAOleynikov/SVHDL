@@ -11,10 +11,12 @@ class SignalSource {
 
 class Signal {
   name: string;
+  subtype: string;
   type: string;
   source: SignalSource;
-  constructor(name: string, type: string) {
+  constructor(name: string, type: string, sybtype: string) {
     this.name = name;
+    this.subtype = subtype;
     this.type = type;
     this.source = new SignalSource();
   }
@@ -28,8 +30,8 @@ export class entity {
     this.name = name;
     this.ports = [];
   }
-  appendPort(port_name: string, port_type: string) {
-    this.ports.push({ name: port_name, type: port_type });
+  appendPort(port_name: string, port_type: string, port_subtype: string) {
+    this.ports.push({ name: port_name, type: port_type, subtype: port_subtype });
   }
 }
 
@@ -43,8 +45,8 @@ export class architecture {
     this.of = of;
     this.signals = [];
   }
-  appendSignal(signal_name: string, signal_type: string) {
-    this.signals.push(new Signal(signal_name, signal_type));
+  appendSignal(signal_name: string, signal_subtype: string) {
+    this.signals.push(new Signal(signal_name, "", signal_subtype));
   }
 }
 
