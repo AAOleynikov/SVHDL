@@ -1,7 +1,7 @@
 /*******************************************************************
  * VHDL SIGNAL OF ARCHITECTURE && PORTS OF ENTITY && HEADER PARSER *
- * V0.1.2														   *
- * 2024.04.24 Oleynikov Anton 	https://github.com/AAOleynikov	   *
+ * V0.1.4														   *
+ * 2024.05.01 Oleynikov Anton 	https://github.com/AAOleynikov	   *
  * ****************************************************************/
 
 //var input для тестого ввода находится в test_input.js
@@ -15,11 +15,13 @@
       "ports":[
          {  											//вид до добавления стимуляторов
             "name":"not_S",
-            "type":"inout"
+            "type":"inout",
+            "subtype":"STD_LOGIC"
          },
          {												//вид после добавления стимуляторов
             "name":"K",
-            "type":"in",
+            "sub_type":"in",
+            "subtype":"STD_LOGIC",
             "stimulus":{
                "stimulus_type":"Clock",
                "low_value":0,
@@ -100,6 +102,7 @@ export default class MVHDLListener extends vhdlParserListener {
     var count_of_ports_in_string;
     var port_name;
     var port_type;
+    var port_subtype;
     for (var i = 0; i < count_of_ports_strings; i++) {
       count_of_ports_in_string = ctx
         .port_clause()
@@ -131,7 +134,17 @@ export default class MVHDLListener extends vhdlParserListener {
           .interface_signal_declaration()
           .signal_mode()
           .getText();
-        new_entity.appendPort(port_name, port_type);
+        port_subtype = ctx
+          .port_clause()
+          .port_list()
+          .interface_list()
+          .interface_element()
+          [i].interface_declaration()
+          .interface_object_declaration()
+          .interface_signal_declaration()
+          .subtype_indication()
+          .getText();
+        new_entity.appendPort(port_name, port_type, port_subtype);
       }
     }
     this.vhdlFileTop.setEntity(new_entity);
