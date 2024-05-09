@@ -1,6 +1,6 @@
 <script setup>
 import "vcdrom/app/vcdrom.js";
-import { reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import Editor from "./components/Editor.vue";
 import FileTree from "./components/FileTree.vue";
 import NavBar from "./components/NavBar.vue";

@@ -14,7 +14,7 @@ class Signal {
   subtype: string;
   type: string;
   source: SignalSource;
-  constructor(name: string, type: string, sybtype: string) {
+  constructor(name: string, type: string, subtype: string) {
     this.name = name;
     this.subtype = subtype;
     this.type = type;
@@ -31,7 +31,11 @@ export class entity {
     this.ports = [];
   }
   appendPort(port_name: string, port_type: string, port_subtype: string) {
-    this.ports.push({ name: port_name, type: port_type, subtype: port_subtype });
+    this.ports.push({
+      name: port_name,
+      type: port_type,
+      subtype: port_subtype,
+    });
   }
 }
 
