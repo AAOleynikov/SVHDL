@@ -12,11 +12,19 @@ const props = defineProps(["data"]);
 const emit = defineEmits(["update:data"]);
 var tree = null;
 
+let realTree = reactive([]);
+if (props.data) {
+  console.log("props data", props.data);
+  for (let proj of props.data.projects) {
+    console.log(proj);
+  }
+}
+
 onMounted(() => {
   tree = createTree("#tree", {
     selectMode: 3,
     source: function (event, data) {
-      return props["data"];
+      return realTree
     },
 
     activate: function (event, data) {

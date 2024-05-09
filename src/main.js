@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./index.css";
+import { createRouter, createWebHistory } from "vue-router";
 
 import { loader } from "@guolao/vue-monaco-editor";
 import * as monaco from "monaco-editor";
@@ -11,9 +12,25 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+import IDEScreen from "./screens/IDEScreen.vue";
+import VCDromScreen from "./screens/VCDromScreen.vue";
+
+const routes = [
+  {
+    path: "/",
+    component: IDEScreen,
+  },
+  {
+    path: "/vcdrom/:id",
+    component: VCDromScreen,
+  },
+];
+
+const router = createRouter({ history: createWebHistory(), routes });
 
 const app = createApp(App);
 app.use(VueMonacoEditorPlugin);
+app.use(router)
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
