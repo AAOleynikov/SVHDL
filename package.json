@@ -21,6 +21,8 @@
     "clsx": "^2.1.0",
     "d3": "^7.9.0",
     "jquery": "^3.7.1",
+    "jquery-contextmenu": "^2.9.2",
+    "jquery-ui": "^1.13.3",
     "jquery.fancytree": "^2.38.3",
     "less": "^4.2.0",
     "monaco-editor": "^0.47.0",
@@ -31,6 +33,7 @@
     "radix-vue": "^1.5.3",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
+    "ui-contextmenu": "^1.18.1",
     "vcdrom": "^1.6.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"

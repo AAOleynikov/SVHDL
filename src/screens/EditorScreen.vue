@@ -23,7 +23,7 @@ const treeContent = ref(projSys);
     direction="horizontal"
     class="border flex-grow flex-row"
   >
-    <ResizablePanel id="panel-1" :default-size="10" :min-size="10">
+    <ResizablePanel id="panel-1" :default-size="40" :min-size="10">
       <div class="border-black pt-2 overflow-auto gap-1 flex flex-col">
         <Button>Сохранить</Button>
         <div><FileTree v-model:data="treeContent" /></div>
