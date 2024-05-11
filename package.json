@@ -24,6 +24,7 @@
     "jquery-contextmenu": "^2.9.2",
     "jquery-ui": "^1.13.3",
     "jquery.fancytree": "^2.38.3",
+    "jszip": "^3.10.1",
     "less": "^4.2.0",
     "monaco-editor": "^0.47.0",
     "monaco-editor-textmate": "^4.0.0",

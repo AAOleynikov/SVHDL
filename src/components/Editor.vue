@@ -1,5 +1,4 @@
 <script setup>
-
 /* Закомментирована подсветка синтаксиса textmate, потому что она не работала */
 
 import { ref, onMounted, reactive } from "vue";
@@ -10,10 +9,15 @@ import { ref, onMounted, reactive } from "vue";
 // import { Registry } from "monaco-textmate"; // peer dependency
 // import { wireTmGrammars } from "monaco-editor-textmate";
 
-const code = defineModel();
+const storage = defineModel();
 
 const editorRef = reactive([]);
 const handleMount = (editor) => (editorRef.value = editor);
+
+const handleUpdate = () => {
+  storage.value.activeProject.isUnsaved = true;
+  storage.value.activeProject.activeFile.isUnsaved = true;
+};
 
 // async function liftOff() {
 //   await loadWASM("node_modules/onigasm/lib/onigasm.wasm");
@@ -59,7 +63,8 @@ const handleMount = (editor) => (editorRef.value = editor);
   <div class="flex-grow flex flex-col">
     <vue-monaco-editor
       style="height: 100%; width: 100%; flex-grow: 1"
-      v-model:value="code"
+      v-model:value="storage.activeProject.activeFile.code"
+      @update:value="handleUpdate"
       @mount="handleMount"
     />
   </div>

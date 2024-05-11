@@ -8,7 +8,7 @@ import "jquery.fancytree/dist/skin-lion/ui.fancytree.less";
 import "jquery.fancytree/dist/modules/jquery.fancytree.edit";
 import "jquery.fancytree/dist/modules/jquery.fancytree.filter";
 import { createTree } from "jquery.fancytree";
-import { Project } from "@/lib/projectSystem";
+import { Project, ProjectStorage } from "@/lib/projectSystem";
 import {
   DialogClose,
   DialogContent,
@@ -21,8 +21,9 @@ import {
 } from "radix-vue";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import JSZip from "JSZip";
 
-const props = defineProps(["data"]);
+const props = defineProps({ data: ProjectStorage });
 const emit = defineEmits(["update:data"]);
 const dialogOpen = ref(false); // Открыт ли диалог
 const dialogType = ref("confirm"); // confirm - подтвердить удаление проекта/всех проектов, input - ввод названия проекта/файла
@@ -36,17 +37,74 @@ const dialogType = ref("confirm"); // confirm - подтвердить удал�
  * renameFile - переименование файла
  */
 const dialogOrigin = ref("newFile");
+
 const whatAffected = ref(""); // Какой проект/файл затрагивает этот диалог
 const dialogHeader = ref(""); // Заголовок диалога
 const dialogInput = ref(""); // v-model для поля ввода в диалоге
-var tree = null;
+var tree = null; // Указатель на jquery-объект дерева
+
+const saveAs = (content, name) => {
+  const blob = new Blob([content]);
+  if (window.navigator && window.navigator.msSaveOrOpenBlob)
+    return window.navigator.msSaveOrOpenBlob(blob);
+
+  // For other browsers:
+  // Create a link pointing to the ObjectURL containing the blob.
+  const data = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = data;
+  link.download = name;
+
+  // this is necessary as link.click() does not work on the latest firefox
+  link.dispatchEvent(
+    new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    })
+  );
+
+  setTimeout(() => {
+    // For Firefox it is necessary to delay revoking the ObjectURL
+    window.URL.revokeObjectURL(data);
+    link.remove();
+  }, 100);
+};
 
 // Функция, которая вызывается, когда пользователь нажимает кнопку "Ок" в диалоге
 function dialogConfirm() {
-  dialogOpen = false;
-  console.log("Cy4kf");
+  dialogOpen.value = false;
+  const orig = dialogOrigin.value;
+  const name = dialogInput.value;
+  const storage: ProjectStorage = props.data;
+  if (orig == "newFile") {
+    storage.activeProject.newFile(name);
+    storage.saveAll();
+  } else if (orig == "newProject") {
+    storage.newProject(name);
+    storage.setProjectActive(name);
+    storage.saveAll();
+  } else if (orig == "deleteFile") {
+    storage.activeProject.deleteFile(whatAffected.value);
+    storage.saveAll();
+  } else if (orig == "deleteProject") {
+    storage.deleteProject(whatAffected.value);
+    storage.saveAll();
+  } else if (orig == "deleteAll") {
+    storage.deleteAllProjects();
+    storage.saveAll();
+  } else if (orig == "renameProject") {
+    storage.renameProject(whatAffected.value, name);
+    storage.saveAll();
+  } else if (orig == "renameFile") {
+    //TODO
+    storage.saveAll();
+  } else console.error("Dialog origin is wrong");
+  fullyReloadTree(); // Временное, но надёжное решение
 }
 
+// Контекстное меню, которое должно открываться при ПКМ на корень дерева проектов
 const MENU_MASTER = [
   {
     title: "New project",
@@ -60,7 +118,8 @@ const MENU_MASTER = [
   },
 ];
 
-const MENU_PROJECT = [
+// Контекстное меню, которое должно открываться при ПКМ на активный проект
+const MENU_ACTIVE_PROJECT = [
   {
     title: "Rename Project",
     cmd: "rename-project",
@@ -70,11 +129,6 @@ const MENU_PROJECT = [
     title: "Delete Project <kbd>[Del]</kbd>",
     cmd: "delete-project",
     uiIcon: "ui-icon-trash",
-  },
-  {
-    title: "Set Project as Active",
-    cmd: "set-project-active",
-    uiIcon: "ui-icon-power",
   },
   { title: "----" },
   {
@@ -90,6 +144,21 @@ const MENU_PROJECT = [
   },
 ];
 
+// Контекстное меню, которое должно открываться при ПКМ на неактивный проект
+const MENU_INACTIVE_PROJECT = [
+  {
+    title: "Set Project as Active",
+    cmd: "set-project-active",
+    uiIcon: "ui-icon-power",
+  },
+  {
+    title: "Delete Project <kbd>[Del]</kbd>",
+    cmd: "delete-project",
+    uiIcon: "ui-icon-trash",
+  },
+];
+
+// Контекстное меню, которое должно открываться при ПКМ на файл внутри проекта
 const MENU_FILE = [
   {
     title: "Rename",
@@ -114,14 +183,31 @@ const MENU_FILE = [
   },
 ];
 
+// Контекстное меню, которое должно открываться при ПКМ на сигнал (сигналы находятся в поддереве файла)
+const MENU_SIGNAL = [
+  {
+    title: "ЗДЕСЬ МОЖЕТ",
+  },
+  {
+    title: "БЫТЬ ВАША",
+  },
+  {
+    title: "РЕКЛАМА",
+  },
+];
+
 // Открыть диалог для подтверждения удаления или ввода названия файла/проекта
 const openDialog = (dOrigin, affected = "") => {
   dialogOrigin.value = dOrigin;
   dialogInput.value = "";
   whatAffected.value = affected;
+
   if (["deleteFile", "deleteProject", "deleteAll"].includes(dOrigin))
-    dialogType.value = confirm;
+    dialogType.value = "confirm";
   else dialogType.value = "input";
+
+  if (["renameFile", "renameProject"].includes(dOrigin))
+    dialogInput.value = affected;
   const ddd = {
     newFile: "Введите название нового файла",
     newProject: "Введите название нового проекта",
@@ -140,20 +226,12 @@ const openDialog = (dOrigin, affected = "") => {
   dialogOpen.value = true;
 };
 
-const MENU_SIGNAL = [
-  {
-    title: "ЗДЕСЬ МОЖЕТ",
-  },
-  {
-    title: "БЫТЬ ВАША",
-  },
-  {
-    title: "РЕКЛАМА",
-  },
-];
-
+// Здесь хранится дерево
 let realTree = [];
+
+// Полностью обновить дерево. Возможна потеря позиции скролла или раскрытия папок
 function fullyReloadTree() {
+  const storage: ProjectStorage = props.data;
   realTree = reactive([
     {
       title: "MVHDL Projects",
@@ -164,15 +242,44 @@ function fullyReloadTree() {
       expanded: true,
     },
   ]);
-  if (props.data) {
-    console.log("props data", props.data);
-    for (let proj of props.data.projects) {
-      realTree[0].children.push({ title: proj.name, folder: true });
+  if (storage) {
+    for (let proj of storage.projects) {
+      realTree[0].children.push({
+        title:
+          (proj == storage.activeProject ? "<b>" : "") +
+          proj.name +
+          (proj == storage.activeProject ? "</b>" : ""),
+        folder: true,
+        expanded: true,
+        key: "project_" + proj.name,
+        children: [],
+      });
+      if (proj == storage.activeProject) {
+        for (let file of proj.files) {
+          realTree[0].children[realTree[0].children.length - 1].children.push({
+            title:
+              (file === proj.activeFile ? '<i class="bi-pen mr-2"></i>' : "") +
+              (file.isUnsaved ? '<i class="bi-dot mr-2"></i>' : "") +
+              file.name,
+            key: "file_" + file.name,
+            icon:
+              file == storage.activeProject.topLevelFile
+                ? "bi-star-fill"
+                : "bi-file-earmark-code",
+          });
+        }
+      }
     }
   }
+  if (tree != null) {
+    tree.reload();
+  }
 }
+
+// Запустить fullyReloadTree при создании дерева
 fullyReloadTree();
 
+// Обработка нажатия пользователем пункта в контекстном меню
 const menuEvent = (event, data) => {
   const storage: ProjectStorage = props.data;
   const node = tree.getActiveNode();
@@ -184,28 +291,83 @@ const menuEvent = (event, data) => {
       openDialog("deleteAll");
     }
   } else if (node.key.startsWith("project_")) {
+    const projectName = node.key.slice("project_".length);
     if (data.cmd == "rename-project") {
+      openDialog("renameProject", projectName);
     }
     if (data.cmd == "delete-project") {
+      openDialog("deleteProject", projectName);
     }
     if (data.cmd == "set-project-active") {
+      storage.setProjectActive(projectName);
+      fullyReloadTree();
     }
     if (data.cmd == "create-file") {
+      openDialog("newFile", projectName);
     }
     if (data.cmd == "read-project") {
+      var zip = new JSZip();
+      storage.activeProject.files.forEach(function (file) {
+        zip.file(file.name, file.code);
+      });
+      zip.generateAsync({ type: "blob" }).then(function (content) {
+        saveAs(content, `${storage.activeProject.name}.zip`);
+      });
     }
   } else if (node.key.startsWith("file_")) {
+    const fileName = node.key.slice("file_".length);
     if (data.cmd == "rename-file") {
+      openDialog("renameFile", fileName);
     }
     if (data.cmd == "delete-file") {
+      openDialog("deleteFile", fileName);
     }
     if (data.cmd == "set-file-top-level") {
+      storage.activeProject.setTopLevelFile(fileName);
+      fullyReloadTree();
     }
     if (data.cmd == "read-file") {
+      const file = storage.activeProject.files.find((a) => a.name == fileName);
+      saveAs(file.code, file.name);
     }
   }
-  fullyReloadTree();
-  tree.reload();
+};
+
+// Функция выбирает меню, которое будет открываться при ПКМ на элемент дерева
+const chooseMenuForElement = (event, ui) => {
+  var node = $.ui.fancytree.getNode(ui.target);
+  var menu = undefined;
+  if (node.key == "master") {
+    menu = MENU_MASTER;
+  } else if (node.key.startsWith("project_")) {
+    const projectName = node.key.slice("project_".length);
+    if (
+      projectName ===
+      (props.data.activeProject ?? {
+        name: "adsfasdfasdfdasdfasdfasdfasdfasd",
+      })["name"]
+    ) {
+      // Если ПКМ по активному проекту
+      menu = MENU_ACTIVE_PROJECT;
+    } else {
+      menu = MENU_INACTIVE_PROJECT;
+    }
+  } else if (node.key.startsWith("file_")) {
+    menu = MENU_FILE;
+  } else {
+    menu = MENU_SIGNAL;
+  }
+  node.setActive();
+  $("#tree").contextmenu({ menu });
+};
+
+//
+const onSelectTreeElement = (event, data) => {
+  const storage = props.data;
+  const key = data.node.key;
+  if (key.startsWith("file_"))
+    storage.activeProject.setActiveFile(key.slice("file_".length));
+  else if (storage.activeProject) storage.activeProject.activeFile = undefined;
 };
 
 // Когда компонент Vue смонтирован, замутить дерево
@@ -215,13 +377,7 @@ onMounted(() => {
     source: function (event, data) {
       return realTree;
     },
-
-    activate: function (event, data) {
-      console.log(event.type + ": " + data.node);
-    },
-    select: function (event, data) {
-      console.log(event.type + ": " + data.node.isSelected() + " " + data.node);
-    },
+    click: onSelectTreeElement,
   });
   +$("#tree").on("nodeCommand", menuEvent);
   import("jquery.fancytree/dist/skin-win7/ui.fancytree.css");
@@ -229,22 +385,7 @@ onMounted(() => {
   $("#tree").contextmenu({
     delegate: "span.fancytree-node",
     menu: [],
-    beforeOpen: function (event, ui) {
-      console.log("here");
-      var node = $.ui.fancytree.getNode(ui.target);
-      var menu = undefined;
-      if (node.key == "master") {
-        menu = MENU_MASTER;
-      } else if (node.key.startsWith("project_")) {
-        menu = MENU_PROJECT;
-      } else if (node.key.startsWith("file_")) {
-        menu = MENU_FILE;
-      } else {
-        menu = MENU_SIGNAL;
-      }
-      node.setActive();
-      $("#tree").contextmenu({ menu });
-    },
+    beforeOpen: chooseMenuForElement,
     select: function (event, ui) {
       var that = this;
       // delay the event, so the menu can close and the click event does
@@ -256,7 +397,9 @@ onMounted(() => {
   });
 });
 
+//Обновление данных при обновлении props
 watch(props["data"], async (newData, oldData) => {
+  fullyReloadTree();
   if (tree != null) {
     tree.reload();
   }
@@ -289,11 +432,17 @@ watch(props["data"], async (newData, oldData) => {
           </Alert>
         </DialogDescription>
 
-        <Input v-model="dialogInput" class="mb-8" />
+        <Input
+          v-model="dialogInput"
+          v-if="dialogType == 'input'"
+          @keyup.enter="dialogConfirm"
+          class="mb-8"
+        />
 
         <div class="mt-2 flex justify-end gap-5">
           <DialogClose>
             <button
+              @click="dialogConfirm"
               class="rounded-md bg-red-500 px-2 py-1 text-white font-bold"
             >
               <i class="bi-check-lg font-bold mr-1"></i>Ок
@@ -301,7 +450,6 @@ watch(props["data"], async (newData, oldData) => {
           </DialogClose>
           <DialogClose>
             <button
-              @click="dialogConfirm"
               class="rounded-md bg-green-500 px-2 py-1 text-white font-bold"
             >
               <i class="bi-x-lg font-bold mr-1"></i>Отмена
