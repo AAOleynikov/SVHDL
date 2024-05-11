@@ -5,7 +5,7 @@ export class ProjectStorage {
   saveToLocalStorage() {}
   addProject(name: string) {}
   loadAll() {
-    this.projects=[]
+    this.projects = [];
     const storedProjects = localStorage.getItem("projectLibrary");
     if (storedProjects != undefined) {
       const projectData = JSON.parse(storedProjects);
@@ -24,6 +24,9 @@ export class ProjectStorage {
   saveAll() {}
   constructor() {
     this.loadAll();
+  }
+  count() {
+    return this.projects.length;
   }
 }
 export class Project {
