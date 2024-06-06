@@ -6,4 +6,10 @@
 
 - ANTLR4 + Java (для запуска генератора)
 
-На Windows проще всего сделать `python -m pip install antlr4-tools`, он сам установит все необходимые зависимости
+На Windows проще всего сделать 
+`python -m pip install antlr4-tools`
+он сам установит все необходимые зависимости
+
+Компиляция vhdlLexer.g4 и vhdlParser.g4 в js производится с помощью комманды
+`antlr4 -Dlanguage=JavaScript vhdlLexer.g4 vhdlParser.g4`
+
