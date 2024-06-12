@@ -16,7 +16,7 @@ watch(state, async (newState, oldState) => {
     <div
       class="flex flex-row justify-between align-middle p-4 bg-slate-300 border-b-slate-600 border-b-2"
     >
-      <a href="https://github.com/AAOleynikov/MVHDL">MVHDL</a>
+      <a href="https://github.com/AAOleynikov/SVHDL">SVHDL</a>
 
       <Tabs
         defaultValue="account"
