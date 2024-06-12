@@ -1,1 +1,0 @@
--w -s "D:\EducationProjects\Active-HDL\6 Circuit\library.cfg"  -j "D:\EducationProjects\Active-HDL\6 Circuit\lab2\projlib.cfg"  -d "D:\EducationProjects\Active-HDL\6 Circuit\lab2\compile\"  -work lab2 -dbg -e 100 "D:\EducationProjects\Active-HDL\6 Circuit\lab2\src\and_3_no.vhd"  "D:\EducationProjects\Active-HDL\6 Circuit\lab2\src\jk_with_forbidden_links.vhd" 

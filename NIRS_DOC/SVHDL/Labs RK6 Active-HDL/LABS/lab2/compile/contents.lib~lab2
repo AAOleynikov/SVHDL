@@ -1,6 +1,0 @@
-120
-~E 1 "./src/and_3_no.vhd" 4 and_3_no
-~A 1 "./src/and_3_no_ff.vhd" 13 and_3_no
-~E 1 "./src/jk_with_forbidden_links.vhd" 4 jk_with_forbidden_links
-~A 1 "./src/jk_with_forbidden_links.vhd" 15 jk_with_forbidden_links
-~A 1 "./src/jk_with_forbidden_links.vhd" 39 jk_with_forbidden_links_2

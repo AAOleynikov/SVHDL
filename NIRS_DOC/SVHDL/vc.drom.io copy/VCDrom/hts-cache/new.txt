@@ -1,8 +1,0 @@
-date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
-22:54:43	5254/5254	---M-Z	404	error ('Not%20Found')	text/html	etag:W/%2264d39a40-24a3%22	https://vc.drom.io/robots.txt		(from )
-22:54:43	1809/1809	U-----	200	untouched ('OK')	text/html	etag:W/%22663c5513-711%22	https://vc.drom.io/	C:/Users/666an/Documents/BMSTU/SVHDL/VCDrom/VCDrom/vc.drom.io/index.html	(from )
-22:54:46	52916/52916	---MC-	200	added ('OK')	text/javascript	date:Tue,%2012%20Dec%202023%2018:09:08%20GMT	http://www.google-analytics.com/analytics.js	C:/Users/666an/Documents/BMSTU/SVHDL/VCDrom/VCDrom/www.google-analytics.com/analytics.js	(from https://vc.drom.io/)
-22:55:26	321788/321788	U-----	200	untouched ('')	font/woff2	etag:%22663c5513-4e8fc%22	https://vc.drom.io/IosevkaDrom-Regular.woff2	C:/Users/666an/Documents/BMSTU/SVHDL/VCDrom/VCDrom/vc.drom.io/IosevkaDrom-Regular.woff2	(from https://vc.drom.io/)
-22:55:26	356752/356752	U-----	200	untouched ('')	font/woff2	etag:%22663c5513-57190%22	https://vc.drom.io/IosevkaDrom-Oblique.woff2	C:/Users/666an/Documents/BMSTU/SVHDL/VCDrom/VCDrom/vc.drom.io/IosevkaDrom-Oblique.woff2	(from https://vc.drom.io/)
-22:55:26	366656/366656	U-----	200	untouched ('')	font/woff2	etag:%22663c5513-59840%22	https://vc.drom.io/IosevkaDrom-Italic.woff2	C:/Users/666an/Documents/BMSTU/SVHDL/VCDrom/VCDrom/vc.drom.io/IosevkaDrom-Italic.woff2	(from https://vc.drom.io/)
-22:55:26	1192095/1192095	U-----	200	untouched ('')	application/javascript	etag:W/%22663c5513-12309f%22	https://vc.drom.io/vcdrom.js	C:/Users/666an/Documents/BMSTU/SVHDL/VCDrom/VCDrom/vc.drom.io/vcdrom.js	(from https://vc.drom.io/)
