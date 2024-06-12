@@ -1,28 +1,60 @@
+/* В этом файле находятся классы персистентных состояний IDE, которые хранятся в LocalStorage и влияют
+на результат симуляции (потеря которых будет означать потерю пользовательских данных)  */
+
+import { Stymulus } from "@/testbench_generator/stymulus";
+import { ParsedEntity, ParsedVhdlFile } from "./parsedFile";
+import { ParsedVCD } from "@/vcd_tools/vcd2json";
+
+/* Настройки пользователя для Stymulus.
+Они обновляются, когда:
+1) Происходит перекомпиляция
+Тогда обновляются список архитектур для каждого файла, конфигурация сигналов для TopLevel-архитектуры и результат парсинга;
+2) Пользователь выбирает TopLevel-сущность
+Тогда изменяются список доступных входных сигналов для TopLevel-сущности и сбрасывается конфигурация сигналов для TopLevel-сущности;
+3) Пользователь задаёт Stymulus для какого-то из входных сигналов
+Тогда изменяется конфигурация сигналов для TopLevel-сущности */
+export class StymulusConfig {
+  project: Project;
+  parsingResult: ParsedVhdlFile[];
+  topLevelFile?: ParsedVhdlFile;
+  topLevelEntity?: ParsedEntity;
+  inputSignalsConfig: Map<string, Stymulus>;
+}
+
+/* Состояние симуляции */
+export class SimulationState {
+  waveform: ParsedVCD;
+  currentTime: number;
+  hotkeyEvents: any[];
+}
+
+/* Хранилище проектов */
 export class ProjectStorage {
   projects: Project[];
   activeProject?: Project;
   unsavedProjects: Project[];
-  saveToLocalStorage() {}
   // Загрузить всё хранилище проектов из LocalStorage
-  loadAll() {
-    this.projects = [];
+  static loadFromLocalStorage(): ProjectStorage {
+    const newObj = new ProjectStorage();
+    newObj.projects = [];
     const storedProjects = localStorage.getItem("projectLibrary");
     if (storedProjects != undefined) {
       const projectData = JSON.parse(storedProjects);
-      this.projects = projectData.projects.map(
-        (project: string) => new Project(this, project)
+      newObj.projects = projectData.projects.map(
+        (project: string) => new Project(newObj, project)
       );
 
       if (projectData.activeProject != undefined) {
-        this.activeProject = this.projects.find(
+        newObj.activeProject = newObj.projects.find(
           (nm) => nm.name === projectData.activeProject
         );
       }
-      this.unsavedProjects = [];
+      newObj.unsavedProjects = [];
     }
+    return newObj;
   }
   // Сохранить всё хранилище в LocalStorage
-  saveAll() {
+  saveToLocalStorage() {
     let data: Object = { projects: [] };
     if (this.activeProject) data["activeProject"] = this.activeProject.name;
     for (let proj of this.projects) {
@@ -35,7 +67,8 @@ export class ProjectStorage {
     }
   }
   constructor() {
-    this.loadAll();
+    this.projects = [];
+    this.unsavedProjects = [];
   }
   // Возвращает количество проектов в хранилище
   count() {
@@ -51,7 +84,7 @@ export class ProjectStorage {
       // Если проекта с таким именем не существует
       this.projects.push(new Project(this, name));
       this.projects[this.projects.length - 1].isUnsaved = false;
-      this.saveAll();
+      this.saveToLocalStorage();
     }
   }
   deleteProject(name: string) {
@@ -76,12 +109,15 @@ export class ProjectStorage {
     this.activeProject = this.projects.find((a) => a.name == name);
   }
 }
+
+/* Проект */
 export class Project {
   storage: ProjectStorage;
   name: string;
   files: ProjectFile[];
   activeFile?: ProjectFile;
   topLevelFile?: ProjectFile;
+  topLevelArchitecture?: string;
   isUnsaved: boolean;
   unsavedFiles: ProjectFile[];
   constructor(storage: ProjectStorage, name: string) {
@@ -151,7 +187,8 @@ export class Project {
     this.activeFile = this.files.find((a) => a.name == name);
   }
 }
-class ProjectFile {
+/* Файл проекта */
+export class ProjectFile {
   proj: Project;
   code: string;
   name: string;

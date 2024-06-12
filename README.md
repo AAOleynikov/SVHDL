@@ -30,6 +30,6 @@
 Компиляция vhdlLexer.g4 и vhdlParser.g4 в js производится с помощью команды:
 `antlr4 -Dlanguage=JavaScript vhdlLexer.g4 vhdlParser.g4`
 
-### Запуск Vue
+### Запуск Development Server
 
 `npm run dev`

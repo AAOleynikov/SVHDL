@@ -1,23 +1,23 @@
 /** Событие присвоения сигналу значения в какой-то момент времени */
-class Assignment {
+export class VCDAssignment {
   public timestamp: number;
   public value: string;
-  public signal: Signal;
-  constructor(timestamp: number, value: string, signal: Signal) {
+  public signal: VCDSignal;
+  constructor(timestamp: number, value: string, signal: VCDSignal) {
     this.timestamp = timestamp;
     this.value = value;
     this.signal = signal;
   }
 }
 
-class Signal {
-  events: Assignment[]; //Список событий, упорядоченный по их временной метке
+class VCDSignal {
+  events: VCDAssignment[]; //Список событий, упорядоченный по их временной метке
   name: string;
   identifier: string;
   size: number;
-  scope: Scope;
+  scope: VCDScope;
 
-  constructor(name: string, identifier: string, size: number, scope: Scope) {
+  constructor(name: string, identifier: string, size: number, scope: VCDScope) {
     this.name = name;
     this.size = size;
     this.scope = scope;
@@ -26,29 +26,29 @@ class Signal {
   }
 
   addEvent(timestamp: number, value: string) {
-    this.events.push(new Assignment(timestamp, value, this));
+    this.events.push(new VCDAssignment(timestamp, value, this));
     this.events.sort((a, b) => a.timestamp - b.timestamp);
   }
 }
 
-class Scope {
+class VCDScope {
   name: string;
-  parentScope?: Scope;
-  signals: Signal[];
+  parentScope?: VCDScope;
+  signals: VCDSignal[];
 
-  constructor(name: string, parentScope?: Scope) {
+  constructor(name: string, parentScope?: VCDScope) {
     this.name = name;
     this.parentScope = parentScope;
     this.signals = [];
   }
 
-  addSignal(signal: Signal) {
+  addSignal(signal: VCDSignal) {
     this.signals.push(signal);
   }
 }
 
-class ParsedVCD {
-  scopes: Scope[];
+export class ParsedVCD {
+  scopes: VCDScope[];
   timescale: number;
   timescaleUnits: string;
   constructor() {
@@ -67,8 +67,8 @@ function getDumps(vcd: string): string[] {
   return ret;
 }
 
-function parseVCD(vcd: string): ParsedVCD {
+export function parseVCD(vcd: string): ParsedVCD {
   const ret = new ParsedVCD();
-
+  // TODO
   return ret;
 }

@@ -63,9 +63,9 @@
 	Пересмотреть классовую архитектуру
 */
 
-/*  
+/*
 	Questions
-	
+
 	Какой формат лучше при инициализации сигналов:
 		(1)this.signals.push({'name' : signal_name, 'type' : signal_type});
 		VS
@@ -80,7 +80,7 @@ import antlr4 from "antlr4";
 import vhdlLexer from "./build/vhdlLexer.js";
 import vhdlParser from "./build/vhdlParser.js";
 import vhdlParserListener from "./build/vhdlParserListener.js";
-import { vhdlFile,architecture,entity } from "@/lib/vhdlFile.ts";
+import { ParsedVhdlFile,ParsedArchitecture,ParsedEntity } from "@/lib/vhdlFile.ts";
 const { CommonTokenStream, InputStream } = antlr4;
 
 
@@ -93,7 +93,7 @@ export default class MVHDLListener extends vhdlParserListener {
   }
 
   exitEntity_declaration(ctx) {
-    const new_entity = new entity(ctx.children[1].getText()); //entity decl with entity decl
+    const new_entity = new ParsedEntity(ctx.children[1].getText()); //entity decl with entity decl
     var count_of_ports_strings = ctx
       .port_clause()
       .port_list()
@@ -160,7 +160,7 @@ export default class MVHDLListener extends vhdlParserListener {
 
   exitArchitecture_body(ctx) {
     //KW_ARCHITECTURE identifier KW_OF name KW_IS
-    const new_architecture = new architecture(
+    const new_architecture = new ParsedArchitecture(
       ctx.children[1].getText(),
       ctx.children[3].getText()
     );
@@ -194,7 +194,7 @@ export default class MVHDLListener extends vhdlParserListener {
 
 export const processCode = (input) => {
   //В этот объект будет записана вся распаршенная информация
-  const vhdlFileTop = new vhdlFile();
+  const vhdlFileTop = new ParsedVhdlFile();
 
   var chars = new InputStream(input, true);
   var lexer = new vhdlLexer(chars);

@@ -1,6 +1,6 @@
-//Класс vhdl-файла, объект этого класса будет содержать всю
-//информацию, включая стимуляторы колебаний
+/* Здесь содержатся классы, хранящие результат парсинга VHDL-файлов */
 
+/* Абстрактный класс источника сигнала */
 class SignalSource {
   isNull: boolean;
   constructor() {
@@ -9,7 +9,8 @@ class SignalSource {
   // TODO дополнить
 }
 
-class Signal {
+/* Класс сигнала */
+export class ParsedSignal {
   name: string;
   subtype: string;
   type: string;
@@ -22,8 +23,8 @@ class Signal {
   }
 }
 
-//Класс сущности
-export class entity {
+/* Класс сущности */
+export class ParsedEntity {
   name: string;
   ports: any[];
   constructor(name: string) {
@@ -39,23 +40,23 @@ export class entity {
   }
 }
 
-//Класс архитектуры
-export class architecture {
-  of: string;
+/* Класс архитектуры */
+export class ParsedArchitecture {
+  of_file: ParsedVhdlFile;
   name: string;
-  signals: Signal[];
-  constructor(name, of) {
+  signals: ParsedSignal[];
+  constructor(name: string, of: ParsedVhdlFile) {
     this.name = name;
-    this.of = of;
+    this.of_file = of;
     this.signals = [];
   }
   appendSignal(signal_name: string, signal_subtype: string) {
-    this.signals.push(new Signal(signal_name, "", signal_subtype));
+    this.signals.push(new ParsedSignal(signal_name, "", signal_subtype));
   }
 }
 
-export class vhdlFile {
-  architectures: architecture[];
+export class ParsedVhdlFile {
+  architectures: ParsedArchitecture[];
   header_declaration: string;
   entity: any;
 

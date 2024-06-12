@@ -1,44 +1,25 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from "vue";
-import "vcdrom/app/vcdrom.js";
-import NavBar from "./components/NavBar.vue";
-import Button from "./components/ui/button/Button.vue";
-import VCDViewer from "@/components/VCDViewer.vue";
-import { RouterView } from "vue-router";
+/* Экран IDE с навигацией и состояниями редактора */
+import { ref, reactive } from "vue";
+import EditorScreen from "./EditorScreen.vue";
+import SignalsScreen from "./SignalsScreen.vue";
+import NavBar from "@/components/NavBar.vue";
+import { IDEState } from "./lib/ideState";
 
-import "./index.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import sampleCode from "@/sample.vhd?raw";
-import { processCode } from "@/parse/parser";
-import { vhdlFile } from "./lib/vhdlFile";
-import EditorScreen from "@/screens/EditorScreen.vue";
-import SignalsScreen from "@/screens/SignalsScreen.vue";
-import VCDromScreen from "@/screens/VCDromScreen.vue";
-
-//Одно из следующих: vhdl, sigs, vcd
-const state = ref("vhdl");
-
-const code = ref(sampleCode);
-
-// В установку сигналов
-const fileParse = reactive(new vhdlFile());
-
-watch(state, (newState, oldState) => {
-  if (oldState == "vhdl" && newState == "sigs") {
-    console.log("Watcher launched!");
-    const newData = processCode(code.value);
-    fileParse.value = newData;
-    console.log(newData);
-  }
-});
-
-function clickB() {
-  mock.push({ title: "More...", folder: true });
-}
+const ide_state = reactive(IDEState.loadFromLocalStorage());
 </script>
 
 <template>
-  <RouterView />
+  <div class="h-screen max-h-screen flex flex-col">
+    <NavBar v-model:editor-state="state" />
+    <template v-if="ide_state.activeScreen == 'vhdl'">
+      <EditorScreen />
+    </template>
+    <template v-if="ide_state.activeScreen == 'stymulus'">
+      <SignalsScreen v-model="fileParse" />
+    </template>
+    <template v-if="ide_state.activeScreen == 'waveform'">
+      <SignalsScreen v-model="fileParse" />
+    </template>
+  </div>
 </template>
-
-<style scoped></style>

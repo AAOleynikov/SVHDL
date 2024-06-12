@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { vhdlFile } from "@/lib/vhdlFile";
+import { ParsedVhdlFile } from "@/lib/parsedFile";
 
 import {
   Table,
