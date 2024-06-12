@@ -17,8 +17,6 @@ if (!fs.existsSync(folderPath)) {
   console.log('Folder "build" already exists');
 }
 
-exec("mkdir build");
-
 process.chdir(folderPath);
 
 exec(command, (error, stdout, stderr) => {
