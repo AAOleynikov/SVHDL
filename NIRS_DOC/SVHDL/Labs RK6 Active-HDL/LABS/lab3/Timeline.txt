@@ -1,0 +1,16 @@
+3
+R 5
+R 3
+J 2
+J 2
+K 2
+K 2
+C 3
+J 5
+C J 5
+C 3
+K 5
+C K 5
+C 3
+J K 5
+C J K 5

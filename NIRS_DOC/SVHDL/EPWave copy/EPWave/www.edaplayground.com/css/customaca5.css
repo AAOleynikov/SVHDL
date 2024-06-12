@@ -1,0 +1,839 @@
+#loadingCover {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top:0;
+    left: 0;
+    background: #777;
+    z-index:9999;
+    font-size: 60px;
+    text-align: center;
+    padding-top: 200px;
+    color: #fff;
+}
+
+h4 {
+    margin: 5px 0px 2px 0px;
+    font-size: 16px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+.unselectable {
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+
+    /* Rules below not implemented in browsers yet */
+    -o-user-select: none;
+    user-select: none;
+}
+.sectionTitle {
+    border-top-style: solid;
+    border-width: 1px;
+    border-color: #D2D2D2;
+    cursor: default;
+}
+
+/* Bootstap overrides */
+.navbar p {
+    font-size: 0.5em;
+}
+.navbar .btn {
+    padding: 10px 6px;
+}
+.btn-sidebar{
+    width: 89%;
+    font-size: 0.9em;
+}
+.navbar-brand {
+    padding: 0px;
+    font-size: 19px;
+    line-height: 40px;
+}
+
+#header     .navbar .btn{
+color: #fff;
+}
+#header     .navbar{
+        min-height: 40px;
+     }
+#header     .navbar-brand{
+        height: 40px;
+     }
+#header    .navbar-inverse{
+      background-image: -webkit-linear-gradient(#04519b,#044687 60%,#033769);
+      background-image: linear-gradient(#04519b,#044687 60%,#033769);
+      background-repeat: no-repeat;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff04519b',endColorstr='#ff033769',GradientType=0);
+      filter: none;
+      border-bottom: 1px solid #022241;
+}
+
+h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6 {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 500;
+    line-height: 1.1;
+    color: #317eac;
+}
+
+select.form-control, input[type="text"].form-control, input[type="password"].form-control {
+    height: 20px;
+}
+select.form-control[multiple], select.form-control[size] {
+    height: auto;
+}
+label, select.form-control, textarea.form-control, input[type="text"].form-control {
+    font-size: 12px;
+    padding: 1px 0px 1px 2px;
+    margin-bottom: 5px;
+}
+.checkbox {
+    margin-top: 0px;
+    margin-bottom: 2px;
+}
+body.playground {
+    font-size: 13px;
+}
+.control-group {
+    margin-bottom: 0px;
+}
+#leftPanel .col-md-12 {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+#leftPanel .col-md-12.sectionTitle {
+    padding-right: 5px;
+    padding-bottom: 10px;
+    padding-top: 5px;
+}
+#leftPanel .form-group {
+    margin-bottom: 0px;
+}
+#leftPanel {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* ANSI color codes */
+.ansi_red_f {
+    color: red;
+}
+.ansi_green_f {
+    color: green;
+}
+.ansi_yellow_f {
+    color: #E67E00;
+}
+.ansi_blue_f {
+    color: blue;
+}
+.ansi_black_f {
+    color: black;
+}
+.ansi_blue_b {
+    background: LightSkyBlue;
+}
+.ansi_cyan_b {
+    background: cyan;
+}
+
+/* Editor panes and tabs */
+.CodeMirror {
+  height: 100%;
+}
+#innerLayout, #innerLayout * {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
+#innerLayout pre, .STDOUT, .COMMAND, .EXIT, .ERROR {
+    font-family: "Monaco","Andale Mono","Lucida Console","Bitstream Vera Sans Mono","Courier New",Courier,monospace;
+    line-height: 14px;
+    font-size: 12px;
+}
+#innerLayout .CodeMirror-linenumber {
+    min-width: 18px;
+    font-family: Helvetica;
+    font-size: 0.85em;
+}
+#innerLayout .ui-widget {
+  font-size: 1em;
+}
+#innerLayout .fa-plus-square-o {
+  color: #2779aa;
+  padding-top: 4px;
+}
+
+.tabs, .tab-buttons, .tab-panels, .code-tabs .tab-panel {
+  border:   none;
+  padding:  0 !important; /* override UI theme for tab-panels */
+  overflow: hidden;
+  position: relative;
+}
+.code-tabs .tab-panel {  /* individual tab-panels */
+  /* make ALL tab-panels FILL the #tab_panels wrapper */
+  width:    100%;
+  height:   100%;
+  background: #FF0;
+}
+.tab-buttons span.ui-icon { /* (x) close icons/buttons inside the tabs */
+  margin-right: -7px;
+  vertical-align: middle;
+  display:    inline-block;
+  cursor:     pointer;
+}
+.tab-buttons {
+  font-size: 10px;
+}
+.tab-buttons .ui-tabs-nav li {
+  margin: 0px 0.2em 0px 0px;
+  padding: 0px 5px 0px 0px;
+}
+.tab-buttons .ui-tabs-nav li a {
+  padding: 0.1em 0.2em 0.5em 0.5em;
+  outline: 0;
+}
+.tabs, .tab-buttons .ui-corner-all {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+.tab-buttons .ui-widget-header {
+  border: 0px;
+}
+
+#header .navbar {
+    padding-right: 15px;
+}
+/* File upload */
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  font-size: 200px;
+  direction: ltr;
+  cursor: pointer;
+}
+
+/* Other */
+#runButton, #loadButton {
+    pointer-events: auto;
+    cursor: pointer;
+}
+#header .btn {
+    margin: 0px;
+}
+#header .btn:focus {
+    background-position: 0px;
+}
+#header .navbar-collapse {
+    max-height: 500px
+}
+#simulator option {
+    padding-left:10px;
+}
+#examples div {
+    cursor: default;
+}
+#examples ul {
+    margin-bottom: 0px;
+    margin-left: -20px;
+}
+#detailsForm {
+    margin-bottom: 0px;
+}
+
+#shareLink {
+    background: none repeat scroll 0% 0% rgb(246, 246, 246);
+}
+
+.yosysSynthesisOptions {
+    font-size: 12px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+.yosysSynthesisOptions .ui-multiselect-checkboxes {
+    overflow-y: hidden;
+}
+
+.STDOUT {
+  color: #000000;
+  background: #FFFFFF;
+  padding: 0px;
+  white-space:pre;
+}
+
+.COMMAND, .EXIT {
+  color: #000000;
+  background: #00CCFF;
+  border: 3px #BAE1EE;
+  padding: 3px;
+  white-space:pre;
+}
+
+.ERROR {
+  color: #DC143C;
+  background: #FFFFFF;
+  padding: 0px;
+  white-space:pre;
+}
+
+.pane_label {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    border: solid 1px #F1F1F1;
+    background: #fff;
+    display: inline-block;
+    height: 22px;
+    padding: 0 6px;
+    line-height: 22px;
+    position: absolute;
+    top: 37px;
+    right: 16px;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    border-radius: 1px;
+    z-index: 30;
+}
+
+/* Workaround for UI Layout issue http://stackoverflow.com/questions/5520463/ui-layout-jquery-plugin */
+#innerLayout, #testbenchTabs, #designTabs {
+    min-width: 1px;
+    min-height: 1px;
+    width: 100%;
+    height: 100%;
+    position:absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+img#doulos-icon {
+    padding-bottom: 3px;
+    width: 80px;
+}
+
+.fa-sort-arrows {
+    font-size: 8pt;
+}
+
+.fa-sort-arrows:before {
+    content: " \f176\f175";
+}
+
+.form-horizontal label{
+    padding-right: 0px;
+}
+
+.no-label-top-padding.form-horizontal label{
+    padding-top: 0px !important;
+}
+
+.form-error{
+    color: red;
+}
+
+.warning{
+    color:red;
+}
+
+.no-bullets{
+    list-style-type:none
+}
+
+.validation-notes {
+    color: #317eac;
+    padding-left:40px;
+    padding-right:100px;
+    padding-bottom:20px;
+}
+
+.validate-heading{
+    padding-left: 30px;
+}
+
+.privacy {
+    color: #317eac;
+    font-size: 12px;
+}
+
+::-webkit-input-placeholder {
+   font-size: 9px;
+}
+
+::-moz-placeholder {
+   font-size: 9px;
+}
+
+:-ms-input-placeholder {
+   font-size: 9px;
+}
+
+.link-sub-heading{
+    padding-bottom: 20px;
+    padding-top: 20px;
+    text-align: left;
+}
+.links-under-form{ padding-bottom: 20px; padding-top: 20px; }
+.links-under-form a { padding-right: 20px; }
+
+span[data-toggle="tooltip"] {
+    border-bottom: 1px dotted #000;
+    text-decoration: none;
+}
+
+/*#bottomTabsButtons .ui-state-active{
+  background: white;
+}*/
+
+#bottomTabsButtons .bottomTab{
+    padding: 5px 10px 5px 15px;
+}
+
+.playground .ui-tabs .ui-tabs-nav li.ui-tabs-active {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.bottom-tab-text {
+    font-size: 14px;
+}
+
+.bottom-tab-icon {
+    font-size: 14px;
+}
+
+#bottomTabsPanels{
+  overflow:scroll;
+  height: calc(100% - 32px); /*IMPORTANT and configurable if tab icons change size. This ensures there is no scrollbar when the tab contents are empty */
+}
+
+.tab-buttons li.ui-state-active .inactive-content{
+  display:none;
+}
+
+.tab-buttons li .inactive-content{
+  padding-left: 2px;
+}
+
+.tab-buttons li:not(.ui-state-active) .active-content{
+  display:none;
+}
+
+.tab-buttons li.ui-state-active{
+  background:#337ab7;
+  border: 1px solid #3559c7;
+  color: white;
+}
+
+.tab-buttons li{
+  color: darkblue;
+}
+
+#results {
+    padding: 6px 2px 2px 10px;
+}
+
+#resultsPane .btn-primary{
+  color: white;
+}
+
+.navbar-inverse .navbar-nav>li>a:focus,.navbar-inverse .navbar-nav>li>a:hover {
+    color: #fff;
+    background-color: transparent
+}
+
+.navbar-inverse .navbar-nav>li>a:focus, .navbar-inverse .navbar-nav>li>a:hover {
+    color: #fff; !important;
+    background-color: #337ab7; !important;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder{
+  font-size: 14px;
+}
+
+.userTab {
+
+}
+
+#left-hand-menu .subSectionTitle {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+img.shareIcon {
+    padding-bottom: 3px;
+    height: 27px;
+}
+
+#linkShareTab {
+    width: 250px;
+}
+
+.playground input[type=checkbox], input[type=radio] {
+    margin-top: 2px;
+}
+
+.playground .ui-widget{
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+#description {
+    resize: none;
+}
+
+.sub-header {
+    text-align: left;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.user-heading {
+    padding-right: 50px;
+    font-weight: 500;
+    font-size: 18px;
+}
+.user-heading-selected {
+    padding-right: 50px;
+    text-decoration: underline;
+    font-weight: 500;
+    color: #333;
+    font-size: 18px;
+}
+
+h4.sub-heading {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.search-form{
+    padding-bottom: 10px;
+    font-size: 14px;
+}
+.search-form input[type="text"] {
+    height: 34px;
+}
+
+#userDetailsForm {
+    padding-bottom: 30px;
+}
+
+input[type="search"] {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    -webkit-appearance: searchfield;
+
+    height: 22px;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: searchfield-cancel-button;
+}
+
+.searchfilters div{
+    float: left;
+    padding-left: 10px;
+}
+
+#examples{
+    margin-left: 17px;
+}
+
+#examples a{
+    line-height: 1.6;
+}
+
+.siteMessage div{
+    height: 40px;
+    padding-left: 8px;
+}
+
+.siteMessage div span{
+    height: 40px;
+    color: white;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.code-tabs .CodeMirror{
+    height: calc(100% - 18px) /*fix problem with including simplmde having a newer (incompatible codemirror version*/
+}
+
+.editor-preview h1 {font-size: 22px}
+.editor-preview h2 {font-size: 18px}
+.editor-preview h3 {font-size: 16px}
+.editor-preview h4 {font-size: 14px}
+.editor-preview h5 {font-size: 12px}
+
+
+@media (max-width: 1000px) {
+    .navbar-header {
+        float: none;
+    }
+    .navbar-left,.navbar-right {
+        float: none !important;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-fixed-top {
+        top: 0;
+        border-width: 0 0 1px;
+    }
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+    .navbar-nav {
+        float: none!important;
+        margin-top: 7.5px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .collapse.in{
+        display:block !important;
+    }
+}
+
+#detailsForm code{
+    color: inherit;
+}
+
+#languageLibrariesSection{
+    border-top-style: none
+}
+
+#saveButton .fa-pencil {
+    display: inline-block;
+}
+
+#saveButton .fa-spinner {
+    display: none;
+}
+
+#saveButton.saving .fa-pencil {
+    display: none;
+}
+
+#saveButton.saving .fa-spinner {
+    display: inline-block;
+}
+
+.stat-row {
+    border-bottom: 1px solid #4588ba;
+    margin-bottom: 10px;
+}
+
+.togetherjs-cursor {
+    display: none !important;
+}
+
+.current-course-exercise {
+    font-weight: 800;
+}
+
+.fixed-top-alert{
+    position: absolute;
+    position: sticky;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    width: auto;
+    height: auto;
+    z-index: 1000;
+    margin-top: 50px;
+}
+
+#cookie-notice-banner {
+  position: fixed;
+  bottom: 25px;
+  left: 50px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow:-1px 3px 8px 2px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  transition: bottom 1s;
+}
+
+#cookie-notice-hide {
+  background-color: #ececed;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 2px 10px;
+  font-weight: 800;
+  margin-left: 8px;
+}
+
+@media screen and (min-width:1001px) {
+    .visible-gt-1000px {
+        display: block !important;
+    }
+}
+@media screen and (max-width:1000px) {
+    .visible-gt-1000px {
+        display: none !important;
+    }
+    #header .navbar {
+        padding-right: 0!important;
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination a {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: black;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+}
+
+.pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+.table-style{
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.table-wrap{
+    margin-top: 32px;
+}
+
+.action-bg{
+    background-color: white;
+}
+.selected-waveform {
+    background-color: lightblue;
+}
+
+.instruction-card {
+    border-radius: 2px;
+    margin: 8px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: #f5f5f5eb;
+    padding: 5px 20px 10px;
+    max-width: 309px;
+    position: absolute;
+    right: 0;
+    top: -9px;
+}
+
+.instruction-card p.instruction-text {
+    margin: 0;
+    color: #000000b5;
+    font-family: inherit;
+}
+.instruction-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+.instruction-heading span {
+    width: 20px;
+    height: 20px;
+    background: #d6ccbf;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.toggleWaveButton {
+    fill: lightgray;
+    stroke: darkgray;
+    stroke-width: 1;
+    cursor: pointer;
+    content: "+";
+}
+
+/* Style for the plus and minus signs */
+.plusSign::before {
+    content: "+";
+}
+
+.minusSign::before {
+    content: "-";
+}
+.pane_button {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    border: solid 1px #F1F1F1;
+    background: #337ab7;
+    display: inline-block;
+    height: 22px;
+    padding: 0 6px;
+    line-height: 22px;
+    position: absolute;
+    top: 7px;
+    right: 16px;
+    text-align: center;
+    font-size: 12px;
+    color: #fff;
+    border-radius: 1px;
+    z-index: 30;
+}
+
+.pane_button_hide {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    border: solid 1px #337ab7;
+    background: #F1F1F1;
+    display: inline-block;
+    height: 22px;
+    padding: 0 6px;
+    line-height: 22px;
+    position: absolute;
+    top: 7px;
+    right: 16px;
+    text-align: center;
+    font-size: 12px;
+    color: #337ab7;
+    border-radius: 1px;
+    z-index: 30;
+}
+
+.media-preview, .media-preview iframe {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+.media-preview {
+    top: 0px;
+}
+.media-preview iframe {
+    top: 0;
+    height: 100%;
+}
+.code-panel{
+    display: inline;
+}

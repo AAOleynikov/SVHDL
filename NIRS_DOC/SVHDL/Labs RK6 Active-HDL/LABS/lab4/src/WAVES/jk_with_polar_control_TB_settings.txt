@@ -1,0 +1,47 @@
+[SETTINGS]
+UUT_entity%jk_with_polar_control%
+UUT_architecture%jk_with_polar_control%
+WAVES_entity%jk_with_polar_control_wb%
+WAVES_architecture%TB_ARCHITECTURE%
+MONITOR%YES%
+DSN_PATH%$dsn\src\WAVES%
+WAVES_STANDARD_PATH%$ALDEC\DAT\WAVES%
+OUTPUT_DIRECTORY%C:\Users\666an\Documents\BMSTU\MVHDL\Labs (2)\lab4\src\WAVES%
+VECTORS_FILE%%
+TEST_PINS_FILE%jk_with_polar_control_TB_pins.vhd%
+TB_FILE%jk_with_polar_control_TB.vhd%
+DECLARATIONS_FILE%jk_with_polar_control_TB_declaration.vhd%
+HEADER_FILE%jk_with_polar_control_TB_header%
+MACRO_FILE%jk_with_polar_control_TB_runtest.do%
+UUT_entity_FILE%lab4/src/jk_with_polar_control.vhd%
+TIMING_CONFIGURATION%NO%
+LIBRARY_NAME%lab4%
+LIBRARY_TYPE%work%
+ENABLE_FILE%none%
+
+[GENERICS]
+
+[PORTS]
+not_S%in%STD_LOGIC%NO%NOCLK%
+J%in%STD_LOGIC%NO%NOCLK%
+C%in%STD_LOGIC%NO%NOCLK%
+K%in%STD_LOGIC%NO%NOCLK%
+not_R%in%STD_LOGIC%NO%NOCLK%
+Q%out%STD_LOGIC%NO%NOCLK%
+not_Q%out%STD_LOGIC%NO%NOCLK%
+
+[CLOCKS]
+
+[SDF]
+
+[INCLUDE]
+library ieee;
+use ieee.std_logic_1164.all;
+
+[VHDL_FILES]
+$dsn\src\no.vhd
+$dsn\src\or_3_no.vhd
+$dsn\src\or_2_no.vhd
+$dsn\src\and_3_no.vhd
+$dsn\src\jk_with_polar_control.vhd
+

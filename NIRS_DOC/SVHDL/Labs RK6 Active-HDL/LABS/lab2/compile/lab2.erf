@@ -1,0 +1,8 @@
+WARNING DAGGEN_0523: "The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available."
+MESSAGE "File: C:/Users/666an/Downloads/Labs (2)/lab2/src/and_3_no_ff.vhd" 
+MESSAGE "Compile Entity "and_3_no"" 
+MESSAGE "Compile Architecture "and_3_no" of Entity "and_3_no"" 
+MESSAGE "File: C:/Users/666an/Downloads/Labs (2)/lab2/src/jk_with_forbidden_links.vhd" 
+MESSAGE "Compile Entity "jk_with_forbidden_links"" 
+MESSAGE "Compile Architecture "jk_with_forbidden_links" of Entity "jk_WitH_forbidden_links"" 
+SUCCESS "Compile success 0 Errors 0 Warnings  Analysis time :  47.0 [ms]" 

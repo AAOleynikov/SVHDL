@@ -1,0 +1,1 @@
+-w -s "D:\EducationProjects\Active-HDL\6 Circuit\library.cfg"  -j "D:\EducationProjects\Active-HDL\6 Circuit\Lab1\projlib.cfg"  -d "D:\EducationProjects\Active-HDL\6 Circuit\Lab1\compile\"  -work lab -dbg -e 100 "D:\EducationProjects\Active-HDL\6 Circuit\Lab1\src\y.vhd"  "D:\EducationProjects\Active-HDL\6 Circuit\Lab1\src\lab1.vhd" 

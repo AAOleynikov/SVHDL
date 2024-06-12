@@ -1,0 +1,119 @@
+/* SVG */
+svg {
+    cursor:default;
+    pointer-events:all;
+}
+
+text.name {
+    font-size:80%;
+    font-family:Lucida Console;
+    fill: white;
+}
+
+text.value {
+    font-size:80%;
+    font-family:Lucida Console;
+    fill: #FFB733;
+}
+
+text.time {
+    font-size:80%;
+    font-family:Lucida Console;
+    fill: yellow;
+}
+
+text.busData {
+    font-size:80%;
+    font-family:Lucida Console;
+    fill: aqua;
+}
+
+line, rect {
+    shape-rendering:crispEdges
+}
+
+.verticalLine1, .verticalLine2 {
+    stroke-width:1;
+    stroke-opacity:0.8
+}
+.verticalLine1 {
+    stroke:#FFB733;
+}
+.verticalLine2 {
+    stroke:#D3D3D3;
+}
+
+i.cursorTimeArrow {
+    color:#FFB733
+}
+
+.removeWave > i {
+    color:red
+}
+
+/* Bootstrap override */
+.btn.btn-default.disabled {
+    opacity: 0.50;
+}
+
+/* Top navbar */
+#header .btn {
+    margin: 0px;
+}
+#header .btn:focus {
+    background-position: 0px;
+}
+
+/* Forms and buttons */
+#epwaveToolbar .btn {
+    padding: 4px 12px;
+}
+.epwaveForm {
+    margin: 0px 0px 5px;
+}
+.epwaveForm input.form-control[type="text"] {
+    height: 22px
+}
+#uploadForm .col-sm-1, #uploadForm .col-sm-2, #uploadForm .col-sm-3, #uploadForm .col-sm-4, #uploadForm .col-sm-5, #uploadForm .col-sm-6,
+#uploadForm .col-sm-7, #uploadForm .col-sm-8, #uploadForm .col-sm-9, #uploadForm .col-sm-10, #uploadForm .col-sm-11, #uploadForm .col-sm-12 {
+    padding-right: 5px;
+    padding-left: 0px;
+}
+
+#fullSignalName {
+    margin: 0px;
+    font-family:Lucida Console;
+}
+.fullSignalWell {
+    margin: 0px;
+    padding: 3px;
+}
+
+#expandOptions, #collapseOptions {
+    cursor:pointer;
+    vertical-align:top;
+}
+
+#typeGroup {
+    display:inline-block;
+}
+
+#type {
+    height:24px;
+    line-height:24px;
+    margin-bottom: 5px;
+    padding: 2px 0px 2px 2px;
+}
+
+#type_upload {
+    padding:0px;
+    margin-bottom:5px;
+}
+
+input[type="file"] {
+    height:22px;
+    line-height:22px;
+    margin-right:5px;
+    font-size: 13px;
+}
+

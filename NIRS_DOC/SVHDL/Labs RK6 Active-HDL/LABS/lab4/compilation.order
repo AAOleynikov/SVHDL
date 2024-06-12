@@ -1,0 +1,13 @@
+.\src\and_3_no.vhd
+.\src\no.vhd
+.\src\or_2_no.vhd
+.\src\or_3_no.vhd
+.\src\jk_with_polar_control.vhd
+.\src\ct.vhd
+.\src\and_2.vhd
+.\src\WAVES\jk_with_polar_control_TB_pins.vhd
+.\src\WAVES\jk_with_polar_control_TB_declaration.vhd
+.\..\..\..\..\..\..\..\Aldec\Active-HDL-13-x64\dat\waves\waves_objects.vhd
+.\..\..\..\..\..\..\..\Aldec\Active-HDL-13-x64\dat\waves\monitor_utilities.vhd
+.\..\..\..\..\..\..\..\Aldec\Active-HDL-13-x64\dat\waves\waves_generator.vhd
+.\src\WAVES\jk_with_polar_control_TB.vhd

@@ -1,0 +1,67 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=4
+Current Config=compile
+[Configurations]
+compile=lab3
+[Library]
+lab3=.\lab3.LIB
+[$LibMap$]
+lab3=.
+Active_lib=
+[Settings]
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+FLOWTOOLS=NONE
+REFRESH_FLOW=1
+FAMILY=
+IMPL_TOOL=
+SYNTH_TOOL=
+[HierarchyViewer]
+SortInfo=u
+HierarchyInformation=jk_with_polar_control|jk_with_polar_control|0
+ShowHide=ShowTopLevel
+Selected=
+[Folders]
+Name3=Makefiles
+Directory3=d:\EducationProjects\Active-HDL\6 Circuit\Lab3\
+Extension3=mak
+Name4=Memory
+Directory4=d:\EducationProjects\Active-HDL\6 Circuit\Lab3\src
+Extension4=mem;mif;hex
+Name5=Dll Libraries
+Directory5=d:\EducationProjects\Active-HDL\6 Circuit\Lab3\
+Extension5=dll
+Name6=PDF
+Directory6=d:\EducationProjects\Active-HDL\6 Circuit\Lab3\
+Extension6=pdf
+Name7=HTML
+Directory7=d:\EducationProjects\Active-HDL\6 Circuit\Lab3\
+Extension7=
+[Files]
+/and_3_no.vhd=-1
+/no.vhd=-1
+/or_3_no.vhd=-1
+/or_2_no.vhd=-1
+/jk_with_polar_control.vhd=-1
+/timeline_trigger.awf=-1
+/or_2.vhd=-1
+/and_2.vhd=-1
+/and_3.vhd=-1
+/ct.vhd=-1
+/timeline_ct.awf=-1
+/timeline_ct_2.awf=-1
+[Files.Data]
+.\src\and_3_no.vhd=VHDL Source Code
+.\src\no.vhd=VHDL Source Code
+.\src\or_3_no.vhd=VHDL Source Code
+.\src\or_2_no.vhd=VHDL Source Code
+.\src\jk_with_polar_control.vhd=VHDL Source Code
+.\src\timeline_trigger.awf=External File
+.\src\or_2.vhd=VHDL Source Code
+.\src\and_2.vhd=VHDL Source Code
+.\src\and_3.vhd=VHDL Source Code
+.\src\ct.vhd=VHDL Source Code
+.\src\timeline_ct.awf=External File
+.\src\timeline_ct_2.awf=External File
