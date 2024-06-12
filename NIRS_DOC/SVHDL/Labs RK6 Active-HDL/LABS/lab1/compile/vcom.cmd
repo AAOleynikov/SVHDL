@@ -1,1 +1,0 @@
--w -erf "C:/Users/666an/Documents/BMSTU/MVHDL/Labs (2)/Lab1/compile/lab1.erf" -d "C:/Users/666an/Documents/BMSTU/MVHDL/Labs (2)/Lab1/compile" -s "C:/Users/666an/Documents/BMSTU/MVHDL/Labs (2)/library.cfg" -j "C:/Users/666an/Documents/BMSTU/MVHDL/Labs (2)/Lab1/projlib.cfg" -work lab -O3 -e 100 -work lab -2002 "C:/Users/666an/Documents/BMSTU/MVHDL/Labs (2)/Lab1/src/y.vhd" 

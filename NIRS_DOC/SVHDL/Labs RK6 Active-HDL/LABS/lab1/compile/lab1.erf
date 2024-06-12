@@ -1,5 +1,0 @@
-WARNING DAGGEN_0523: "The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available."
-MESSAGE "File: C:/Users/666an/Documents/BMSTU/MVHDL/Labs (2)/Lab1/src/y.vhd" 
-MESSAGE "Compile Entity "y"" 
-MESSAGE "Compile Architecture "y" of Entity "y"" 
-SUCCESS "Compile success 0 Errors 0 Warnings  Analysis time :  16.0 [ms]" 

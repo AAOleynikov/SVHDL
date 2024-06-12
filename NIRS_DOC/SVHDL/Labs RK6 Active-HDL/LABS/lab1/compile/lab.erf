@@ -1,7 +1,0 @@
-MESSAGE "File: D:\EducationProjects\Active-HDL\6 Circuit\Lab1\src\y.vhd" 
-MESSAGE "Compile Entity "y"" 
-MESSAGE "Compile Architecture "y" of Entity "y"" 
-MESSAGE "File: D:\EducationProjects\Active-HDL\6 Circuit\Lab1\src\lab1.vhd" 
-MESSAGE "Compile Entity "lab1"" 
-MESSAGE "Compile Architecture "lab1" of Entity "lab1"" 
-SUCCESS "Compile success 0 Errors 0 Warnings  Analysis time :  0.3 [s]" 

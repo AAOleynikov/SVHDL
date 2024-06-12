@@ -1,4 +1,0 @@
-# HTTrack Website Copier Cookie File
-# This file format is compatible with Netscape cookies
-www.edaplayground.com	TRUE	/	FALSE	1999999999	JSESSIONID	5F5D4EC3522ACEBE580F7B575C662B30
-
