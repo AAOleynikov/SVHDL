@@ -35,7 +35,6 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "ui-contextmenu": "^1.18.1",
-    "vcdrom": "^1.6.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"
   },

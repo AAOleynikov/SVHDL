@@ -3,12 +3,7 @@ import "../index.css";
 import { defineProps, defineEmits, ref, watch } from "vue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const props = defineProps(["editorState"]);
-const emit = defineEmits(["update:editorState"]);
-const state = ref(props["editorState"]);
-watch(state, async (newState, oldState) => {
-  emit("update:editorState", newState);
-});
+const ide_state = defineModel();
 </script>
 
 <template>
@@ -21,12 +16,11 @@ watch(state, async (newState, oldState) => {
       <Tabs
         defaultValue="account"
         className="w-[600px]"
-        v-model:model-value="state"
+        v-model:model-value="ide_state.activeScreen"
       >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="vhdl"
-            ><i class="bi-code-slash pr-2"></i> VHDL code
-            editing</TabsTrigger
+            ><i class="bi-code-slash pr-2"></i> VHDL code editing</TabsTrigger
           >
           <TabsTrigger value="sigs">
             <i class="bi-yelp pr-2"></i> Signal Setting

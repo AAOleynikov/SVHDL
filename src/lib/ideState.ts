@@ -1,99 +1,56 @@
-import { ProjectStorage, Project, ProjectFile } from "./projectSystem";
-
-class StymulusState {
-  saveToLocalStorage() {
-    // Логика сохранения StymulusState в LocalStorage
-  }
-
-  static loadFromLocalStorage(): StymulusState {
-    // Логика загрузки StymulusState из LocalStorage
-    return new StymulusState();
-  }
-}
-
-class SimulationState {
-  saveToLocalStorage() {
-    // Логика сохранения SimulationState в LocalStorage
-  }
-
-  static loadFromLocalStorage(): SimulationState {
-    // Логика загрузки SimulationState из LocalStorage
-    return new SimulationState();
-  }
-}
+import {
+  ProjectStorage,
+  Project,
+  ProjectFile,
+  SimulationState,
+  StymulusConfig,
+} from "./projectSystem";
 
 export class IDEState {
-  activeScreen: "vhdl" | "stymulus" | "waveform";
+  activeScreen: "vhdl" | "stymulus" | "waveform" = "vhdl";
+  activeProject?: Project;
+  activeFile?: ProjectFile;
+  editorLine?: number;
+  activeProjectNeedsRecompilation: boolean = true;
   projectStorage: ProjectStorage;
-  activeProject: Project | undefined;
-  activeFile: ProjectFile | undefined;
-  editorLine: number | undefined;
-  needsRecompilation: boolean;
-  stymulusState: StymulusState;
-  simulationState: SimulationState;
+  stymulusState?: StymulusConfig;
+  simulationState?: SimulationState;
 
-  constructor(
-    activeScreen: "vhdl" | "stymulus" | "waveform",
-    projectStorage: ProjectStorage,
-    stymulusState: StymulusState,
-    simulationState: SimulationState,
-    needsRecompilation: boolean = false,
-    activeProject?: Project,
-    activeFile?: ProjectFile,
-    editorLine?: number
-  ) {
-    this.activeScreen = activeScreen;
-    this.projectStorage = projectStorage;
-    this.stymulusState = stymulusState;
-    this.simulationState = simulationState;
-    this.needsRecompilation = needsRecompilation;
-    this.activeProject = activeProject;
-    this.activeFile = activeFile;
-    this.editorLine = editorLine;
-  }
+  constructor() {}
 
   saveToLocalStorage() {
+    this.projectStorage.saveAll();
     localStorage.setItem(
       "IDEState",
       JSON.stringify({
         activeScreen: this.activeScreen,
-        projectStorage: this.projectStorage.saveToLocalStorage(),
         activeProjectName: this.activeProject ? this.activeProject.name : "",
         activeFileName: this.activeFile ? this.activeFile.name : "",
-        editorLine: this.editorLine,
-        needsRecompilation: this.needsRecompilation,
-        stymulusState: this.stymulusState.saveToLocalStorage(),
-        simulationState: this.simulationState.saveToLocalStorage(),
+        editorLine: this.editorLine ?? 0,
       })
     );
   }
-
   static loadFromLocalStorage(): IDEState {
+    const ide_state: IDEState = new IDEState();
+    ide_state.projectStorage = ProjectStorage.loadFromLocalStorage();
     const data = JSON.parse(localStorage.getItem("IDEState") || "{}");
 
-    const projectStorage = ProjectStorage.loadFromLocalStorage();
-    const stymulusState = StymulusState.loadFromLocalStorage();
-    const simulationState = SimulationState.loadFromLocalStorage();
-
-    let activeProject;
     if (data.activeProjectName) {
-      // Реализовать поиск по имени проекта data.activeProjectName в projectStorage.projects и присвоить найденный проект переменной activeProject
+      ide_state.activeProject = ide_state.projectStorage.getProjectByName(
+        data.activeProjectName
+      );
+      if (data.activeFileName) {
+        ide_state.activeFile = ide_state.activeProject.getFileByName(
+          data.activeFileName
+        );
+        ide_state.editorLine = data.editorLine ?? 0;
+      }
     }
-
-    let activeFile;
-    if (data.activeFileName && activeProject) {
-      // Реализовать поиск по имени файла data.activeFileName в файлах activeProject и присвоить найденный файл переменной activeFile
-    }
-
-    return new IDEState(
-      data.state,
-      projectStorage,
-      stymulusState,
-      simulationState,
-      data.needsRecompilation,
-      activeProject,
-      activeFile,
-      data.editorLine
-    );
+    return ide_state;
+  }
+  setProjectActive(projectName: string) {
+    this.activeProject = this.projectStorage.getProjectByName(projectName);
+    this.simulationState = SimulationState.loadFromLocalStorage(this.projectStorage,projectName);
+    this.stymulusState = StymulusConfig.loadFromLocalStorage(this.projectStorage, projectName);
   }
 }

@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./index.css";
+import "bootstrap-icons/font/bootstrap-icons.css"
 
 import { loader } from "@guolao/vue-monaco-editor";
 import * as monaco from "monaco-editor";

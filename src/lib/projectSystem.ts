@@ -13,12 +13,36 @@ import { ParsedVCD } from "@/vcd_tools/vcd2json";
 Тогда изменяются список доступных входных сигналов для TopLevel-сущности и сбрасывается конфигурация сигналов для TopLevel-сущности;
 3) Пользователь задаёт Stymulus для какого-то из входных сигналов
 Тогда изменяется конфигурация сигналов для TopLevel-сущности */
+
 export class StymulusConfig {
   project: Project;
-  parsingResult: ParsedVhdlFile[];
+  parsingResult: Map<string, ParsedVhdlFile>;
   topLevelFile?: ParsedVhdlFile;
   topLevelEntity?: ParsedEntity;
   inputSignalsConfig: Map<string, Stymulus>;
+  static loadFromJson(
+    projectStorage: ProjectStorage,
+    projectName: string,
+    data: any
+  ): StymulusConfig | undefined {
+    const stConfig = new StymulusConfig();
+    stConfig.project = projectStorage.getProjectByName(projectName);
+    stConfig.parsingResult = {};
+    stConfig.topLevelFile
+    stConfig.topLevelEntity
+    stConfig.inputSignalsConfig
+
+    return stConfig;
+  }
+  static loadFromLocalStorage(
+    projectStorage: ProjectStorage,
+    projectName: string
+  ): StymulusConfig | undefined {
+    const rawData = localStorage.getItem(`stymulus_${projectName}`);
+    if (rawData == undefined) return;
+    const data = JSON.parse(rawData);
+    return this.loadFromJson(projectStorage, projectName, data);
+  }
 }
 
 /* Состояние симуляции */
@@ -28,49 +52,46 @@ export class SimulationState {
   hotkeyEvents: any[];
 }
 
-/* Хранилище проектов */
+/** Хранилище проектов */
 export class ProjectStorage {
-  projects: Project[];
-  activeProject?: Project;
-  unsavedProjects: Project[];
-  // Загрузить всё хранилище проектов из LocalStorage
+  projects: Project[] = [];
+  activeProject?: Project = undefined;
+  unsavedProjects: Project[] = [];
+  projectSetUpdated: boolean = false;
+  /** Загрузить всё хранилище проектов из LocalStorage */
   static loadFromLocalStorage(): ProjectStorage {
     const newObj = new ProjectStorage();
-    newObj.projects = [];
     const storedProjects = localStorage.getItem("projectLibrary");
     if (storedProjects != undefined) {
       const projectData = JSON.parse(storedProjects);
       newObj.projects = projectData.projects.map(
         (project: string) => new Project(newObj, project)
       );
-
-      if (projectData.activeProject != undefined) {
-        newObj.activeProject = newObj.projects.find(
-          (nm) => nm.name === projectData.activeProject
-        );
-      }
-      newObj.unsavedProjects = [];
     }
     return newObj;
   }
-  // Сохранить всё хранилище в LocalStorage
+  /** Сохранить всё хранилище в LocalStorage */
   saveToLocalStorage() {
     let data: Object = { projects: [] };
-    if (this.activeProject) data["activeProject"] = this.activeProject.name;
-    for (let proj of this.projects) {
-      data["projects"].push(proj.name);
-    }
+    for (let proj of this.projects) data["projects"].push(proj.name);
     localStorage.setItem("projectLibrary", JSON.stringify(data));
-
+    for (let proj of this.projects) proj.saveToLocalStorage();
+    this.projectSetUpdated = false;
+  }
+  /** Записать только изменения */
+  saveAll() {
+    if (this.projectSetUpdated) {
+      let data: Object = { projects: [] };
+      for (let proj of this.projects) data["projects"].push(proj.name);
+      localStorage.setItem("projectLibrary", JSON.stringify(data));
+    }
     for (let proj of this.projects) {
       if (proj.isUnsaved) proj.saveToLocalStorage();
     }
+    this.projectSetUpdated = false;
   }
-  constructor() {
-    this.projects = [];
-    this.unsavedProjects = [];
-  }
-  // Возвращает количество проектов в хранилище
+  constructor() {}
+  /** Возвращает количество проектов в хранилище */
   count() {
     return this.projects.length;
   }
@@ -86,6 +107,7 @@ export class ProjectStorage {
       this.projects[this.projects.length - 1].isUnsaved = false;
       this.saveToLocalStorage();
     }
+    this.projectSetUpdated = true;
   }
   deleteProject(name: string) {
     const proj = this.projects.find((a) => a.name == name);
@@ -95,18 +117,21 @@ export class ProjectStorage {
       this.projects = this.projects.filter((a) => a.name != name);
       proj.delete();
     }
+    this.projectSetUpdated = true;
   }
   deleteAllProjects() {
     for (let proj of this.projects) proj.delete();
     this.projects = [];
     this.activeProject = undefined;
+    this.projectSetUpdated = true;
   }
   renameProject(from: string, to: string) {
     if (!this.projects.some((a) => a.name === to))
       this.projects.find((a) => a.name === from).rename(to);
+    this.projectSetUpdated = true;
   }
-  setProjectActive(name: string) {
-    this.activeProject = this.projects.find((a) => a.name == name);
+  getProjectByName(name: string): Project | undefined {
+    return this.projects.find((p) => p.name == name);
   }
 }
 
@@ -123,8 +148,8 @@ export class Project {
   constructor(storage: ProjectStorage, name: string) {
     this.name = name;
     this.storage = storage;
-    if (localStorage.getItem(`${name}_proj`) != null) {
-      const rawProj = localStorage.getItem(`${name}_proj`);
+    if (localStorage.getItem(`project_${name}`) != null) {
+      const rawProj = localStorage.getItem(`project_${name}`);
       const proj = JSON.parse(rawProj);
       const files: Object[] = proj ?? [];
       this.files = [];
@@ -152,7 +177,7 @@ export class Project {
         isTopLevel: file == this.topLevelFile,
       });
     }
-    localStorage.setItem(this.name + "_proj", JSON.stringify(ser));
+    localStorage.setItem(`project_${this.name}`, JSON.stringify(ser));
     this.isUnsaved = false;
     this.unsavedFiles = [];
   }
@@ -183,11 +208,11 @@ export class Project {
   setTopLevelFile(name: string) {
     this.topLevelFile = this.files.find((a) => a.name == name);
   }
-  setActiveFile(name: string) {
-    this.activeFile = this.files.find((a) => a.name == name);
+  getFileByName(name: string): ProjectFile | undefined {
+    return this.files.find((file) => file.name == name);
   }
 }
-/* Файл проекта */
+/** Файл проекта */
 export class ProjectFile {
   proj: Project;
   code: string;

@@ -80,13 +80,15 @@ import antlr4 from "antlr4";
 import vhdlLexer from "./build/vhdlLexer.js";
 import vhdlParser from "./build/vhdlParser.js";
 import vhdlParserListener from "./build/vhdlParserListener.js";
-import { ParsedVhdlFile,ParsedArchitecture,ParsedEntity } from "@/lib/vhdlFile.ts";
+import {
+  ParsedVhdlFile,
+  ParsedArchitecture,
+  ParsedEntity,
+} from "@/lib/vhdlFile.ts";
 const { CommonTokenStream, InputStream } = antlr4;
 
-
-
 //перегружаем стандартные методы класса Listener для обработки
-export default class MVHDLListener extends vhdlParserListener {
+export default class SVHDLListener extends vhdlParserListener {
   constructor(_vhdlFileTop) {
     super();
     this.vhdlFileTop = _vhdlFileTop;
@@ -202,11 +204,11 @@ export const processCode = (input) => {
   var parser = new vhdlParser(tokens);
   parser.buildParseTrees = true;
   var tree = parser.design_file();
-  var listener = new MVHDLListener(vhdlFileTop);
+  var listener = new SVHDLListener(vhdlFileTop);
   antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-  //установка стимулятора в виде частотного генератора для сигнала K
-  vhdlFileTop.setStimulusClock("K", 10, 0, 1, "low_value", 50);
+  // //установка стимулятора в виде частотного генератора для сигнала K
+  // vhdlFileTop.setStimulusClock("K", 10, 0, 1, "low_value", 50);
 
   return vhdlFileTop;
 };
