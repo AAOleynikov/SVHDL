@@ -16,10 +16,10 @@ import { ParsedVCD } from "@/vcd_tools/vcd2json";
 
 export class StymulusConfig {
   project: Project;
-  parsingResult: Map<string, ParsedVhdlFile>;
+  parsingResult: object;
   topLevelFile?: ParsedVhdlFile;
   topLevelEntity?: ParsedEntity;
-  inputSignalsConfig: Map<string, Stymulus>;
+  inputSignalsConfig: object;
   static loadFromJson(
     projectStorage: ProjectStorage,
     projectName: string,
@@ -27,10 +27,10 @@ export class StymulusConfig {
   ): StymulusConfig | undefined {
     const stConfig = new StymulusConfig();
     stConfig.project = projectStorage.getProjectByName(projectName);
-    stConfig.parsingResult = {};
-    stConfig.topLevelFile
-    stConfig.topLevelEntity
-    stConfig.inputSignalsConfig
+    stConfig.parsingResult = new Map();
+    stConfig.topLevelFile;
+    stConfig.topLevelEntity;
+    stConfig.inputSignalsConfig;
 
     return stConfig;
   }
@@ -45,11 +45,17 @@ export class StymulusConfig {
   }
 }
 
-/* Состояние симуляции */
+/** Состояние симуляции */
 export class SimulationState {
   waveform: ParsedVCD;
   currentTime: number;
   hotkeyEvents: any[];
+  static loadFromLocalStorage(
+    projectStorage: ProjectStorage,
+    projectName: string
+  ): SimulationState | undefined {
+    return undefined;
+  }
 }
 
 /** Хранилище проектов */

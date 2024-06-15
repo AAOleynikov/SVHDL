@@ -6,6 +6,16 @@ import {
   StymulusConfig,
 } from "./projectSystem";
 
+import { toast } from "vue-sonner";
+
+export class ToastMessage {
+  title: string;
+  text?: string;
+  type: "warning" | "error" | "success" | "info" = "info";
+  buttonText?: string;
+  buttonCallback?: Function;
+}
+
 export class IDEState {
   activeScreen: "vhdl" | "stymulus" | "waveform" = "vhdl";
   activeProject?: Project;
@@ -50,7 +60,32 @@ export class IDEState {
   }
   setProjectActive(projectName: string) {
     this.activeProject = this.projectStorage.getProjectByName(projectName);
-    this.simulationState = SimulationState.loadFromLocalStorage(this.projectStorage,projectName);
-    this.stymulusState = StymulusConfig.loadFromLocalStorage(this.projectStorage, projectName);
+    this.simulationState = SimulationState.loadFromLocalStorage(
+      this.projectStorage,
+      projectName
+    );
+    this.stymulusState = StymulusConfig.loadFromLocalStorage(
+      this.projectStorage,
+      projectName
+    );
+  }
+  addToastMessage(message: ToastMessage) {
+    const data: any = {};
+    if (message.text) data.description = message.text;
+    if (message.buttonText) {
+      data.action = {
+        label: message.buttonText,
+        callback: message.buttonCallback,
+      };
+    }
+    if (message.type == "error") {
+      toast.error(message.title, data);
+    } else if (message.type == "success") {
+      toast.success(message.title, data);
+    } else if (message.type == "warning") {
+      toast.warning(message.title, data);
+    } else {
+      toast.info(message.title, data);
+    }
   }
 }

@@ -1,9 +1,26 @@
-<script setup>
-import "../index.css";
+<script setup lang="ts">
+import "@/assets/css/index.css";
+import { IDEState } from "@/lib/ideState";
 import { defineProps, defineEmits, ref, watch } from "vue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const ide_state = defineModel();
+const ide_state = defineModel<IDEState>();
+
+const screen = ref(ide_state.value.activeScreen);
+
+watch(screen, (newValue, oldValue) => {
+  if (
+    (newValue == "stymulus" || newValue == "waveform") &&
+    ide_state.value.activeProject == undefined
+  ) {
+    ide_state.value.addToastMessage({
+      title: "No project selected",
+      type: "error",
+    });
+    screen.value = "vhdl";
+    console.log("here");
+  }
+});
 </script>
 
 <template>
@@ -14,18 +31,19 @@ const ide_state = defineModel();
       <a href="https://github.com/AAOleynikov/SVHDL">SVHDL</a>
 
       <Tabs
+        activationMode="manual"
         defaultValue="account"
         className="w-[600px]"
-        v-model:model-value="ide_state.activeScreen"
+        v-model:model-value="screen"
       >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="vhdl"
             ><i class="bi-code-slash pr-2"></i> VHDL code editing</TabsTrigger
           >
-          <TabsTrigger value="sigs">
+          <TabsTrigger value="stymulus">
             <i class="bi-yelp pr-2"></i> Signal Setting
           </TabsTrigger>
-          <TabsTrigger value="vcd">
+          <TabsTrigger value="waveform">
             <i class="bi-bar-chart-steps pr-2"></i> Postprocessing
           </TabsTrigger>
         </TabsList>

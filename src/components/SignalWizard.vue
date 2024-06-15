@@ -12,7 +12,7 @@ import {
 
 import { defineModel } from "vue";
 
-const signal = defineModel();
+const ide_state = defineModel();
 </script>
 
 <template>

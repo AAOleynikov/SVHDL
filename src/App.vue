@@ -5,6 +5,8 @@ import EditorScreen from "@/screens/EditorScreen.vue";
 import SignalsScreen from "@/screens/SignalsScreen.vue";
 import NavBar from "@/components/NavBar.vue";
 import { IDEState } from "./lib/ideState";
+import { Toaster } from '@/components/ui/sonner'
+
 
 const ide_state = reactive(IDEState.loadFromLocalStorage());
 </script>
@@ -22,4 +24,5 @@ const ide_state = reactive(IDEState.loadFromLocalStorage());
       <SignalsScreen v-model="ide_state" />
     </template>
   </div>
+  <Toaster richColors closeButton />
 </template>
