@@ -27,7 +27,7 @@ export class StymulusConfig {
   ): StymulusConfig | undefined {
     const stConfig = new StymulusConfig();
     stConfig.project = projectStorage.getProjectByName(projectName);
-    stConfig.parsingResult = new Map();
+    stConfig.parsingResult = {};
     stConfig.topLevelFile;
     stConfig.topLevelEntity;
     stConfig.inputSignalsConfig;
@@ -61,9 +61,8 @@ export class SimulationState {
 /** Хранилище проектов */
 export class ProjectStorage {
   projects: Project[] = [];
-  activeProject?: Project = undefined;
-  unsavedProjects: Project[] = [];
   projectSetUpdated: boolean = false;
+  hasUnsavedChanges: boolean = false;
   /** Загрузить всё хранилище проектов из LocalStorage */
   static loadFromLocalStorage(): ProjectStorage {
     const newObj = new ProjectStorage();
@@ -85,16 +84,22 @@ export class ProjectStorage {
     this.projectSetUpdated = false;
   }
   /** Записать только изменения */
-  saveAll() {
+  saveAll(): boolean {
+    let ret = false;
     if (this.projectSetUpdated) {
+      ret = true;
       let data: Object = { projects: [] };
       for (let proj of this.projects) data["projects"].push(proj.name);
       localStorage.setItem("projectLibrary", JSON.stringify(data));
     }
     for (let proj of this.projects) {
-      if (proj.isUnsaved) proj.saveToLocalStorage();
+      if (proj.isUnsaved) {
+        proj.saveToLocalStorage();
+        ret = true;
+      }
     }
     this.projectSetUpdated = false;
+    return ret;
   }
   constructor() {}
   /** Возвращает количество проектов в хранилище */
@@ -114,27 +119,31 @@ export class ProjectStorage {
       this.saveToLocalStorage();
     }
     this.projectSetUpdated = true;
+    this.hasUnsavedChanges = true;
   }
   deleteProject(name: string) {
     const proj = this.projects.find((a) => a.name == name);
     if (proj != undefined) {
       // Проект с таким именем существует
-      if (this.activeProject == proj) this.activeProject = undefined;
       this.projects = this.projects.filter((a) => a.name != name);
       proj.delete();
+      this.projectSetUpdated = true;
+      this.hasUnsavedChanges = true;
     }
-    this.projectSetUpdated = true;
   }
   deleteAllProjects() {
     for (let proj of this.projects) proj.delete();
     this.projects = [];
-    this.activeProject = undefined;
     this.projectSetUpdated = true;
+    this.hasUnsavedChanges = true;
   }
-  renameProject(from: string, to: string) {
-    if (!this.projects.some((a) => a.name === to))
+  renameProject(from: string, to: string): boolean {
+    if (!this.projects.some((a) => a.name === to)) {
       this.projects.find((a) => a.name === from).rename(to);
-    this.projectSetUpdated = true;
+      this.projectSetUpdated = true;
+      this.hasUnsavedChanges = true;
+      return true;
+    } else return false;
   }
   getProjectByName(name: string): Project | undefined {
     return this.projects.find((p) => p.name == name);
@@ -173,7 +182,6 @@ export class Project {
     this.unsavedFiles = [];
   }
   saveToLocalStorage() {
-    console.log("saving project to local storage");
     let ser = [];
     for (let file of this.files) {
       file.isUnsaved = false;
@@ -189,6 +197,7 @@ export class Project {
   }
   delete() {
     localStorage.removeItem(this.name + "_proj");
+    this.storage.hasUnsavedChanges = true;
   }
   rename(name: string) {
     this.delete();
@@ -197,6 +206,13 @@ export class Project {
     this.unsavedFiles = [];
     this.isUnsaved = false;
   }
+  renameFile(from: string, to: string): boolean {
+    if (!this.files.some((a) => a.name == to)) {
+      this.files.find((a) => a.name == from).name = to;
+      return true;
+    }
+    return false;
+  }
   deleteFile(name: string) {
     console.log("delete file", name);
     this.isUnsaved = true;
@@ -204,12 +220,14 @@ export class Project {
     this.files = this.files.filter((a) => a.name != name);
     this.unsavedFiles = this.unsavedFiles.filter((a) => a.name != name);
     if (this.activeFile == file) this.activeFile = undefined;
+    this.storage.hasUnsavedChanges = true;
   }
   newFile(name: string) {
     this.files.push(new ProjectFile(this, name));
     this.files[this.files.length - 1].isUnsaved = true;
     this.isUnsaved = true;
     this.unsavedFiles.push(this.files[this.files.length - 1]);
+    this.storage.hasUnsavedChanges = true;
   }
   setTopLevelFile(name: string) {
     this.topLevelFile = this.files.find((a) => a.name == name);
@@ -223,7 +241,9 @@ export class ProjectFile {
   proj: Project;
   code: string;
   name: string;
-  isUnsaved: boolean;
+  isUnsaved: boolean = false;
+  isExpanded: false; // Развёрнут ли файл в дереве (видны ли сущности в нём)
+
   constructor(proj: Project, name: string, code?: string) {
     if (code == undefined)
       this.code =
@@ -231,5 +251,10 @@ export class ProjectFile {
     else this.code = code;
     this.proj = proj;
     this.name = name;
+  }
+  setUnsaved() {
+    this.isUnsaved = true;
+    this.proj.isUnsaved = true;
+    this.proj.storage.hasUnsavedChanges = true;
   }
 }

@@ -7,8 +7,9 @@ import "ui-contextmenu/jquery.ui-contextmenu.min";
 import "jquery.fancytree/dist/skin-lion/ui.fancytree.less";
 import "jquery.fancytree/dist/modules/jquery.fancytree.edit";
 import "jquery.fancytree/dist/modules/jquery.fancytree.filter";
-import { createTree } from "jquery.fancytree";
+import { createTree } from "jquery.fancytree"; // На ошибку похуй
 import { Project, ProjectStorage } from "@/lib/projectSystem";
+import { IDEState } from "@/lib/ideState";
 import {
   DialogClose,
   DialogContent,
@@ -21,10 +22,9 @@ import {
 } from "radix-vue";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import JSZip from "JSZip";
+import JSZip from "jszip";
 
-const props = defineProps({ data: ProjectStorage });
-const emit = defineEmits(["update:data"]);
+const ide_state = defineModel<IDEState>();
 const dialogOpen = ref(false); // Открыт ли диалог
 const dialogType = ref("confirm"); // confirm - подтвердить удаление проекта/всех проектов, input - ввод названия проекта/файла
 
@@ -45,8 +45,6 @@ var tree = null; // Указатель на jquery-объект дерева
 
 const saveAs = (content, name) => {
   const blob = new Blob([content]);
-  if (window.navigator && window.navigator.msSaveOrOpenBlob)
-    return window.navigator.msSaveOrOpenBlob(blob);
 
   // For other browsers:
   // Create a link pointing to the ObjectURL containing the blob.
@@ -77,29 +75,36 @@ function dialogConfirm() {
   dialogOpen.value = false;
   const orig = dialogOrigin.value;
   const name = dialogInput.value;
-  const storage: ProjectStorage = props.data;
   if (orig == "newFile") {
-    storage.activeProject.newFile(name);
-    storage.saveAll();
+    ide_state.value.activeProject.newFile(name);
+    ide_state.value.saveAll();
   } else if (orig == "newProject") {
-    storage.newProject(name);
-    storage.setProjectActive(name);
-    storage.saveAll();
+    ide_state.value.projectStorage.newProject(name);
+    ide_state.value.setProjectActive(name);
+    ide_state.value.saveAll();
   } else if (orig == "deleteFile") {
-    storage.activeProject.deleteFile(whatAffected.value);
-    storage.saveAll();
+    ide_state.value.activeProject.deleteFile(whatAffected.value);
+    ide_state.value.saveAll();
   } else if (orig == "deleteProject") {
-    storage.deleteProject(whatAffected.value);
-    storage.saveAll();
+    ide_state.value.projectStorage.deleteProject(whatAffected.value);
+    ide_state.value.saveAll();
   } else if (orig == "deleteAll") {
-    storage.deleteAllProjects();
-    storage.saveAll();
+    ide_state.value.projectStorage.deleteAllProjects();
+    ide_state.value.saveAll();
   } else if (orig == "renameProject") {
-    storage.renameProject(whatAffected.value, name);
-    storage.saveAll();
+    if (!ide_state.value.projectStorage.renameProject(whatAffected.value, name))
+      ide_state.value.addToastMessage({
+        title: "Cant rename project!",
+        type: "error",
+      });
   } else if (orig == "renameFile") {
-    //TODO
-    storage.saveAll();
+    if (ide_state.value.activeProject.renameFile(whatAffected.value, name)) {
+    } else {
+      ide_state.value.addToastMessage({
+        title: "Cant rename project!",
+        type: "error",
+      });
+    }
   } else console.error("Dialog origin is wrong");
   fullyReloadTree(); // Временное, но надёжное решение
 }
@@ -213,7 +218,7 @@ const openDialog = (dOrigin, affected = "") => {
     newProject: "Введите название нового проекта",
     deleteFile: `Уверены, что хотите удалить файл ${whatAffected.value}?`,
     deleteProject: `Уверены, что хотите удалить проект ${whatAffected.value}?`,
-    deleteAll: `Уверены, что хотите удалить ${props.data.count()} проектов?`,
+    deleteAll: `Уверены, что хотите удалить ${ide_state.value.projectStorage.count()} проектов?`,
     renameProject: `Введите новое название проекта ${whatAffected.value}`,
     renameFile: `Введите новое название файла ${whatAffected.value}`,
   };
@@ -231,10 +236,9 @@ let realTree = [];
 
 // Полностью обновить дерево. Возможна потеря позиции скролла или раскрытия папок
 function fullyReloadTree() {
-  const storage: ProjectStorage = props.data;
   realTree = reactive([
     {
-      title: "MVHDL Projects",
+      title: "SVHDL Projects",
       icon: "bi-archive",
       folder: true,
       key: "master",
@@ -242,19 +246,19 @@ function fullyReloadTree() {
       expanded: true,
     },
   ]);
-  if (storage) {
-    for (let proj of storage.projects) {
+  if (ide_state.value.projectStorage) {
+    for (let proj of ide_state.value.projectStorage.projects) {
       realTree[0].children.push({
         title:
-          (proj == storage.activeProject ? "<b>" : "") +
+          (proj == ide_state.value.activeProject ? "<b>" : "") +
           proj.name +
-          (proj == storage.activeProject ? "</b>" : ""),
+          (proj == ide_state.value.activeProject ? "</b>" : ""),
         folder: true,
         expanded: true,
         key: "project_" + proj.name,
         children: [],
       });
-      if (proj == storage.activeProject) {
+      if (proj == ide_state.value.activeProject) {
         for (let file of proj.files) {
           realTree[0].children[realTree[0].children.length - 1].children.push({
             title:
@@ -263,7 +267,7 @@ function fullyReloadTree() {
               file.name,
             key: "file_" + file.name,
             icon:
-              file == storage.activeProject.topLevelFile
+              file == ide_state.value.activeProject.topLevelFile
                 ? "bi-star-fill"
                 : "bi-file-earmark-code",
           });
@@ -281,7 +285,6 @@ fullyReloadTree();
 
 // Обработка нажатия пользователем пункта в контекстном меню
 const menuEvent = (event, data) => {
-  const storage: ProjectStorage = props.data;
   const node = tree.getActiveNode();
   if (node.key == "master") {
     if (data.cmd == "create-project") {
@@ -299,7 +302,7 @@ const menuEvent = (event, data) => {
       openDialog("deleteProject", projectName);
     }
     if (data.cmd == "set-project-active") {
-      storage.setProjectActive(projectName);
+      ide_state.value.setProjectActive(projectName);
       fullyReloadTree();
     }
     if (data.cmd == "create-file") {
@@ -307,11 +310,11 @@ const menuEvent = (event, data) => {
     }
     if (data.cmd == "read-project") {
       var zip = new JSZip();
-      storage.activeProject.files.forEach(function (file) {
+      ide_state.value.activeProject.files.forEach(function (file) {
         zip.file(file.name, file.code);
       });
       zip.generateAsync({ type: "blob" }).then(function (content) {
-        saveAs(content, `${storage.activeProject.name}.zip`);
+        saveAs(content, `${ide_state.value.activeProject.name}.zip`);
       });
     }
   } else if (node.key.startsWith("file_")) {
@@ -323,11 +326,13 @@ const menuEvent = (event, data) => {
       openDialog("deleteFile", fileName);
     }
     if (data.cmd == "set-file-top-level") {
-      storage.activeProject.setTopLevelFile(fileName);
+      ide_state.value.activeProject.setTopLevelFile(fileName);
       fullyReloadTree();
     }
     if (data.cmd == "read-file") {
-      const file = storage.activeProject.files.find((a) => a.name == fileName);
+      const file = ide_state.value.activeProject.files.find(
+        (a) => a.name == fileName
+      );
       saveAs(file.code, file.name);
     }
   }
@@ -343,7 +348,7 @@ const chooseMenuForElement = (event, ui) => {
     const projectName = node.key.slice("project_".length);
     if (
       projectName ===
-      (props.data.activeProject ?? {
+      (ide_state.value.activeProject ?? {
         name: "adsfasdfasdfdasdfasdfasdfasdfasd",
       })["name"]
     ) {
@@ -358,16 +363,16 @@ const chooseMenuForElement = (event, ui) => {
     menu = MENU_SIGNAL;
   }
   node.setActive();
-  $("#tree").contextmenu({ menu });
+  $("#tree").contextmenu({ menu: menu });
 };
 
 //
 const onSelectTreeElement = (event, data) => {
-  const storage = props.data;
   const key = data.node.key;
   if (key.startsWith("file_"))
-    storage.activeProject.setActiveFile(key.slice("file_".length));
-  else if (storage.activeProject) storage.activeProject.activeFile = undefined;
+    ide_state.value.setActiveFile(key.slice("file_".length));
+  else if (ide_state.value.activeProject)
+    ide_state.value.activeProject.activeFile = undefined;
 };
 
 // Когда компонент Vue смонтирован, замутить дерево
@@ -398,12 +403,17 @@ onMounted(() => {
 });
 
 //Обновление данных при обновлении props
-watch(props["data"], async (newData, oldData) => {
-  fullyReloadTree();
-  if (tree != null) {
-    tree.reload();
-  }
-});
+watch(
+  ide_state,
+  async (newData, oldData) => {
+    console.log("ide_state updated!");
+    fullyReloadTree();
+    if (tree != null) {
+      tree.reload();
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -411,8 +421,7 @@ watch(props["data"], async (newData, oldData) => {
     <DialogPortal>
       <DialogOverlay class="bg-black opacity-50 fixed inset-0 z-30" />
       <DialogContent
-        class="fixed top-[50%] left-[50%] max-h-30 w- max-w-96 translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] z-[100]"
-      >
+        class="fixed top-[50%] left-[50%] max-h-30 w- max-w-96 translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] z-[100]">
         <DialogTitle class="m-0 text-[17px] font-semibold">
           {{ dialogHeader }}
         </DialogTitle>
@@ -420,8 +429,7 @@ watch(props["data"], async (newData, oldData) => {
           <Alert
             variant="destructive"
             class="flex flex-row gap-4"
-            v-if="dialogType == 'confirm'"
-          >
+            v-if="dialogType == 'confirm'">
             <i class="bi-x-circle text-4xl"></i>
             <div>
               <AlertTitle>Будьте осторожны!</AlertTitle>
@@ -436,22 +444,19 @@ watch(props["data"], async (newData, oldData) => {
           v-model="dialogInput"
           v-if="dialogType == 'input'"
           @keyup.enter="dialogConfirm"
-          class="mb-8"
-        />
+          class="mb-8" />
 
         <div class="mt-2 flex justify-end gap-5">
           <DialogClose>
             <button
               @click="dialogConfirm"
-              class="rounded-md bg-red-500 px-2 py-1 text-white font-bold"
-            >
+              class="rounded-md bg-red-500 px-2 py-1 text-white font-bold">
               <i class="bi-check-lg font-bold mr-1"></i>Ок
             </button>
           </DialogClose>
           <DialogClose>
             <button
-              class="rounded-md bg-green-500 px-2 py-1 text-white font-bold"
-            >
+              class="rounded-md bg-green-500 px-2 py-1 text-white font-bold">
               <i class="bi-x-lg font-bold mr-1"></i>Отмена
             </button>
           </DialogClose>

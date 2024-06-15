@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref, watch } from "vue";
 import FileTree from "@/components/FileTree.vue";
 import {
@@ -8,42 +8,37 @@ import {
 } from "@/components/ui/resizable";
 import Button from "@/components/ui/button/Button.vue";
 import Editor from "@/components/Editor.vue";
-import { ProjectStorage } from "@/lib/projectSystem";
+import { IDEState } from "@/lib/ideState";
 
-const projSys = reactive(new ProjectStorage());
+const ide_state = defineModel<IDEState>({ required: true });
 </script>
 
 <template>
   <ResizablePanelGroup
     id="group-1"
     direction="horizontal"
-    class="border flex-grow flex-row"
-  >
+    class="border flex-grow flex-row">
     <ResizablePanel id="panel-1" :default-size="40" :min-size="10">
       <div class="border-black pt-2 overflow-auto gap-1 flex flex-col">
-        <Button @click="projSys.saveAll()">Сохранить</Button>
-        <div><FileTree v-model:data="projSys" /></div>
+        <Button @click="ide_state.saveAll()">Save all</Button>
+        <Button @click="ide_state.discardAll()">Discard changes</Button>
+        <Button @click="ide_state.compile()">Compile</Button>
+        <div><FileTree v-model="ide_state" /></div>
       </div>
     </ResizablePanel>
     <ResizableHandle id="handle-1" />
     <ResizablePanel id="panel-2" :min-size="10" class="flex flex-col">
-      <template
-        v-if="projSys.activeProject && projSys.activeProject.activeFile"
-      >
-        <Editor v-model="projSys" />
+      <template v-if="ide_state.activeFile">
+        <Editor v-model="ide_state" />
       </template>
-      <template
-        v-if="!(projSys.activeProject && projSys.activeProject.activeFile)"
-      >
+      <template v-if="!ide_state.activeFile">
         <div
-          class="flex flex-col items-center justify-center grow-1 h-full gap-3"
-        >
+          class="flex flex-col items-center justify-center grow-1 h-full gap-3">
           <svg
             version="1.1"
             width="200"
             height="250"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+            xmlns="http://www.w3.org/2000/svg">
             <circle cx="50" cy="200" r="50" fill="gray" />
             <circle cx="150" cy="200" r="50" fill="gray" />
             <circle cx="100" cy="50" r="50" fill="gray" />

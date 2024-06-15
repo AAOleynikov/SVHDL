@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from "vue";
 import SignalWizard from "@/components/SignalWizard.vue";
 import { Button } from "@/components/ui/button";

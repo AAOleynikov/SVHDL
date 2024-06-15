@@ -26,10 +26,13 @@ export class IDEState {
   stymulusState?: StymulusConfig;
   simulationState?: SimulationState;
 
-  constructor() {}
+  isEverythingSaved() {
+    return !this.projectStorage.hasUnsavedChanges;
+  }
 
+  constructor() {}
+  /** Сохраняет только состояние IDE, не более того! */
   saveToLocalStorage() {
-    this.projectStorage.saveAll();
     localStorage.setItem(
       "IDEState",
       JSON.stringify({
@@ -88,4 +91,24 @@ export class IDEState {
       toast.info(message.title, data);
     }
   }
+  saveAll() {
+    if (this.projectStorage.saveAll())
+      this.addToastMessage({ type: "success", title: "Saved!" });
+    else
+      this.addToastMessage({
+        type: "info",
+        title: "Everything is already saved!",
+      });
+  }
+  discardAll() {
+    this.projectStorage = ProjectStorage.loadFromLocalStorage();
+    const activeFileName = this.activeFile.name;
+    this.setProjectActive(this.activeProject.name);
+    this.setActiveFile(activeFileName);
+  }
+  setActiveFile(name: string) {
+    this.activeFile = this.activeProject.getFileByName(name);
+    console.log(this.activeFile);
+  }
+  compile() {}
 }
