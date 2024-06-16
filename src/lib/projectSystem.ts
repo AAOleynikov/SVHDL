@@ -4,6 +4,7 @@
 import { Stymulus } from "@/testbench_generator/stymulus";
 import { ParsedEntity, ParsedVhdlFile } from "./parsedFile";
 import { ParsedVCD } from "@/vcd_tools/vcd2json";
+import { editor } from "monaco-editor";
 
 /* Настройки пользователя для Stymulus.
 Они обновляются, когда:
@@ -13,50 +14,6 @@ import { ParsedVCD } from "@/vcd_tools/vcd2json";
 Тогда изменяются список доступных входных сигналов для TopLevel-сущности и сбрасывается конфигурация сигналов для TopLevel-сущности;
 3) Пользователь задаёт Stymulus для какого-то из входных сигналов
 Тогда изменяется конфигурация сигналов для TopLevel-сущности */
-
-export class StymulusConfig {
-  project: Project;
-  parsingResult: object;
-  topLevelFile?: ParsedVhdlFile;
-  topLevelEntity?: ParsedEntity;
-  inputSignalsConfig: object;
-  static loadFromJson(
-    projectStorage: ProjectStorage,
-    projectName: string,
-    data: any
-  ): StymulusConfig | undefined {
-    const stConfig = new StymulusConfig();
-    stConfig.project = projectStorage.getProjectByName(projectName);
-    stConfig.parsingResult = {};
-    stConfig.topLevelFile;
-    stConfig.topLevelEntity;
-    stConfig.inputSignalsConfig;
-
-    return stConfig;
-  }
-  static loadFromLocalStorage(
-    projectStorage: ProjectStorage,
-    projectName: string
-  ): StymulusConfig | undefined {
-    const rawData = localStorage.getItem(`stymulus_${projectName}`);
-    if (rawData == undefined) return;
-    const data = JSON.parse(rawData);
-    return this.loadFromJson(projectStorage, projectName, data);
-  }
-}
-
-/** Состояние симуляции */
-export class SimulationState {
-  waveform: ParsedVCD;
-  currentTime: number;
-  hotkeyEvents: any[];
-  static loadFromLocalStorage(
-    projectStorage: ProjectStorage,
-    projectName: string
-  ): SimulationState | undefined {
-    return undefined;
-  }
-}
 
 /** Хранилище проектов */
 export class ProjectStorage {
@@ -99,6 +56,7 @@ export class ProjectStorage {
       }
     }
     this.projectSetUpdated = false;
+    this.hasUnsavedChanges = false;
     return ret;
   }
   constructor() {}
@@ -247,7 +205,7 @@ export class ProjectFile {
   constructor(proj: Project, name: string, code?: string) {
     if (code == undefined)
       this.code =
-        " -- Ты можешь писать сюда свой код на vhdl, но не злоупотребляй этим, программа - это программа (:\n";
+        " -- You can write your code here, but dont forget: program is program (-:\n";
     else this.code = code;
     this.proj = proj;
     this.name = name;

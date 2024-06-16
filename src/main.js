@@ -1,11 +1,11 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import "@/assets/css/index.css";
-import "bootstrap-icons/font/bootstrap-icons.css"
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 import { loader } from "@guolao/vue-monaco-editor";
 import * as monaco from "monaco-editor";
-import { install as VueMonacoEditorPlugin } from "@guolao/vue-monaco-editor";
+import { vhdl_lang } from "./assets/vhdl_monarch";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
@@ -14,7 +14,6 @@ import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 
 const app = createApp(App);
-app.use(VueMonacoEditorPlugin);
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -33,7 +32,9 @@ self.MonacoEnvironment = {
     return new editorWorker();
   },
 };
-
 loader.config({ monaco });
+
+monaco.languages.register({ id: "vhdl" });
+monaco.languages.setMonarchTokensProvider("vhdl", vhdl_lang);
 
 app.mount("#app");

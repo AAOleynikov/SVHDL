@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());
 watch(ide_state, (newO, oldO) => {
+  console.log("Какой хороший день, чтобы пойти на СВО")
   if (persistencyTimerId.value === undefined) {
     persistencyTimerId.value = setTimeout(() => {
       ide_state.saveToLocalStorage();

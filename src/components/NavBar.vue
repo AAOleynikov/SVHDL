@@ -3,6 +3,7 @@ import "@/assets/css/index.css";
 import { IDEState } from "@/lib/ideState";
 import { defineProps, defineEmits, ref, watch } from "vue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { validateTransition } from "@/lib/validateTransition";
 
 const ide_state = defineModel<IDEState>();
 const props = defineProps(["persTimer"]);
@@ -29,29 +30,10 @@ const thisDecryption = ref("S");
 const screen = ref(ide_state.value.activeScreen);
 
 watch(screen, (newValue, oldValue) => {
-  if (newValue == "stymulus" || newValue == "waveform") {
-    {
-      if (ide_state.value.activeProject == undefined) {
-        ide_state.value.addToastMessage({
-          title: "No project selected",
-          type: "error",
-        });
-        screen.value = "vhdl";
-      }
-      if (ide_state.value.stymulusState == undefined) {
-        ide_state.value.addToastMessage({
-          title: "Compile first",
-          type: "error",
-          text: "Before setting up stymulus, you should compile your project",
-          buttonText: "Compile",
-          buttonCallback: () => {
-            ide_state.value.compile();
-          },
-        });
-        screen.value = "vhdl";
-      }
-    }
-  }
+  const newScr = validateTransition(ide_state.value, oldValue, newValue);
+  screen.value = newScr;
+  if (ide_state.value.activeScreen !== newScr)
+    ide_state.value.activeScreen = newScr;
 });
 </script>
 

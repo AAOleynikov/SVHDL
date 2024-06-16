@@ -1,3 +1,4 @@
+import { onClickOutside } from "@vueuse/core";
 import {
   ProjectStorage,
   Project,
@@ -8,6 +9,8 @@ import {
 
 import { toast } from "vue-sonner";
 
+export type Screen = "vhdl" | "stymulus" | "waveform";
+
 export class ToastMessage {
   title: string;
   text?: string;
@@ -16,8 +19,52 @@ export class ToastMessage {
   buttonCallback?: Function;
 }
 
+export class StymulusConfig {
+  project: Project;
+  parsingResult: object;
+  topLevelFile?: ParsedVhdlFile;
+  topLevelEntity?: ParsedEntity;
+  inputSignalsConfig: object;
+  static loadFromJson(
+    projectStorage: ProjectStorage,
+    projectName: string,
+    data: any
+  ): StymulusConfig | undefined {
+    const stConfig = new StymulusConfig();
+    stConfig.project = projectStorage.getProjectByName(projectName);
+    stConfig.parsingResult = {};
+    stConfig.topLevelFile;
+    stConfig.topLevelEntity;
+    stConfig.inputSignalsConfig;
+
+    return stConfig;
+  }
+  static loadFromLocalStorage(
+    projectStorage: ProjectStorage,
+    projectName: string
+  ): StymulusConfig | undefined {
+    const rawData = localStorage.getItem(`stymulus_${projectName}`);
+    if (rawData == undefined) return;
+    const data = JSON.parse(rawData);
+    return this.loadFromJson(projectStorage, projectName, data);
+  }
+}
+
+/** Состояние симуляции */
+export class SimulationState {
+  waveform: ParsedVCD;
+  currentTime: number;
+  hotkeyEvents: any[];
+  static loadFromLocalStorage(
+    projectStorage: ProjectStorage,
+    projectName: string
+  ): SimulationState | undefined {
+    return undefined;
+  }
+}
+
 export class IDEState {
-  activeScreen: "vhdl" | "stymulus" | "waveform" = "vhdl";
+  activeScreen: Screen;
   activeProject?: Project;
   activeFile?: ProjectFile;
   editorLine?: number;
@@ -47,6 +94,8 @@ export class IDEState {
     const ide_state: IDEState = new IDEState();
     ide_state.projectStorage = ProjectStorage.loadFromLocalStorage();
     const data = JSON.parse(localStorage.getItem("IDEState") || "{}");
+
+    ide_state.activeScreen = data.activeScreen ?? "vhdl";
 
     if (data.activeProjectName) {
       ide_state.activeProject = ide_state.projectStorage.getProjectByName(
@@ -78,7 +127,7 @@ export class IDEState {
     if (message.buttonText) {
       data.action = {
         label: message.buttonText,
-        callback: message.buttonCallback,
+        onClick: message.buttonCallback,
       };
     }
     if (message.type == "error") {
@@ -105,10 +154,30 @@ export class IDEState {
     const activeFileName = this.activeFile.name;
     this.setProjectActive(this.activeProject.name);
     this.setActiveFile(activeFileName);
+    this.addToastMessage({ title: "Changes discarded!", type: "success" });
   }
   setActiveFile(name: string) {
     this.activeFile = this.activeProject.getFileByName(name);
     console.log(this.activeFile);
   }
-  compile() {}
+  compile() {
+    if (!this.isEverythingSaved()) {
+      this.addToastMessage({
+        title: "Save first",
+        type: "error",
+        text: "Before compiling, you should save your project",
+        buttonText: "Save all",
+        buttonCallback: () => {
+          this.saveAll();
+        },
+      });
+      return;
+    }
+    this.ensureStymulusState();
+    this.updateParsing();
+  }
+  ensureStymulusState() {
+    if (this.stymulusState == undefined)
+      this.stymulusState = new StymulusConfig(this, this.activeProject);
+  }
 }

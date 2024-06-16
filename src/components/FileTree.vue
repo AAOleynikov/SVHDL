@@ -262,7 +262,9 @@ function fullyReloadTree() {
         for (let file of proj.files) {
           realTree[0].children[realTree[0].children.length - 1].children.push({
             title:
-              (file === proj.activeFile ? '<i class="bi-pen mr-2"></i>' : "") +
+              (file === ide_state.value.activeFile
+                ? '<i class="bi-pen mr-2"></i>'
+                : "") +
               (file.isUnsaved ? '<i class="bi-dot mr-2"></i>' : "") +
               file.name,
             key: "file_" + file.name,
