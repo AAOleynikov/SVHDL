@@ -1,12 +1,19 @@
-/* Здесь содержатся классы, хранящие результат парсинга VHDL-файлов */
+/* Здесь содержатся классы, хранящие результат парсинга VHDL-файлов
+ (c) Oleynikov A. A, 2024
+*/
 
-/* Абстрактный класс источника сигнала */
-class SignalSource {
-  isNull: boolean;
-  constructor() {
-    this.isNull = true;
-  }
-  // TODO дополнить
+import { ProjectFile } from "./projectSystem";
+
+export type ParsedProjectData = {
+  fileName: string;
+  entities: { name: string }[];
+  architectures: { name: string }[];
+}[];
+
+export class ParsedProject {
+  vhdlFiles: Map<ProjectFile, ParsedVhdlFile>;
+  constructor(data: ParsedProjectData) {}
+  toJson(): any {}
 }
 
 /* Класс сигнала */
@@ -14,12 +21,10 @@ export class ParsedSignal {
   name: string;
   subtype: string;
   type: string;
-  source: SignalSource;
   constructor(name: string, type: string, subtype: string) {
     this.name = name;
     this.subtype = subtype;
     this.type = type;
-    this.source = new SignalSource();
   }
 }
 

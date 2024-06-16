@@ -1,12 +1,13 @@
 import { onClickOutside } from "@vueuse/core";
+import { ProjectStorage, Project, ProjectFile } from "./projectSystem";
 import {
-  ProjectStorage,
-  Project,
-  ProjectFile,
-  SimulationState,
-  StymulusConfig,
-} from "./projectSystem";
-
+  ParsedVhdlFile,
+  ParsedArchitecture,
+  ParsedEntity,
+  ParsedSignal,
+  ParsedProject,
+} from "./parsedFile";
+import { ParsedVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 
 export type Screen = "vhdl" | "stymulus" | "waveform";
@@ -20,33 +21,25 @@ export class ToastMessage {
 }
 
 export class StymulusConfig {
+  ide_state: IDEState;
   project: Project;
-  parsingResult: object;
+  parsingResult: ParsedProject;
   topLevelFile?: ParsedVhdlFile;
   topLevelEntity?: ParsedEntity;
   inputSignalsConfig: object;
-  static loadFromJson(
-    projectStorage: ProjectStorage,
-    projectName: string,
-    data: any
-  ): StymulusConfig | undefined {
-    const stConfig = new StymulusConfig();
-    stConfig.project = projectStorage.getProjectByName(projectName);
-    stConfig.parsingResult = {};
-    stConfig.topLevelFile;
-    stConfig.topLevelEntity;
-    stConfig.inputSignalsConfig;
+  isOutdated: boolean;
+  constructor(ide_state: IDEState, project: Project) {
+    this.ide_state = ide_state;
+    this.project = project;
 
-    return stConfig;
+    const data: any = localStorage.getItem(`stymulus_${project.name}`);
+    if (data != undefined) {
+      this.parsingResult = new ParsedProject(data.parsingResult);
+    } else this.isOutdated = true;
   }
-  static loadFromLocalStorage(
-    projectStorage: ProjectStorage,
-    projectName: string
-  ): StymulusConfig | undefined {
-    const rawData = localStorage.getItem(`stymulus_${projectName}`);
-    if (rawData == undefined) return;
-    const data = JSON.parse(rawData);
-    return this.loadFromJson(projectStorage, projectName, data);
+  save() {
+    const data: any = {};
+    data.parsingResult = this.parsingResult.toJson(); // TODO
   }
 }
 
@@ -116,10 +109,7 @@ export class IDEState {
       this.projectStorage,
       projectName
     );
-    this.stymulusState = StymulusConfig.loadFromLocalStorage(
-      this.projectStorage,
-      projectName
-    );
+    this.stymulusState = new StymulusConfig(this, this.activeProject);
   }
   addToastMessage(message: ToastMessage) {
     const data: any = {};
@@ -155,6 +145,7 @@ export class IDEState {
     this.setProjectActive(this.activeProject.name);
     this.setActiveFile(activeFileName);
     this.addToastMessage({ title: "Changes discarded!", type: "success" });
+    this.updateStymulusState();
   }
   setActiveFile(name: string) {
     this.activeFile = this.activeProject.getFileByName(name);
@@ -173,11 +164,9 @@ export class IDEState {
       });
       return;
     }
-    this.ensureStymulusState();
-    this.updateParsing();
+    this.updateStymulusState();
   }
-  ensureStymulusState() {
-    if (this.stymulusState == undefined)
-      this.stymulusState = new StymulusConfig(this, this.activeProject);
+  updateStymulusState() {
+    this.stymulusState = new StymulusConfig(this, this.activeProject);
   }
 }
