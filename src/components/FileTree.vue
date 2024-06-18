@@ -1,49 +1,27 @@
 <script setup lang="ts">
-import { onMounted, defineProps, reactive, watch, ref } from "vue";
-import $ from "jquery";
-import "jquery-ui/themes/base/all.css";
-import "jquery-ui/dist/jquery-ui";
-import "ui-contextmenu/jquery.ui-contextmenu.min";
-import "jquery.fancytree/dist/skin-lion/ui.fancytree.less";
-import "jquery.fancytree/dist/modules/jquery.fancytree.edit";
-import "jquery.fancytree/dist/modules/jquery.fancytree.filter";
-import { createTree } from "jquery.fancytree"; // На ошибку похуй
-import { Project, ProjectStorage } from "@/lib/projectSystem";
+import { onMounted, defineProps, reactive, watch, ref, computed } from "vue";
+import { Project, ProjectFile, ProjectStorage } from "@/lib/projectSystem";
 import { IDEState } from "@/lib/ideState";
-import {
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogOverlay,
-  DialogPortal,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "radix-vue";
-import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Tree, { MenuAction, TreeData } from "./Tree.vue";
+import ModalDialog, { DialogParams, ModalDialogState } from "./ModalDialog.vue";
 import JSZip from "jszip";
+import { ParsedEntity } from "@/lib/parsedFile";
 
 const ide_state = defineModel<IDEState>();
-const dialogOpen = ref(false); // Открыт ли диалог
-const dialogType = ref("confirm"); // confirm - подтвердить удаление проекта/всех проектов, input - ввод названия проекта/файла
 
-/** newFile - ввод названия файла
- * newProject - ввод названия проекта
- * deleteFile - удаление одного файла
- * deleteProject - удаление одного проекта
- * deleteAll - удаление всех проектов
- * renameProject - переименование проекта
- * renameFile - переименование файла
- */
-const dialogOrigin = ref("newFile");
+const dialogState = reactive<ModalDialogState>({
+  isOpened: false,
+  title: "No dialog should be shown",
+  type: "yesno",
+});
 
-const whatAffected = ref(""); // Какой проект/файл затрагивает этот диалог
-const dialogHeader = ref(""); // Заголовок диалога
-const dialogInput = ref(""); // v-model для поля ввода в диалоге
-var tree = null; // Указатель на jquery-объект дерева
+type IKey = {
+  type: "architecture" | "entity" | "file" | "project" | "storage";
+  assocObj?: any;
+};
 
-const saveAs = (content, name) => {
+// Скачать Blob
+const saveAs = (content: BlobPart, name: string) => {
   const blob = new Blob([content]);
 
   // For other browsers:
@@ -70,426 +48,247 @@ const saveAs = (content, name) => {
   }, 100);
 };
 
-// Функция, которая вызывается, когда пользователь нажимает кнопку "Ок" в диалоге
-function dialogConfirm() {
-  dialogOpen.value = false;
-  const orig = dialogOrigin.value;
-  const name = dialogInput.value;
-  if (orig == "newFile") {
-    ide_state.value.activeProject.newFile(name);
-    ide_state.value.saveAll();
-  } else if (orig == "newProject") {
-    ide_state.value.projectStorage.newProject(name);
-    ide_state.value.setProjectActive(name);
-    ide_state.value.saveAll();
-  } else if (orig == "deleteFile") {
-    ide_state.value.activeProject.deleteFile(whatAffected.value);
-    ide_state.value.saveAll();
-  } else if (orig == "deleteProject") {
-    ide_state.value.projectStorage.deleteProject(whatAffected.value);
-    ide_state.value.saveAll();
-  } else if (orig == "deleteAll") {
-    ide_state.value.projectStorage.deleteAllProjects();
-    ide_state.value.saveAll();
-  } else if (orig == "renameProject") {
-    if (!ide_state.value.projectStorage.renameProject(whatAffected.value, name))
-      ide_state.value.addToastMessage({
-        title: "Cant rename project!",
-        type: "error",
-      });
-  } else if (orig == "renameFile") {
-    if (ide_state.value.activeProject.renameFile(whatAffected.value, name)) {
-    } else {
-      ide_state.value.addToastMessage({
-        title: "Cant rename project!",
-        type: "error",
-      });
-    }
-  } else console.error("Dialog origin is wrong");
-  fullyReloadTree(); // Временное, но надёжное решение
-}
-
-// Контекстное меню, которое должно открываться при ПКМ на корень дерева проектов
-const MENU_MASTER = [
-  {
-    title: "New project",
-    cmd: "create-project",
-    uiIcon: "ui-icon-plusthick",
-  },
-  {
-    title: "Remove ALL PROJECTS",
-    cmd: "delete-all-projects",
-    uiIcon: "ui-icon-cancel",
-  },
-];
-
-// Контекстное меню, которое должно открываться при ПКМ на активный проект
-const MENU_ACTIVE_PROJECT = [
-  {
-    title: "Rename Project",
-    cmd: "rename-project",
-    uiIcon: "ui-icon-pencil",
-  },
-  {
-    title: "Delete Project <kbd>[Del]</kbd>",
-    cmd: "delete-project",
-    uiIcon: "ui-icon-trash",
-  },
-  { title: "----" },
-  {
-    title: "New File",
-    cmd: "create-file",
-    uiIcon: "ui-icon-plus",
-  },
-  { title: "----" },
-  {
-    title: "Download as ZIP",
-    cmd: "read-project",
-    uiIcon: "ui-icon-disk",
-  },
-];
-
-// Контекстное меню, которое должно открываться при ПКМ на неактивный проект
-const MENU_INACTIVE_PROJECT = [
-  {
-    title: "Set Project as Active",
-    cmd: "set-project-active",
-    uiIcon: "ui-icon-power",
-  },
-  {
-    title: "Delete Project <kbd>[Del]</kbd>",
-    cmd: "delete-project",
-    uiIcon: "ui-icon-trash",
-  },
-];
-
-// Контекстное меню, которое должно открываться при ПКМ на файл внутри проекта
-const MENU_FILE = [
-  {
-    title: "Rename",
-    cmd: "rename-file",
-    uiIcon: "ui-icon-pencil",
-  },
-  {
-    title: "Delete <kbd>[Del]</kbd>",
-    cmd: "delete-file",
-    uiIcon: "ui-icon-trash",
-  },
-  {
-    title: "Set File as Top-Level",
-    cmd: "set-file-top-level",
-    uiIcon: "ui-icon-star",
-  },
-  { title: "----" },
-  {
-    title: "Download file",
-    cmd: "read-file",
-    uiIcon: "ui-icon-arrowthick-1-s",
-  },
-];
-
-// Контекстное меню, которое должно открываться при ПКМ на сигнал (сигналы находятся в поддереве файла)
-const MENU_SIGNAL = [
-  {
-    title: "ЗДЕСЬ МОЖЕТ",
-  },
-  {
-    title: "БЫТЬ ВАША",
-  },
-  {
-    title: "РЕКЛАМА",
-  },
-];
-
 // Открыть диалог для подтверждения удаления или ввода названия файла/проекта
-const openDialog = (dOrigin, affected = "") => {
-  dialogOrigin.value = dOrigin;
-  dialogInput.value = "";
-  whatAffected.value = affected;
-
-  if (["deleteFile", "deleteProject", "deleteAll"].includes(dOrigin))
-    dialogType.value = "confirm";
-  else dialogType.value = "input";
-
-  if (["renameFile", "renameProject"].includes(dOrigin))
-    dialogInput.value = affected;
-  const ddd = {
-    newFile: "Введите название нового файла",
-    newProject: "Введите название нового проекта",
-    deleteFile: `Уверены, что хотите удалить файл ${whatAffected.value}?`,
-    deleteProject: `Уверены, что хотите удалить проект ${whatAffected.value}?`,
-    deleteAll: `Уверены, что хотите удалить ${ide_state.value.projectStorage.count()} проектов?`,
-    renameProject: `Введите новое название проекта ${whatAffected.value}`,
-    renameFile: `Введите новое название файла ${whatAffected.value}`,
-  };
-  if (ddd.hasOwnProperty(dialogOrigin.value)) {
-    dialogHeader.value = ddd[dialogOrigin.value];
-  } else {
-    dialogHeader.value = "ERROR IN CODE!!!!!";
-    dialogOrigin.value = "asdfadsfasdfasdfadsfasdfafsdfasf";
-  }
-  dialogOpen.value = true;
+const openDialog = (params: DialogParams) => {
+  dialogState.title = params.title;
+  dialogState.callback = params.callback;
+  dialogState.inputValue = params.inputValue;
+  dialogState.type = params.type;
+  dialogState.isOpened = true;
 };
 
-// Здесь хранится дерево
-let realTree = [];
-
-// Полностью обновить дерево. Возможна потеря позиции скролла или раскрытия папок
-function fullyReloadTree() {
-  realTree = reactive([
-    {
-      title: "SVHDL Projects",
-      icon: "bi-archive",
-      folder: true,
-      key: "master",
-      children: [],
-      expanded: true,
-    },
-  ]);
-  if (ide_state.value.projectStorage) {
-    for (let proj of ide_state.value.projectStorage.projects) {
-      realTree[0].children.push({
-        title:
-          (proj == ide_state.value.activeProject ? "<b>" : "") +
-          proj.name +
-          (proj == ide_state.value.activeProject ? "</b>" : ""),
-        folder: true,
-        expanded: true,
-        key: "project_" + proj.name,
-        children: [],
-      });
-      if (proj == ide_state.value.activeProject) {
-        for (let file of proj.files) {
-          realTree[0].children[realTree[0].children.length - 1].children.push({
-            title:
-              (file === ide_state.value.activeFile
-                ? '<i class="bi-pen mr-2"></i>'
-                : "") +
-              (file.isUnsaved ? '<i class="bi-dot mr-2"></i>' : "") +
-              file.name,
-            key: "file_" + file.name,
-            icon:
-              file == ide_state.value.activeProject.topLevelFile
-                ? "bi-star-fill"
-                : "bi-file-earmark-code",
-          });
+const treeData = computed<TreeData>(() => {
+  const data: TreeData = {
+    title: "SVHDL Projects",
+    key: { type: "storage" },
+    icon: "bi-archive",
+    children: [],
+  };
+  for (let proj of ide_state.value.projectStorage.projects) {
+    const projectData: TreeData = {
+      title: proj.name,
+      key: { type: "project", assocObj: proj },
+    };
+    if (proj == ide_state.value.activeProject) {
+      projectData.isBold = true;
+      projectData.children = [];
+      for (let file of proj.files) {
+        const fileData: TreeData = {
+          title: file.name,
+          key: { type: "file", assocObj: file },
+          badges: [],
+        };
+        if (file.isUnsaved) fileData.badges.push("bi-dot");
+        fileData.icon = "bi-file-earmark";
+        if (file == ide_state.value.activeFile) {
+          fileData.badges.push("bi-pen");
+          const parsedAnalog =
+            ide_state.value.stymulusState.parsingResult.vhdlFiles.find((a) => {
+              return a.fileName == file.name;
+            });
+          if (parsedAnalog) {
+            fileData.children = [];
+            for (let entity of parsedAnalog.entities) {
+              const entityData: TreeData = {
+                title: entity.name,
+                key: { type: "entity", assocObj: entity },
+                icon: "bi-explicit",
+              };
+              console.log("ide_state", ide_state.value);
+              if (
+                ide_state.value.stymulusState &&
+                ide_state.value.stymulusState.topLevelFile &&
+                entity.fileName ==
+                  ide_state.value.stymulusState.topLevelFile.fileName &&
+                entity.name == ide_state.value.stymulusState.topLevelEntity.name
+              ) {
+                entityData.icon = "bi-explicit-fill";
+              }
+              fileData.children.push(entityData);
+            }
+            for (let arch of parsedAnalog.architectures) {
+              const entityData: TreeData = {
+                title: arch.name,
+                key: { type: "architecture", assocObj: arch },
+                icon: "bi-amazon",
+              };
+              fileData.children.push(entityData);
+            }
+          }
         }
+        projectData.children.push(fileData);
       }
     }
+    data.children.push(projectData);
   }
-  if (tree != null) {
-    tree.reload();
-  }
-}
 
-// Запустить fullyReloadTree при создании дерева
-fullyReloadTree();
-
-// Обработка нажатия пользователем пункта в контекстном меню
-const menuEvent = (event, data) => {
-  const node = tree.getActiveNode();
-  if (node.key == "master") {
-    if (data.cmd == "create-project") {
-      openDialog("newProject");
-    }
-    if (data.cmd == "delete-all-projects") {
-      openDialog("deleteAll");
-    }
-  } else if (node.key.startsWith("project_")) {
-    const projectName = node.key.slice("project_".length);
-    if (data.cmd == "rename-project") {
-      openDialog("renameProject", projectName);
-    }
-    if (data.cmd == "delete-project") {
-      openDialog("deleteProject", projectName);
-    }
-    if (data.cmd == "set-project-active") {
-      ide_state.value.setProjectActive(projectName);
-      fullyReloadTree();
-    }
-    if (data.cmd == "create-file") {
-      openDialog("newFile", projectName);
-    }
-    if (data.cmd == "read-project") {
-      var zip = new JSZip();
-      ide_state.value.activeProject.files.forEach(function (file) {
-        zip.file(file.name, file.code);
-      });
-      zip.generateAsync({ type: "blob" }).then(function (content) {
-        saveAs(content, `${ide_state.value.activeProject.name}.zip`);
-      });
-    }
-  } else if (node.key.startsWith("file_")) {
-    const fileName = node.key.slice("file_".length);
-    if (data.cmd == "rename-file") {
-      openDialog("renameFile", fileName);
-    }
-    if (data.cmd == "delete-file") {
-      openDialog("deleteFile", fileName);
-    }
-    if (data.cmd == "set-file-top-level") {
-      ide_state.value.activeProject.setTopLevelFile(fileName);
-      fullyReloadTree();
-    }
-    if (data.cmd == "read-file") {
-      const file = ide_state.value.activeProject.files.find(
-        (a) => a.name == fileName
-      );
-      saveAs(file.code, file.name);
-    }
-  }
-};
-
-// Функция выбирает меню, которое будет открываться при ПКМ на элемент дерева
-const chooseMenuForElement = (event, ui) => {
-  var node = $.ui.fancytree.getNode(ui.target);
-  var menu = undefined;
-  if (node.key == "master") {
-    menu = MENU_MASTER;
-  } else if (node.key.startsWith("project_")) {
-    const projectName = node.key.slice("project_".length);
-    if (
-      projectName ===
-      (ide_state.value.activeProject ?? {
-        name: "adsfasdfasdfdasdfasdfasdfasdfasd",
-      })["name"]
-    ) {
-      // Если ПКМ по активному проекту
-      menu = MENU_ACTIVE_PROJECT;
-    } else {
-      menu = MENU_INACTIVE_PROJECT;
-    }
-  } else if (node.key.startsWith("file_")) {
-    menu = MENU_FILE;
-  } else {
-    menu = MENU_SIGNAL;
-  }
-  node.setActive();
-  $("#tree").contextmenu({ menu: menu });
-};
-
-//
-const onSelectTreeElement = (event, data) => {
-  const key = data.node.key;
-  if (key.startsWith("file_"))
-    ide_state.value.setActiveFile(key.slice("file_".length));
-  else if (ide_state.value.activeProject)
-    ide_state.value.activeProject.activeFile = undefined;
-};
-
-// Когда компонент Vue смонтирован, замутить дерево
-onMounted(() => {
-  tree = createTree("#tree", {
-    selectMode: 3,
-    source: function (event, data) {
-      return realTree;
-    },
-    click: onSelectTreeElement,
-  });
-  +$("#tree").on("nodeCommand", menuEvent);
-  import("jquery.fancytree/dist/skin-win7/ui.fancytree.css");
-
-  $("#tree").contextmenu({
-    delegate: "span.fancytree-node",
-    menu: [],
-    beforeOpen: chooseMenuForElement,
-    select: function (event, ui) {
-      var that = this;
-      // delay the event, so the menu can close and the click event does
-      // not interfere with the edit control
-      setTimeout(function () {
-        $(that).trigger("nodeCommand", { cmd: ui.cmd });
-      }, 100);
-    },
-  });
+  return data;
 });
 
-//Обновление данных при обновлении props
-watch(
-  ide_state,
-  async (newData, oldData) => {
-    console.log("ide_state updated!");
-    fullyReloadTree();
-    if (tree != null) {
-      tree.reload();
+const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
+  const menu: (MenuAction | "---")[] = [];
+  if (key.type == "architecture") {
+    menu.push({ text: "Just architecture" }, { text: "Nothin' more" });
+  } else if (key.type == "entity") {
+    const entity: ParsedEntity = key.assocObj;
+    menu.push({
+      text: "Set File as Top-Level",
+      icon: "ui-icon-star",
+      callback: (key: IKey) => {
+        ide_state.value.stymulusState.setTopLevelEntity(entity);
+      },
+    });
+  } else if (key.type == "file") {
+    const file: ProjectFile = key.assocObj;
+    menu.push(
+      {
+        text: "Rename",
+        icon: "ui-icon-pencil",
+        callback: (key: IKey) => {
+          openDialog({
+            title: "Name of this file",
+            type: "input",
+            inputValue: "" + file.name,
+            callback: (newName: string) => {
+              file.proj.renameFile(file.name, newName);
+            },
+          });
+        },
+      },
+      {
+        text: "Delete",
+        icon: "ui-icon-trash",
+        callback: (key: IKey) => {
+          openDialog({
+            title: "Remove file " + file.name + "?",
+            callback: () => {
+              file.proj.deleteFile(file.name);
+            },
+            type: "yesno",
+          });
+        },
+      },
+
+      { text: "----" },
+      {
+        text: "Download file",
+        icon: "ui-icon-arrowthick-1-s",
+        callback: (key: IKey) => {
+          saveAs(key.assocObj.code, key.assocObj.name);
+        },
+      }
+    );
+  } else if (key.type == "project") {
+    const project: Project = key.assocObj;
+    if (key.assocObj == ide_state.value.activeProject) {
+      // Активный проект
+      menu.push(
+        {
+          text: "Rename Project",
+          icon: "ui-icon-pencil",
+        },
+        {
+          text: "New File",
+          icon: "ui-icon-plus",
+          callback: (key: IKey) => {
+            openDialog({
+              title: "Name for new file",
+              type: "input",
+              callback: (fileName: string) => {
+                project.newFile(fileName);
+              },
+            });
+          },
+        }
+      );
+    } else {
+      // Неактивный проект
+      menu.push({
+        text: "Set Project as Active",
+        icon: "ui-icon-power",
+        callback: (key: IKey) => {
+          ide_state.value.setProjectActive(key.assocObj.name);
+        },
+      });
     }
-  },
-  { deep: true }
-);
+    // Для любого проекта
+    menu.push(
+      "---",
+      {
+        text: "Delete Project",
+        icon: "ui-icon-trash",
+        callback: (key: IKey) => {
+          openDialog({
+            title: "Remove project " + project.name + "?",
+            callback: () => {
+              ide_state.value.projectStorage.deleteProject(project.name);
+            },
+            type: "yesno",
+          });
+        },
+      },
+      {
+        text: "Download as ZIP",
+        icon: "ui-icon-disk",
+        callback: (key: IKey) => {
+          var zip = new JSZip();
+          key.assocObj.files.forEach(function (file) {
+            zip.file(file.name, file.code);
+          });
+          zip.generateAsync({ type: "blob" }).then(function (content) {
+            saveAs(content, `${key.assocObj.name}.zip`);
+          });
+        },
+      }
+    );
+  } else if (key.type == "storage") {
+    // Контекстное меню, которое должно открываться при ПКМ на корень дерева проектов
+    menu.push(
+      {
+        text: "New project",
+        icon: "ui-icon-plusthick",
+        callback: () => {
+          openDialog({
+            title: "Name for new project",
+            type: "input",
+            callback: (projectName: string) => {
+              ide_state.value.projectStorage.newProject(projectName);
+            },
+          });
+        },
+      },
+      {
+        text: "Remove ALL PROJECTS",
+        icon: "ui-icon-cancel",
+        callback: (key: IKey) => {
+          openDialog({
+            title: `Remove ${ide_state.value.projectStorage.count()} projects from SVHDL?`,
+            callback: () => {
+              ide_state.value.projectStorage.deleteAllProjects();
+            },
+            type: "yesno",
+          });
+        },
+      }
+    );
+  } else menu.push({ text: "No actions" });
+
+  return menu;
+};
+
+const selectCallback = (key: IKey) => {
+  if (key.type == "file") {
+    ide_state.value.activeFile = key.assocObj;
+  } else if (key.type == "project" || key.type == "storage") {
+    ide_state.value.activeFile = undefined;
+  }
+};
 </script>
 
 <template>
-  <DialogRoot v-model:open="dialogOpen">
-    <DialogPortal>
-      <DialogOverlay class="bg-black opacity-50 fixed inset-0 z-30" />
-      <DialogContent
-        class="fixed top-[50%] left-[50%] max-h-30 w- max-w-96 translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] z-[100]">
-        <DialogTitle class="m-0 text-[17px] font-semibold">
-          {{ dialogHeader }}
-        </DialogTitle>
-        <DialogDescription class="mt-[10px] mb-5 text-[15px] leading-normal">
-          <Alert
-            variant="destructive"
-            class="flex flex-row gap-4"
-            v-if="dialogType == 'confirm'">
-            <i class="bi-x-circle text-4xl"></i>
-            <div>
-              <AlertTitle>Будьте осторожны!</AlertTitle>
-              <AlertDescription>
-                Это действие нельзя отменить
-              </AlertDescription>
-            </div>
-          </Alert>
-        </DialogDescription>
-
-        <Input
-          v-model="dialogInput"
-          v-if="dialogType == 'input'"
-          @keyup.enter="dialogConfirm"
-          class="mb-8" />
-
-        <div class="mt-2 flex justify-end gap-5">
-          <DialogClose>
-            <button
-              @click="dialogConfirm"
-              class="rounded-md bg-red-500 px-2 py-1 text-white font-bold">
-              <i class="bi-check-lg font-bold mr-1"></i>Ок
-            </button>
-          </DialogClose>
-          <DialogClose>
-            <button
-              class="rounded-md bg-green-500 px-2 py-1 text-white font-bold">
-              <i class="bi-x-lg font-bold mr-1"></i>Отмена
-            </button>
-          </DialogClose>
-        </div>
-      </DialogContent>
-    </DialogPortal>
-  </DialogRoot>
-  <div id="tree" style="height: 100%"></div>
+  <ModalDialog v-model="dialogState" />
+  <Tree
+    :data="treeData"
+    :get-menu-function="getMenuFunction"
+    :select-callback="selectCallback" />
 </template>
-
-<style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
-  }
-}
-</style>

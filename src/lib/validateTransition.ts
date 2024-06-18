@@ -28,7 +28,10 @@ export function validateTransition(
       });
       return "vhdl";
     }
-    if (ide_state.stymulusState == undefined) {
+    if (
+      ide_state.stymulusState === undefined ||
+      ide_state.stymulusState.isOutdated
+    ) {
       ide_state.addToastMessage({
         title: "Compile first",
         type: "error",
@@ -37,6 +40,17 @@ export function validateTransition(
         buttonCallback: () => {
           ide_state.compile();
         },
+      });
+      return "vhdl";
+    }
+    if (
+      ide_state.stymulusState.topLevelFile === undefined ||
+      ide_state.stymulusState.topLevelEntity === undefined
+    ) {
+      ide_state.addToastMessage({
+        title: "Select top-level entity first",
+        type: "error",
+        text: "Before setting up stymulus, you should select top-level entity",
       });
       return "vhdl";
     }

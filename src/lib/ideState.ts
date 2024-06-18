@@ -1,4 +1,3 @@
-import { onClickOutside } from "@vueuse/core";
 import { ProjectStorage, Project, ProjectFile } from "./projectSystem";
 import {
   ParsedVhdlFile,
@@ -9,6 +8,7 @@ import {
 } from "./parsedFile";
 import { ParsedVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
+import { processCode } from "@/parse/parser";
 
 export type Screen = "vhdl" | "stymulus" | "waveform";
 
@@ -31,6 +31,7 @@ export class StymulusConfig {
   constructor(ide_state: IDEState, project: Project) {
     this.ide_state = ide_state;
     this.project = project;
+    this.parsingResult = new ParsedProject();
 
     const data: any = localStorage.getItem(`stymulus_${project.name}`);
     if (data != undefined) {
@@ -40,6 +41,22 @@ export class StymulusConfig {
   save() {
     const data: any = {};
     data.parsingResult = this.parsingResult.toJson(); // TODO
+  }
+  updateParsing() {
+    this.parsingResult = new ParsedProject();
+    for (let file of this.project.files) {
+      this.parsingResult.addFile(processCode(file.code, file.name));
+    }
+    console.log(this.parsingResult);
+    this.save();
+    this.isOutdated = false;
+  }
+  setTopLevelEntity(entity: ParsedEntity) {
+    const file = this.parsingResult.vhdlFiles.find((a) => {
+      return a.fileName == entity.fileName;
+    });
+    this.topLevelFile = file;
+    this.topLevelEntity = entity;
   }
 }
 
@@ -67,11 +84,14 @@ export class IDEState {
   simulationState?: SimulationState;
 
   isEverythingSaved() {
-    return !this.projectStorage.hasUnsavedChanges;
+    return (
+      !this.projectStorage.hasUnsavedChanges &&
+      !this.projectStorage.projectSetUpdated
+    );
   }
 
   constructor() {}
-  /** Сохраняет только состояние IDE, не более того! */
+  /** Сохраняет только состояние IDE, не сохраняет файлы! */
   saveToLocalStorage() {
     localStorage.setItem(
       "IDEState",
@@ -91,9 +111,7 @@ export class IDEState {
     ide_state.activeScreen = data.activeScreen ?? "vhdl";
 
     if (data.activeProjectName) {
-      ide_state.activeProject = ide_state.projectStorage.getProjectByName(
-        data.activeProjectName
-      );
+      ide_state.setProjectActive(data.activeProjectName);
       if (data.activeFileName) {
         ide_state.activeFile = ide_state.activeProject.getFileByName(
           data.activeFileName
@@ -165,6 +183,7 @@ export class IDEState {
       return;
     }
     this.updateStymulusState();
+    this.stymulusState.updateParsing();
   }
   updateStymulusState() {
     this.stymulusState = new StymulusConfig(this, this.activeProject);

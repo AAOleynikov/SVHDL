@@ -6,11 +6,11 @@ import SignalsScreen from "@/screens/SignalsScreen.vue";
 import NavBar from "@/components/NavBar.vue";
 import { IDEState } from "./lib/ideState";
 import { Toaster } from "@/components/ui/sonner";
+import { validateTransition } from "./lib/validateTransition";
 
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());
 watch(ide_state, (newO, oldO) => {
-  console.log("Какой хороший день, чтобы пойти на СВО")
   if (persistencyTimerId.value === undefined) {
     persistencyTimerId.value = setTimeout(() => {
       ide_state.saveToLocalStorage();
@@ -18,6 +18,11 @@ watch(ide_state, (newO, oldO) => {
     }, 1000);
   }
 });
+ide_state.activeScreen = validateTransition(
+  ide_state,
+  ide_state.activeScreen,
+  ide_state.activeScreen
+);
 </script>
 
 <template>
