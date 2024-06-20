@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
 import SignalWizard from "@/components/SignalWizard.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
 import { ParsedVhdlFile } from "@/lib/parsedFile";
-
 import {
   Table,
   TableBody,
@@ -21,18 +14,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { IDEState } from "@/lib/ideState";
 
-const vhdlf = defineModel();
+const ide_state = defineModel<IDEState>();
 
 console.log("Hello!");
 </script>
 
 <template>
   <div class="flex-grow flex flex-col pr-3 pl-3">
-    <span class="mb-2">
-      Задать параметры симуляции <Button>Запустить</Button>
-    </span>
-    <h2>Found {{ vhdlf.value.architectures.length }}</h2>
     <Table>
       <TableHeader>
         <TableRow>
@@ -43,16 +33,16 @@ console.log("Hello!");
         </TableRow>
       </TableHeader>
       <TableBody>
-        <template v-for="architecture in vhdlf.value.architectures">
-          <TableRow>
-            <h2>Signals of architecture {{ architecture.name }}</h2>
-          </TableRow>
-          <TableRow v-for="signal in architecture.signals">
-            <TableCell className="font-medium">{{ signal.type }}</TableCell>
-            <TableCell className="font-medium">{{ signal.name }}</TableCell>
-            <TableCell>{{ signal.type }}</TableCell>
-            <TableCell><SignalWizard /></TableCell>
-          </TableRow>
+        <template v-if="ide_state.stymulusState.stymulusList !== undefined">
+          <template
+            v-for="entry of ide_state.stymulusState.stymulusList.entries()">
+            <TableRow>
+              <TableCell className="font-medium">in</TableCell>
+              <TableCell className="font-medium">{{ entry[0] }}</TableCell>
+              <TableCell>std_logic</TableCell>
+              <TableCell><SignalWizard v-model="entry[1]" /></TableCell>
+            </TableRow>
+          </template>
         </template>
       </TableBody>
     </Table>

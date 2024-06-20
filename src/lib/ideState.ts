@@ -9,6 +9,9 @@ import {
 import { ParsedVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
+import { ConstStymulus, Stymulus } from "@/testbench_generator/stymulus";
+import { assert } from "@vueuse/core";
+import { parseRange } from "@/lib/measureUnits";
 
 export type Screen = "vhdl" | "stymulus" | "waveform";
 
@@ -20,36 +23,110 @@ export class ToastMessage {
   buttonCallback?: Function;
 }
 
+type StymulusConfigJson = {
+  parsingResult: any;
+  topLevelFileName?: string;
+  topLevelEntityName?: string;
+  isOutdated: boolean;
+};
+
 export class StymulusConfig {
   ide_state: IDEState;
   project: Project;
   parsingResult: ParsedProject;
   topLevelFile?: ParsedVhdlFile;
   topLevelEntity?: ParsedEntity;
-  inputSignalsConfig: object;
   isOutdated: boolean;
+  stymulusList: Map<string, Stymulus>;
   constructor(ide_state: IDEState, project: Project) {
     this.ide_state = ide_state;
     this.project = project;
     this.parsingResult = new ParsedProject();
 
-    const data: any = localStorage.getItem(`stymulus_${project.name}`);
-    if (data != undefined) {
+    const rawData: string | null = localStorage.getItem(
+      `stymulus_${project.name}`
+    );
+    if (rawData !== null) {
+      const data: StymulusConfigJson = JSON.parse(rawData);
+      console.log("data", data);
+      this.isOutdated = data.isOutdated;
       this.parsingResult = new ParsedProject(data.parsingResult);
-    } else this.isOutdated = true;
+      this.topLevelFile = this.parsingResult.vhdlFiles.find((a) => {
+        return a.fileName === data.topLevelFileName;
+      });
+      if (this.topLevelFile) {
+        this.topLevelEntity = this.topLevelFile.entities.find((a) => {
+          return a.name === data.topLevelEntityName;
+        });
+      }
+    } else {
+      this.isOutdated = true;
+      this.parsingResult = new ParsedProject();
+    }
   }
   save() {
-    const data: any = {};
-    data.parsingResult = this.parsingResult.toJson(); // TODO
+    const data: StymulusConfigJson = {
+      parsingResult: this.parsingResult.toJson(),
+      isOutdated: this.isOutdated,
+      topLevelEntityName: this.topLevelEntity
+        ? this.topLevelEntity.name
+        : undefined,
+      topLevelFileName: this.topLevelFile
+        ? this.topLevelFile.fileName
+        : undefined,
+    };
+    console.log("serialized data", data);
+    const serializedData = JSON.stringify(data);
+    localStorage.setItem("stymulus_" + this.project.name, serializedData);
   }
   updateParsing() {
     this.parsingResult = new ParsedProject();
     for (let file of this.project.files) {
       this.parsingResult.addFile(processCode(file.code, file.name));
     }
-    console.log(this.parsingResult);
+    try {
+      // Проверка на то, остался ли файл верхнего уровня и осталась ли top-level сущность после обновления парсинга
+      const fileAnalog = this.parsingResult.vhdlFiles.find((a) => {
+        return a.fileName == this.topLevelFile.fileName;
+      });
+      console.log("I am alive here!");
+      const entityAnalog = fileAnalog.entities.find((a) => {
+        return a.name == this.topLevelEntity.name;
+      });
+      if (entityAnalog.name.length) {
+        this.topLevelFile = fileAnalog;
+        this.topLevelEntity = entityAnalog;
+      } else {
+        this.topLevelFile = undefined;
+        this.topLevelEntity = undefined;
+      }
+    } catch {
+      this.topLevelFile = undefined;
+      this.topLevelEntity = undefined;
+    }
     this.save();
     this.isOutdated = false;
+  }
+  updateStymulusList() {
+    this.stymulusList = new Map();
+    if (this.topLevelEntity !== undefined) {
+      for (let port of this.topLevelEntity.ports) {
+        if (port.mode == "in") {
+          console.log("should be here");
+          if (port.type.startsWith("std_logic_vector")) {
+            const diap = parseRange(port.type);
+            for (let index of diap) {
+              this.stymulusList.set(
+                port.name + `(${index})`,
+                new ConstStymulus("0")
+              );
+            }
+          } else {
+            this.stymulusList.set(port.name, new ConstStymulus("0"));
+          }
+        }
+      }
+    }
   }
   setTopLevelEntity(entity: ParsedEntity) {
     const file = this.parsingResult.vhdlFiles.find((a) => {
@@ -57,6 +134,7 @@ export class StymulusConfig {
     });
     this.topLevelFile = file;
     this.topLevelEntity = entity;
+    this.save();
   }
 }
 
@@ -184,6 +262,7 @@ export class IDEState {
     }
     this.updateStymulusState();
     this.stymulusState.updateParsing();
+    this.stymulusState.updateStymulusList();
   }
   updateStymulusState() {
     this.stymulusState = new StymulusConfig(this, this.activeProject);

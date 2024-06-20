@@ -110,7 +110,7 @@ export default class SVHDLListener extends vhdlParserListener {
           .interface_signal_declaration()
           .subtype_indication()
           .getText();
-        new_entity.appendPort(port_name, port_mode, port_type);
+        new_entity.appendPort(port_name, port_type, port_mode);
       }
     }
     this.vhdlFileTop.addEntity(new_entity);

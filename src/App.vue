@@ -7,6 +7,8 @@ import NavBar from "@/components/NavBar.vue";
 import { IDEState } from "./lib/ideState";
 import { Toaster } from "@/components/ui/sonner";
 import { validateTransition } from "./lib/validateTransition";
+import WaveformScreen from "./screens/WaveformScreen.vue";
+import SimulationControl from "./components/waveform/SimulationControl.vue";
 
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());
@@ -35,7 +37,7 @@ ide_state.activeScreen = validateTransition(
       <SignalsScreen v-model="ide_state" />
     </template>
     <template v-if="ide_state.activeScreen == 'waveform'">
-      <SignalsScreen v-model="ide_state" />
+      <WaveformScreen v-model="ide_state" />
     </template>
   </div>
   <Toaster richColors closeButton />

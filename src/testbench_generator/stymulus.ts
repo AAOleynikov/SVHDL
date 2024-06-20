@@ -1,17 +1,17 @@
 /* Классы источников сигнала. Для разных источников будут делаться разные процессы в testbench. */
 import { ParsedVhdlFile, ParsedEntity, ParsedSignal } from "@/lib/parsedFile";
 export interface Stymulus {
-  signalFor: ParsedSignal;
   generateProcess(): string;
+  describe(): string;
 }
 
 export function dumpStymulusToString(st: Stymulus): string {
   if (st instanceof ClockStymulus) {
     return JSON.stringify({
       type: "clock",
-      period: st.period,
-      pulseWidth: st.pulseWidth,
-      startPhase: st.startPhase,
+      period: st.periodFs,
+      pulseWidth: st.pulseWidthFs,
+      startPhase: st.phaseShiftFs,
     });
   } else if (st instanceof ConstStymulus) {
     return JSON.stringify({
@@ -48,49 +48,49 @@ export function loadStymulusFromString(
 }
 
 export class ClockStymulus implements Stymulus {
-  signalFor: ParsedSignal;
-  period: number;
-  pulseWidth: number;
-  startPhase: number;
-  constructor(
-    signalFor: ParsedSignal,
-    period: number,
-    pulseWidth: number,
-    startPhase: number
-  ) {
-    this.signalFor = signalFor;
-    this.period = period;
-    this.pulseWidth = pulseWidth;
-    this.startPhase = startPhase;
+  periodFs: number;
+  pulseWidthFs: number;
+  phaseShiftFs: number;
+  constructor(period: number, pulseWidth: number, startPhase: number) {
+    this.periodFs = period;
+    this.pulseWidthFs = pulseWidth;
+    this.phaseShiftFs = startPhase;
   }
   generateProcess(): string {
     return "-- To Do";
   }
+  describe(): string {
+    return `Clock (T=${toEngineeringNotation(this.periodFs)}s, S=${Math.ceil(
+      (this.pulseWidthFs / this.periodFs) * 100
+    )}%)`;
+  }
 }
 
 export class ConstStymulus implements Stymulus {
-  signalFor: ParsedSignal;
   value: string;
-  constructor(signalFor: ParsedSignal, value: string) {
-    this.signalFor = signalFor;
+  constructor(value: string) {
     this.value = value;
   }
   generateProcess(): string {
     return "-- To Do";
   }
+  describe(): string {
+    return "Constant " + this.value;
+  }
 }
 
 export class HotkeyStymulus implements Stymulus {
-  signalFor: ParsedSignal;
   defaultValue: string;
   key: string;
-  constructor(signalFor: ParsedSignal, defaultValue: string, key: string) {
-    this.signalFor = signalFor;
+  constructor(defaultValue: string, key: string) {
     this.defaultValue = defaultValue;
     this.key = key;
   }
   generateProcess(): string {
     return "-- To Do";
+  }
+  describe(): string {
+    return `Hotkey "${this.key}" from value ${this.defaultValue}`;
   }
 }
 

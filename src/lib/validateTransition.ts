@@ -8,6 +8,7 @@ export function validateTransition(
   screenFrom: Screen,
   screenTo: Screen
 ): Screen {
+  if (screenTo == "vhdl") return screenTo;
   if (screenTo == "stymulus" || screenTo == "waveform") {
     if (ide_state.isEverythingSaved() == false) {
       ide_state.addToastMessage({

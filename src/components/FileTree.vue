@@ -132,7 +132,7 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
   } else if (key.type == "entity") {
     const entity: ParsedEntity = key.assocObj;
     menu.push({
-      text: "Set File as Top-Level",
+      text: "Set Entity as Top-Level",
       icon: "ui-icon-star",
       callback: (key: IKey) => {
         ide_state.value.stymulusState.setTopLevelEntity(entity);
