@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.monospaceFont {
+  font-family: Consolas, "Courier New", monospace;
+}

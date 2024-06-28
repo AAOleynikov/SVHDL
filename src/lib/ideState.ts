@@ -12,6 +12,8 @@ import { processCode } from "@/parse/parser";
 import { ConstStymulus, Stymulus } from "@/testbench_generator/stymulus";
 import { assert } from "@vueuse/core";
 import { parseRange } from "@/lib/measureUnits";
+import { ValidationResultFromServer, validate } from "./serverWorks";
+import { useConsoleStore } from "@/stores/console";
 
 export type Screen = "vhdl" | "stymulus" | "waveform";
 
@@ -89,7 +91,6 @@ export class StymulusConfig {
       const fileAnalog = this.parsingResult.vhdlFiles.find((a) => {
         return a.fileName == this.topLevelFile.fileName;
       });
-      console.log("I am alive here!");
       const entityAnalog = fileAnalog.entities.find((a) => {
         return a.name == this.topLevelEntity.name;
       });
@@ -112,7 +113,6 @@ export class StymulusConfig {
     if (this.topLevelEntity !== undefined) {
       for (let port of this.topLevelEntity.ports) {
         if (port.mode == "in") {
-          console.log("should be here");
           if (port.type.startsWith("std_logic_vector")) {
             const diap = parseRange(port.type);
             for (let index of diap) {
@@ -156,10 +156,13 @@ export class IDEState {
   activeProject?: Project;
   activeFile?: ProjectFile;
   editorLine?: number;
+  valResult?: ValidationResultFromServer;
   activeProjectNeedsRecompilation: boolean = true;
   projectStorage: ProjectStorage;
   stymulusState?: StymulusConfig;
   simulationState?: SimulationState;
+  isLoading: boolean = false;
+  consoleStore: ReturnType<typeof useConsoleStore>;
 
   isEverythingSaved() {
     return (
@@ -168,7 +171,9 @@ export class IDEState {
     );
   }
 
-  constructor() {}
+  constructor() {
+    this.consoleStore = useConsoleStore();
+  }
   /** Сохраняет только состояние IDE, не сохраняет файлы! */
   saveToLocalStorage() {
     localStorage.setItem(
@@ -263,6 +268,29 @@ export class IDEState {
     this.updateStymulusState();
     this.stymulusState.updateParsing();
     this.stymulusState.updateStymulusList();
+    validate(this.activeProject, this);
+  }
+  finishCompilation(result: ValidationResultFromServer) {
+    console.log("asdfaddfsafadsfsdafsdafdsaafds");
+    if (result !== undefined) {
+      if (result.success) {
+        this.consoleStore.clearConsole();
+        this.addToastMessage({
+          type: "success",
+          title: "Compilation successful",
+        });
+      } else {
+        this.consoleStore.setConsoleText(result.errors.join("\n"));
+        this.addToastMessage({
+          type: "error",
+          title: "Compilation error",
+          buttonText: "Open console",
+          buttonCallback: () => {
+            this.consoleStore.openConsole();
+          },
+        });
+      }
+    }
   }
   updateStymulusState() {
     this.stymulusState = new StymulusConfig(this, this.activeProject);

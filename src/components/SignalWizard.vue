@@ -22,7 +22,7 @@ import {
   ConstStymulus,
   HotkeyStymulus,
 } from "@/testbench_generator/stymulus";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import TimeInput from "./TimeInput.vue";
 
 const keyValue = ref<string[]>([""]);
@@ -57,6 +57,29 @@ const upperKey = () => {
     keyValue.value[0] = kv.toUpperCase();
   }
 };
+watch(stymulusType, (newType, oldType) => {
+  if (oldType !== newType) {
+    if (newType === "const") signal_stymulus.value = new ConstStymulus("0");
+    else if (newType === "clock") {
+      signal_stymulus.value = new ClockStymulus(
+        { mantissa: 10, exponent: "ns" },
+        { mantissa: 5, exponent: "ns" },
+        { mantissa: 1, exponent: "ns" }
+      );
+    } else if (newType === "hotkey") {
+      signal_stymulus.value = new HotkeyStymulus("0", "a");
+      signal_stymulus.value;
+    }
+  }
+});
+
+watch(
+  signal_stymulus,
+  () => {
+    console.log("Signal stymulus updated");
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -79,29 +102,9 @@ const upperKey = () => {
           </div>
         </TabsContent>
         <TabsContent value="clock">
-          <div>
-            <div className="grid gap-4">
-              <div className="">
-                <h4 className="font-medium leading-none">Параметры</h4>
-              </div>
-              <div className="grid gap-2">
-                <div className="grid grid-cols-2 items-center gap-4">
-                  <span>Period</span>
-                  <TimeInput v-model="period" />
-                </div>
-                <div className="grid grid-cols-2 items-center gap-4">
-                  <span>Pulse Width</span>
-                  <Input
-                    id="maxWidth"
-                    defaultValue="50%"
-                    className="h-8 w-20" />
-                </div>
-                <div className="grid grid-cols-2 items-center gap-4">
-                  <span>Phase Shift</span>
-                  <Input id="height" defaultValue="33n" className="h-8 w-20" />
-                </div>
-              </div>
-            </div>
+          <div class="flex flex-col gap-3">
+            <div><h3>Parameters</h3></div>
+            <div class="flex flex-row"><Label>Low value</Label></div>
           </div>
         </TabsContent>
         <TabsContent value="hotkey">

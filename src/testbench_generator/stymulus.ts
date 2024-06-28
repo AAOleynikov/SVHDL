@@ -1,5 +1,9 @@
 /* Классы источников сигнала. Для разных источников будут делаться разные процессы в testbench. */
+import { Time, timeToFs, toEngineeringNotation } from "@/lib/measureUnits";
 import { ParsedVhdlFile, ParsedEntity, ParsedSignal } from "@/lib/parsedFile";
+
+export type ValueType = "0" | "1";
+
 export interface Stymulus {
   generateProcess(): string;
   describe(): string;
@@ -9,9 +13,9 @@ export function dumpStymulusToString(st: Stymulus): string {
   if (st instanceof ClockStymulus) {
     return JSON.stringify({
       type: "clock",
-      period: st.periodFs,
-      pulseWidth: st.pulseWidthFs,
-      startPhase: st.phaseShiftFs,
+      period: st.period,
+      pulseWidth: st.pulseWidth,
+      startPhase: st.phaseShift,
     });
   } else if (st instanceof ConstStymulus) {
     return JSON.stringify({
@@ -34,41 +38,44 @@ export function loadStymulusFromString(
 ): Stymulus {
   const data = JSON.parse(str);
   if (data.type == "clock") {
-    return new ClockStymulus(
-      signalFor,
-      data.period,
-      data.pulseWidth,
-      data.startPhase
-    );
+    return new ClockStymulus(data.period, data.pulseWidth, data.startPhase);
   } else if (data.type == "const") {
-    return new ConstStymulus(signalFor, data.value);
+    return new ConstStymulus(data.value);
   } else if (data.type == "hotkey") {
-    return new HotkeyStymulus(signalFor, data.defaultValue, data.key);
+    return new HotkeyStymulus(data.defaultValue, data.key);
   }
 }
 
 export class ClockStymulus implements Stymulus {
-  periodFs: number;
-  pulseWidthFs: number;
-  phaseShiftFs: number;
-  constructor(period: number, pulseWidth: number, startPhase: number) {
-    this.periodFs = period;
-    this.pulseWidthFs = pulseWidth;
-    this.phaseShiftFs = startPhase;
+  period: Time;
+  pulseWidth: Time;
+  phaseShift: Time;
+  constructor(period: Time, pulseWidth: Time, startPhase: Time) {
+    this.period = period;
+    this.pulseWidth = pulseWidth;
+    this.phaseShift = startPhase;
   }
   generateProcess(): string {
     return "-- To Do";
   }
   describe(): string {
-    return `Clock (T=${toEngineeringNotation(this.periodFs)}s, S=${Math.ceil(
-      (this.pulseWidthFs / this.periodFs) * 100
+    if (
+      this.period.mantissa === 0 ||
+      timeToFs(this.period) < timeToFs(this.pulseWidth)
+    ) {
+      return "Clock (invalid)";
+    }
+    return `Clock (T=${toEngineeringNotation(
+      timeToFs(this.period)
+    )}s, S=${Math.ceil(
+      (timeToFs(this.pulseWidth) / timeToFs(this.period)) * 100
     )}%)`;
   }
 }
 
 export class ConstStymulus implements Stymulus {
-  value: string;
-  constructor(value: string) {
+  value: ValueType;
+  constructor(value: ValueType) {
     this.value = value;
   }
   generateProcess(): string {
@@ -80,9 +87,9 @@ export class ConstStymulus implements Stymulus {
 }
 
 export class HotkeyStymulus implements Stymulus {
-  defaultValue: string;
-  key: string;
-  constructor(defaultValue: string, key: string) {
+  public defaultValue: ValueType;
+  public key: string;
+  constructor(defaultValue: ValueType, key: string) {
     this.defaultValue = defaultValue;
     this.key = key;
   }

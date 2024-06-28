@@ -16,9 +16,7 @@ import {
 } from "@/components/ui/table";
 import { IDEState } from "@/lib/ideState";
 
-const ide_state = defineModel<IDEState>();
-
-console.log("Hello!");
+const ide_state = defineModel<IDEState>({required:true});
 </script>
 
 <template>
@@ -26,10 +24,10 @@ console.log("Hello!");
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead class="w-[100px]">Entity</TableHead>
-          <TableHead class="w-[100px]">ID</TableHead>
+          <TableHead class="w-[100px]">Mode</TableHead>
+          <TableHead class="w-[100px]">Name</TableHead>
           <TableHead>Type</TableHead>
-          <TableHead>Signal</TableHead>
+          <TableHead>Stymulus</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

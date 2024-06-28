@@ -5,17 +5,13 @@ import Separator from "../ui/separator/Separator.vue";
 import TooltipButton from "./TooltipButton.vue";
 import TimeInput from "../TimeInput.vue";
 import ScaleWizard from "./ScaleWizard.vue";
+import { ScaleData } from "./WfTypes";
 
-type SimulationControlState = {
-  currentTool: "cursor" | "move";
-  leftBorderFs: number;
-  rightBorderFs: number;
-  cursorFs?: number;
-};
+const scaleData = defineModel<ScaleData>({ required: true });
 </script>
 
 <template>
-  <div class="mb-2 border-2 border-slate-200 rounded-md px-2 py-1">
+  <div class="mb-2 border-2 border-slate-200 bg-white rounded-md px-2 py-1">
     <TooltipProvider>
       <div class="flex flex-row justify-between">
         <div class="flex flex-row flex-wrap gap-y-1 gap-x-3">
@@ -44,7 +40,7 @@ type SimulationControlState = {
           <div class="border-s-[1px] flex flex-row items-center pl-2">
             <span class="mr-5">CMT: 100ns</span>
             <span class="mr-2">Step size: </span>
-            <TimeInput />
+            <TimeInput v-model="scaleData.step" />
             <TooltipButton icon="bi-fast-forward-fill" tooltip="Make step" />
           </div>
           <div class="border-s-[1px] flex flex-row items-center pl-2">

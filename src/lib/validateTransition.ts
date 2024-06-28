@@ -55,6 +55,18 @@ export function validateTransition(
       });
       return "vhdl";
     }
+    if (ide_state.consoleStore.isConsoleAvailable === true) {
+      ide_state.addToastMessage({
+        title: "Compilation failed",
+        type: "error",
+        text: "Before setting up stymulus, compilation should be successful",
+        buttonText: "Open console",
+        buttonCallback: () => {
+          ide_state.consoleStore.openConsole();
+        },
+      });
+      return "vhdl";
+    }
   }
   return screenTo;
 }

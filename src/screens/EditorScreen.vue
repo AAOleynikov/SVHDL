@@ -10,6 +10,10 @@ import Button from "@/components/ui/button/Button.vue";
 import Editor from "@/components/Editor.vue";
 import { IDEState } from "@/lib/ideState";
 
+import { useConsoleStore } from "@/stores/console";
+
+const consoleStore = useConsoleStore();
+
 const ide_state = defineModel<IDEState>({ required: true });
 </script>
 
@@ -23,6 +27,11 @@ const ide_state = defineModel<IDEState>({ required: true });
         <Button @click="ide_state.saveAll()">Save all</Button>
         <Button @click="ide_state.discardAll()">Discard changes</Button>
         <Button @click="ide_state.compile()">Compile</Button>
+        <Button
+          @click="()=>{ide_state.consoleStore.openConsole()}"
+          :disabled="!consoleStore.isConsoleAvailable"
+          >Console</Button
+        >
         <div><FileTree v-model="ide_state" /></div>
       </div>
     </ResizablePanel>

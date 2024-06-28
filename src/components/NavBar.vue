@@ -22,6 +22,7 @@ const decryptions = [
   "Standard",
   "Ssssssss",
   "Syrup",
+  "Sugar",
   "Seek",
   "Soul",
 ];
@@ -40,7 +41,13 @@ watch(screen, (newValue, oldValue) => {
 <template>
   <nav>
     <div
-      class="flex flex-row justify-between align-middle p-4 bg-slate-300 border-b-slate-600 border-b-2">
+      class="flex flex-row justify-between align-middle p-4 bg-slate-300 fixed w-screen min-w-screen"
+      style="
+        height: 70px;
+        max-height: 70px;
+        border-bottom: 2px solid;
+        border-bottom-color: gray;
+      ">
       <div class="flex flex-row gap-3 items-center">
         <img
           src="/src/assets/img/LOGO.png"

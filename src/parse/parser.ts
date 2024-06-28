@@ -68,9 +68,8 @@ export default class SVHDLListener extends vhdlParserListener {
       .port_list()
       .interface_list()
       .interface_element().length;
-    var count_of_ports_in_string;
     for (var i = 0; i < count_of_ports_strings; i++) {
-      count_of_ports_in_string = ctx
+      const count_of_ports_in_string = ctx
         .port_clause()
         .port_list()
         .interface_list()
