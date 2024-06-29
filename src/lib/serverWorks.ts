@@ -31,13 +31,32 @@ export function validate(proj: Project, ide_state: IDEState) {
     }),
     topLevelEntity: "",
   };
-  console.log("reqData", reqData);
   ide_state.isLoading = true;
   const request = instance
     .post("/validate", { data: reqData })
     .then((resp) => {
       ide_state.isLoading = false;
       ide_state.finishCompilation(resp.data);
+    })
+    .catch(() => {
+      ide_state.isLoading = false;
+    });
+}
+
+export function simulate(
+  filesToServak: {
+    files: { fileName: string; fileContent: string }[];
+    topLevelEntity: string;
+    simTimeFs: number;
+  },
+  ide_state: IDEState
+) {
+  ide_state.isLoading = true;
+  const request = instance
+    .post("/simulate", { data: filesToServak })
+    .then((resp) => {
+      ide_state.isLoading = false;
+      ide_state.finishSimulation(resp.data);
     })
     .catch(() => {
       ide_state.isLoading = false;

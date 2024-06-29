@@ -17,7 +17,6 @@ const value = defineModel<Time>({ required: true });
 const stringMantissa = ref<string>(value.value.mantissa.toString());
 
 watch(stringMantissa, () => {
-  console.log("Первий вочер");
   if (isValid.value) {
     value.value.mantissa = parseFloat(stringMantissa.value.replace(",", "."));
   }
@@ -26,7 +25,6 @@ watch(stringMantissa, () => {
 watch(
   value,
   (newValue, oldValue) => {
-    console.log("Второй вочер");
     if (newValue.mantissa !== oldValue.mantissa) {
       stringMantissa.value = newValue.mantissa.toString();
     }

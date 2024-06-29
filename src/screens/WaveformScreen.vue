@@ -12,11 +12,10 @@ import { ref, reactive, computed, onMounted, watch } from "vue";
 import { VCDScope, parseVCD } from "@/vcd_tools/vcd2json";
 import { usePointerSwipe, useScroll } from "@vueuse/core";
 
-import vcdExample from "@/vcd_tools/vcd_example.vcd?raw"; // На ошибку похуй
 import { IDEState } from "@/lib/ideState";
 
-const vcdData = parseVCD(vcdExample);
 const ide_state = defineModel<IDEState>();
+const vcdData = parseVCD(ide_state.value.vcd);
 
 const vcdState = reactive<WaveFormData[]>([]);
 
@@ -40,7 +39,6 @@ function recursiveLoadVcdState(
   where.push(newFolder);
 }
 for (const scope of vcdData.scopes) {
-  console.log("I am working");
   recursiveLoadVcdState(vcdState, scope);
 }
 
@@ -81,7 +79,6 @@ function recursiveLoadDisplayState(
 const displayState = computed(() => {
   const ret: DisplayData[] = [];
   for (const dd of vcdState) recursiveLoadDisplayState(ret, dd, 0);
-  console.log("Recomputed", ret);
   return ret;
 });
 
@@ -101,11 +98,11 @@ usePointerSwipe(labelsResizeGrip, {
 
 const scaleData = reactive<ScaleData>({
   leftBorder: 0,
-  rightBorder: 1000000,
+  rightBorder: Math.round(ide_state.value.curSTime / 3),
   labelsWidth: 500,
   plotsSectionWidth: 500,
   mode: "cursor",
-  currentSimTime: 100000000,
+  currentSimTime: ide_state.value.curSTime,
   step: { mantissa: 100, exponent: "ns" },
 });
 

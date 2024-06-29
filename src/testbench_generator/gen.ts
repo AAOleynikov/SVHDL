@@ -4,9 +4,10 @@
  * ****************************************************************/
 
 import { Time } from "@/lib/measureUnits";
-import { Stymulus, ValueType } from "./stymulus";
 
-// Тестовый пример конфигурации top-lvl entity и его architectures
+export type ValueType = "0" | "1";
+
+var process_id: number = 0;
 
 export type GeneratorStymulus =
   | GeneratorClockStymulus
@@ -14,6 +15,7 @@ export type GeneratorStymulus =
   | GeneratorConstStymulus;
 
 export interface GeneratorClockStymulus {
+  nameOfTarget: string;
   stimulus_type: "Clock";
   low_value: ValueType;
   high_value: ValueType;
@@ -23,11 +25,13 @@ export interface GeneratorClockStymulus {
 }
 
 export interface GeneratorHotkeyStymulus {
+  nameOfTarget: string;
   stimulus_type: "HotKey";
   time_line: { time: Time; value: ValueType }[];
 }
 
 export interface GeneratorConstStymulus {
+  nameOfTarget: string;
   stimulus_type: "Const";
   value: ValueType;
 }
@@ -36,7 +40,6 @@ export interface GeneratorPort {
   name: string;
   sub_type: "in" | "out" | "inout";
   type: string;
-  stimulus: GeneratorStymulus;
 }
 
 export interface CodeGeneratorData {
@@ -50,69 +53,9 @@ export interface CodeGeneratorData {
     of: string;
     signals: any[];
   }[];
+  stimulus: GeneratorStymulus[];
   preferred_arch_name: string;
 }
-const jsonExample: CodeGeneratorData = {
-  header_declaration: "library IEEE; use IEEE.STD_LOGIC_1164.all;",
-  entity: {
-    name: "and3",
-    ports: [
-      {
-        name: "x1",
-        sub_type: "in",
-        type: "STD_LOGIC",
-        stimulus: {
-          stimulus_type: "Clock",
-          low_value: "0",
-          high_value: "1",
-          starts_with: "low_value",
-          duty_cycle: 50,
-          period: { mantissa: 20, exponent: "ns" },
-        },
-      },
-      {
-        name: "x2",
-        sub_type: "in",
-        type: "STD_LOGIC",
-        stimulus: {
-          stimulus_type: "Clock",
-          low_value: "0",
-          high_value: "1",
-          starts_with: "low_value",
-          duty_cycle: 50,
-          period: { mantissa: 10, exponent: "ns" },
-        },
-      },
-      {
-        name: "x3",
-        sub_type: "in",
-        type: "STD_LOGIC",
-        stimulus: {
-          stimulus_type: "HotKey",
-          time_line: [
-            { time: { mantissa: 0, exponent: "ns" }, value: "0" },
-            { time: { mantissa: 40, exponent: "ns" }, value: "1" },
-            { time: { mantissa: 60, exponent: "ns" }, value: "1" },
-            { time: { mantissa: 80, exponent: "ns" }, value: "0" },
-          ],
-        },
-      },
-    ],
-  },
-  architectures: [
-    {
-      name: "and3_arch1",
-      of: "and3",
-      signals: [],
-    },
-    {
-      name: "and3_arch2",
-      of: "and3",
-      signals: [],
-    },
-  ],
-  preferred_arch_name: "and3_arch1",
-};
 
 /*
    По объекту конфигурации top-lvl entity и его architectures конструируется автономный (не зависящий от изменений исходного объекта конфигурации)
@@ -130,7 +73,7 @@ const metaDataForHeader =
   "VHDL TESTBENCH GENERATOR V0.0.7 OLEYNIKOV ANTON https://github.com/AAOleynikov";
 /* start TestbenchGenerator declaration */
 
-class TestbenchGenerator {
+export class TestbenchGenerator {
   config: CodeGeneratorData;
   vhdl: string;
   /* start constructor of TestbenchGenerator */
@@ -186,19 +129,39 @@ class TestbenchGenerator {
     });
 
     // Генерация стимулов, если они определены
-    this.config.entity.ports.forEach((port) => {
-      if (port.stimulus) {
-        switch (port.stimulus.stimulus_type) {
-          case "Clock":
-            TBA += this.Stimulus.generateClock(port);
-            break;
-          case "HotKey":
-            TBA += this.Stimulus.generateHotKey(port);
-            break;
-          case "Const":
-            TBA += this.Stimulus.generateConst(port);
-            break;
-        }
+    this.config.stimulus.forEach((stim) => {
+      //TODO избавиться от хардкода
+      switch (stim.stimulus_type) {
+        case "Clock":
+          TBA += this.Stimulus.generateClock(
+            {
+              name: stim.nameOfTarget,
+              sub_type: "in",
+              type: "std_logic",
+            },
+            stim
+          );
+          break;
+        case "HotKey":
+          TBA += this.Stimulus.generateHotKey(
+            {
+              name: stim.nameOfTarget,
+              sub_type: "in",
+              type: "std_logic",
+            },
+            stim
+          );
+          break;
+        case "Const":
+          TBA += this.Stimulus.generateConst(
+            {
+              name: stim.nameOfTarget,
+              sub_type: "in",
+              type: "std_logic",
+            },
+            stim
+          );
+          break;
       }
     });
 
@@ -220,43 +183,41 @@ class TestbenchGenerator {
   /* start Stimulus declaration */
 
   private Stimulus = class {
-    static generateClock(port: GeneratorPort) {
-      if (port.stimulus.stimulus_type !== "Clock") throw "Wrong stimulus type";
+    static generateClock(port: GeneratorPort, stim: GeneratorClockStymulus) {
+      if (stim.stimulus_type !== "Clock") throw "Wrong stimulus type";
       let SC = `-- Clock stimulus for ${port.name}\n`;
-      SC += `\t${port.name}_process: process\n`;
+      SC += `\tanton${process_id++}_process: process\n`;
       SC += `\tbegin\n`;
-      if (port.stimulus.starts_with == "low_value") {
-        SC += `\t\t${port.name} <= '${port.stimulus.low_value}';\n`;
+      if (stim.starts_with == "low_value") {
+        SC += `\t\t${port.name} <= '${stim.low_value}';\n`;
         SC += `\t\twait for ${
-          (port.stimulus.period.mantissa * (100 - port.stimulus.duty_cycle)) /
-          100
-        } ${port.stimulus.period.exponent};\n`;
-        SC += `\t\t${port.name} <= '${port.stimulus.high_value}';\n`;
-        SC += `\t\twait for ${
-          (port.stimulus.period.mantissa * port.stimulus.duty_cycle) / 100
-        } ${port.stimulus.period.exponent};\n`;
+          (stim.period.mantissa * (100 - stim.duty_cycle)) / 100
+        } ${stim.period.exponent};\n`;
+        SC += `\t\t${port.name} <= '${stim.high_value}';\n`;
+        SC += `\t\twait for ${(stim.period.mantissa * stim.duty_cycle) / 100} ${
+          stim.period.exponent
+        };\n`;
       } else {
-        SC += `\t\t${port.name} <= '${port.stimulus.high_value}';\n`;
+        SC += `\t\t${port.name} <= '${stim.high_value}';\n`;
+        SC += `\t\twait for ${(stim.period.mantissa * stim.duty_cycle) / 100} ${
+          stim.period.exponent
+        };\n`;
+        SC += `\t\t${port.name} <= '${stim.low_value}';\n`;
         SC += `\t\twait for ${
-          (port.stimulus.period.mantissa * port.stimulus.duty_cycle) / 100
-        } ${port.stimulus.period.exponent};\n`;
-        SC += `\t\t${port.name} <= '${port.stimulus.low_value}';\n`;
-        SC += `\t\twait for ${
-          (port.stimulus.period.mantissa * (100 - port.stimulus.duty_cycle)) /
-          100
-        } ${port.stimulus.period.exponent};\n`;
+          (stim.period.mantissa * (100 - stim.duty_cycle)) / 100
+        } ${stim.period.exponent};\n`;
       }
       SC += "\tend process;\n\n";
       return SC;
     }
 
-    static generateHotKey(port: GeneratorPort) {
-      if (port.stimulus.stimulus_type !== "HotKey") throw "Wrong stimulus type";
+    static generateHotKey(port: GeneratorPort, stim: GeneratorHotkeyStymulus) {
+      if (stim.stimulus_type !== "HotKey") throw "Wrong stimulus type";
       let cumSumTime = 0;
       let SHK = `-- HotKey stimulus for ${port.name}\n`;
-      SHK += `\t${port.name}_process: process\n`;
+      SHK += `\tanton${process_id++}_process: process\n`;
       SHK += `\tbegin\n`;
-      port.stimulus.time_line.forEach((time_line, index) => {
+      stim.time_line.forEach((time_line, index) => {
         //опасный момент - если несоблюден порядок по неубыванию времени в записях об изменении time_line, то
         //при вычислении задержки в очередном wait будет получено отрицательное значение и невозмножность отработать
 
@@ -274,13 +235,13 @@ class TestbenchGenerator {
       SHK += "\tend process;\n\n";
       return SHK;
     }
-    static generateConst(port: GeneratorPort) {
-      if (port.stimulus.stimulus_type !== "Const") throw "Wrong stimulus type";
+    static generateConst(port: GeneratorPort, stim: GeneratorConstStymulus) {
+      if (stim.stimulus_type !== "Const") throw "Wrong stimulus type";
       let code = `-- Const stimulus for ${port.name}\n`;
-      code += `\t${port.name}_process: process\n`;
+      code += `\tanton${process_id++}_process: process\n`;
       code += `\tbegin\n`;
 
-      code += `\t\t${port.name} <= '${port.stimulus.value}';\n`;
+      code += `\t\t${port.name} <= '${stim.value}';\n`;
       code += `\t\twait;\n`;
       code += "\t-- stopping the process forever\n\t\twait;\n";
       code += "\tend process;\n\n";
@@ -293,5 +254,5 @@ class TestbenchGenerator {
 /* end TestbenchGenerator declaration */
 
 // const data = JSON.parse(jsonExample);
-let TB = new TestbenchGenerator(jsonExample);
-console.log(TB.vhdl);
+//let TB = new TestbenchGenerator(jsonExample);
+//console.log(TB.vhdl);

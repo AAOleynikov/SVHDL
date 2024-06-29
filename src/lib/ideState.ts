@@ -9,11 +9,14 @@ import {
 import { ParsedVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
-import { ConstStymulus, Stymulus } from "@/testbench_generator/stymulus";
-import { assert } from "@vueuse/core";
-import { parseRange } from "@/lib/measureUnits";
-import { ValidationResultFromServer, validate } from "./serverWorks";
+import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
+import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
 import { useConsoleStore } from "@/stores/console";
+import {
+  CodeGeneratorData,
+  GeneratorStymulus,
+  TestbenchGenerator,
+} from "@/testbench_generator/gen";
 
 export type Screen = "vhdl" | "stymulus" | "waveform";
 
@@ -39,7 +42,7 @@ export class StymulusConfig {
   topLevelFile?: ParsedVhdlFile;
   topLevelEntity?: ParsedEntity;
   isOutdated: boolean;
-  stymulusList: Map<string, Stymulus>;
+  stymulusList: Map<string, GeneratorStymulus>;
   constructor(ide_state: IDEState, project: Project) {
     this.ide_state = ide_state;
     this.project = project;
@@ -116,13 +119,18 @@ export class StymulusConfig {
           if (port.type.startsWith("std_logic_vector")) {
             const diap = parseRange(port.type);
             for (let index of diap) {
-              this.stymulusList.set(
-                port.name + `(${index})`,
-                new ConstStymulus("0")
-              );
+              this.stymulusList.set(port.name + `(${index})`, {
+                stimulus_type: "Const",
+                value: "0",
+                nameOfTarget: port.name + `(${index})`,
+              });
             }
           } else {
-            this.stymulusList.set(port.name, new ConstStymulus("0"));
+            this.stymulusList.set(port.name, {
+              stimulus_type: "Const",
+              value: "0",
+              nameOfTarget: port.name,
+            });
           }
         }
       }
@@ -163,6 +171,8 @@ export class IDEState {
   simulationState?: SimulationState;
   isLoading: boolean = false;
   consoleStore: ReturnType<typeof useConsoleStore>;
+  vcd: string = "";
+  curSTime: number;
 
   isEverythingSaved() {
     return (
@@ -192,6 +202,7 @@ export class IDEState {
     const data = JSON.parse(localStorage.getItem("IDEState") || "{}");
 
     ide_state.activeScreen = data.activeScreen ?? "vhdl";
+    if (ide_state.activeScreen === "waveform") ide_state.activeScreen = "vhdl";
 
     if (data.activeProjectName) {
       ide_state.setProjectActive(data.activeProjectName);
@@ -294,5 +305,51 @@ export class IDEState {
   }
   updateStymulusState() {
     this.stymulusState = new StymulusConfig(this, this.activeProject);
+  }
+  startSimulation(firstStepSize: Time) {
+    this.curSTime = timeToFs(firstStepSize);
+    const stims: GeneratorStymulus[] = [];
+    this.stymulusState.stymulusList.forEach((a) => {
+      stims.push(a);
+    });
+    console.log(stims);
+    const genData: CodeGeneratorData = {
+      header_declaration: "library ieee;\nuse ieee.std_logic_1164.all;",
+      entity: {
+        name: this.stymulusState.topLevelEntity.name,
+        ports: this.stymulusState.topLevelEntity.ports.map((a) => {
+          return {
+            name: a.name,
+            sub_type: a.mode,
+            type: a.type
+              .replace("to", " to ")
+              .replace("downto", " downto ")
+              .replace("std_logic_vec to r", "std_logic_vector"),
+          };
+        }),
+      },
+      architectures: [],
+      preferred_arch_name: this.stymulusState.topLevelEntity.name + "_tb",
+      stimulus: stims,
+    };
+    const tbGen = new TestbenchGenerator(genData);
+    const fileCode = tbGen.vhdl;
+    const filesToServak = this.activeProject.files.map((a) => {
+      return { fileName: a.name, fileContent: a.code };
+    });
+    filesToServak.push({ fileName: "testbench.vhdl", fileContent: fileCode });
+    simulate(
+      {
+        files: filesToServak,
+        simTimeFs: this.curSTime,
+        topLevelEntity: this.stymulusState.topLevelEntity.name + "_tb",
+      },
+      this
+    );
+  }
+  finishSimulation(data: any) {
+    console.log(data);
+    this.vcd = data.vcd;
+    this.activeScreen = "waveform";
   }
 }

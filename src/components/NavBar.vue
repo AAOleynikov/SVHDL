@@ -36,6 +36,13 @@ watch(screen, (newValue, oldValue) => {
   if (ide_state.value.activeScreen !== newScr)
     ide_state.value.activeScreen = newScr;
 });
+
+watch(
+  () => ide_state.value.activeScreen,
+  () => {
+    screen.value = ide_state.value.activeScreen;
+  }
+);
 </script>
 
 <template>
