@@ -1,6 +1,6 @@
 ![RK6](https://github.com/AAOleynikov/MVHDL/assets/157613831/19e7d8c5-7ebb-46ea-9561-be825d3d8943)
 
-# SVHDL - simple VHDL runner for BMSTU RK6 electrical engineering course
+# SVHDL - simple VHDL runner for RK6 electrical engineering course
 
 Основные возможности SVHDL:
 
