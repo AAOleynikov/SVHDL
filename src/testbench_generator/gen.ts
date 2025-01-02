@@ -92,12 +92,12 @@ export class TestbenchGenerator {
   }
 
   private generateHeader(): string {
-    let TBH = `-- This VHDL TESTBENCH code is generated automatically by\n-- ${metaDataForHeader}\n\n${this.config.header_declaration}\n\n`;
+    const TBH = `-- This VHDL TESTBENCH code is generated automatically by\n-- ${metaDataForHeader}\n\n${this.config.header_declaration}\n\n`;
     return TBH;
   }
 
   private generateEntity(): string {
-    let TBE = `entity ${this.config.entity.name}_tb is\nend ${this.config.entity.name}_tb;\n\n`;
+    const TBE = `entity ${this.config.entity.name}_tb is\nend ${this.config.entity.name}_tb;\n\n`;
     return TBE;
   }
 

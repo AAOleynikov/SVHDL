@@ -3,7 +3,6 @@ import { IDEState } from "@/lib/ideState";
 import { ProjectFile } from "@/lib/projectSystem";
 import { ref, onMounted, reactive, watch, onUnmounted } from "vue";
 import { editor, worker } from "monaco-editor";
-import { mode } from "d3";
 
 const props = defineProps({ modelValue: { type: IDEState, required: true } });
 const emit = defineEmits(["update:modelValue"]);

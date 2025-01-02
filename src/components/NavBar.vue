@@ -48,12 +48,17 @@ watch(
 <template>
   <nav>
     <div
-      class="flex flex-row justify-between align-middle p-4 bg-slate-300 fixed w-screen min-w-screen"
+      class="flex flex-row justify-between align-middle p-4 fixed w-screen min-w-screen"
       style="
         height: 70px;
         max-height: 70px;
         border-bottom: 2px solid;
         border-bottom-color: gray;
+        background: linear-gradient(
+          0deg,
+          rgba(180, 180, 180, 1) 0%,
+          rgba(196, 196, 196, 1) 100%
+        );
       ">
       <div class="flex flex-row gap-3 items-center">
         <img
@@ -85,7 +90,7 @@ watch(
         defaultValue="account"
         className="w-[600px]"
         v-model:model-value="screen">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 h-full">
           <TabsTrigger value="vhdl"
             ><i class="bi-code-slash pr-2"></i> VHDL code editing</TabsTrigger
           >
