@@ -39,7 +39,7 @@
 */
 
 //Подключение заголовочных файлов, связанных c antlr4
-import antlr4 from "antlr4";
+import { ParseTreeListener, ParseTreeWalker, CommonTokenStream, InputStream} from "antlr4";
 import vhdlLexer from "./build/vhdlLexer";
 import vhdlParser from "./build/vhdlParser";
 import vhdlParserListener from "./build/vhdlParserListener";
@@ -48,10 +48,9 @@ import {
   ParsedArchitecture,
   ParsedEntity,
 } from "@/lib/parsedFile";
-const { CommonTokenStream, InputStream } = antlr4;
 
 //перегружаем стандартные методы класса Listener для обработки
-export default class SVHDLListener extends vhdlParserListener {
+export default class SVHDLListener extends vhdlParserListener implements ParseTreeListener {
   vhdlFileTop: ParsedVhdlFile;
   constructor(_vhdlFileTop) {
     super();
@@ -63,12 +62,12 @@ export default class SVHDLListener extends vhdlParserListener {
       ctx.children[1].getText(),
       this.vhdlFileTop.fileName
     ); //entity decl with entity decl
-    var count_of_ports_strings = ctx
+    const count_of_ports_strings = ctx
       .port_clause()
       .port_list()
       .interface_list()
       .interface_element().length;
-    for (var i = 0; i < count_of_ports_strings; i++) {
+    for (let i = 0; i < count_of_ports_strings; i++) {
       const count_of_ports_in_string = ctx
         .port_clause()
         .port_list()
@@ -78,7 +77,7 @@ export default class SVHDLListener extends vhdlParserListener {
         .interface_object_declaration()
         .interface_signal_declaration()
         .identifier_list().children.length;
-      for (var j = 0; j < count_of_ports_in_string; j += 2) {
+      for (let j = 0; j < count_of_ports_in_string; j += 2) {
         const port_name = ctx
           .port_clause()
           .port_list()
@@ -116,9 +115,9 @@ export default class SVHDLListener extends vhdlParserListener {
   }
 
   exitContext_item(ctx) {
-    var text_with_sep = "";
-    var count_of_tokens = ctx.children[0].children.length;
-    for (var i = 0; i < count_of_tokens; i++)
+    let text_with_sep = "";
+    const count_of_tokens = ctx.children[0].children.length;
+    for (let i = 0; i < count_of_tokens; i++)
       text_with_sep += ctx.children[0].children[i].getText() + " ";
     this.vhdlFileTop.setHeader(text_with_sep);
   }
@@ -129,8 +128,8 @@ export default class SVHDLListener extends vhdlParserListener {
       ctx.children[1].getText(),
       ctx.children[3].getText()
     );
-    var count_of_gramm = ctx.block_declarative_item().length;
-    for (var i = 0; i < count_of_gramm; i++) {
+    const count_of_gramm = ctx.block_declarative_item().length;
+    for (let i = 0; i < count_of_gramm; i++) {
       if (
         ctx
           .block_declarative_item()
@@ -138,10 +137,10 @@ export default class SVHDLListener extends vhdlParserListener {
           .slice(0, 6)
           .toLowerCase() == "signal"
       ) {
-        var signals_count =
+        const signals_count =
           ctx.block_declarative_item()[i].children[0].children[0].children[1]
             .children.length;
-        for (var j = 0; j < signals_count; j += 2) {
+        for (let j = 0; j < signals_count; j += 2) {
           new_architecture.appendSignal(
             ctx
               .block_declarative_item()
@@ -155,20 +154,24 @@ export default class SVHDLListener extends vhdlParserListener {
     }
     this.vhdlFileTop.appendArchitecture(new_architecture);
   }
+  visitTerminal() {}
+  visitErrorNode() {}
+  enterEveryRule() {}
+  exitEveryRule() {}
 }
 
 export function processCode(input: string, fileName: string) {
   //В этот объект будет записана вся распаршенная информация
   const vhdlFileTop = new ParsedVhdlFile(fileName);
 
-  var chars = new InputStream(input, true);
-  var lexer = new vhdlLexer(chars);
-  var tokens = new CommonTokenStream(lexer);
-  var parser = new vhdlParser(tokens);
+  const chars = new InputStream(input, true);
+  const lexer = new vhdlLexer(chars);
+  const tokens = new CommonTokenStream(lexer);
+  const parser = new vhdlParser(tokens);
   parser.buildParseTrees = true;
-  var tree = parser.design_file();
-  var listener = new SVHDLListener(vhdlFileTop);
-  antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree); // На ошибку похуй
+  const tree = parser.design_file();
+  const listener = new SVHDLListener(vhdlFileTop);
+  ParseTreeWalker.DEFAULT.walk(listener, tree); // На ошибку похуй
 
   // //установка стимулятора в виде частотного генератора для сигнала K
   // vhdlFileTop.setStimulusClock("K", 10, 0, 1, "low_value", 50);

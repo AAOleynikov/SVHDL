@@ -1,11 +1,5 @@
 import { ProjectStorage, Project, ProjectFile } from "./projectSystem";
-import {
-  ParsedVhdlFile,
-  ParsedArchitecture,
-  ParsedEntity,
-  ParsedSignal,
-  ParsedProject,
-} from "./parsedFile";
+import { ParsedVhdlFile, ParsedEntity, ParsedProject } from "./parsedFile";
 import { ParsedVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
@@ -25,7 +19,7 @@ export class ToastMessage {
   text?: string;
   type: "warning" | "error" | "success" | "info" = "info";
   buttonText?: string;
-  buttonCallback?: Function;
+  buttonCallback?: () => void;
 }
 
 type StymulusConfigJson = {
@@ -86,7 +80,7 @@ export class StymulusConfig {
   }
   updateParsing() {
     this.parsingResult = new ParsedProject();
-    for (let file of this.project.files) {
+    for (const file of this.project.files) {
       this.parsingResult.addFile(processCode(file.code, file.name));
     }
     try {
@@ -114,11 +108,11 @@ export class StymulusConfig {
   updateStymulusList() {
     this.stymulusList = new Map();
     if (this.topLevelEntity !== undefined) {
-      for (let port of this.topLevelEntity.ports) {
+      for (const port of this.topLevelEntity.ports) {
         if (port.mode == "in") {
           if (port.type.startsWith("std_logic_vector")) {
             const diap = parseRange(port.type);
-            for (let index of diap) {
+            for (const index of diap) {
               this.stymulusList.set(port.name + `(${index})`, {
                 stimulus_type: "Const",
                 value: "0",
@@ -170,7 +164,6 @@ export class IDEState {
   stymulusState?: StymulusConfig;
   simulationState?: SimulationState;
   isLoading: boolean = false;
-  consoleStore: ReturnType<typeof useConsoleStore>;
   vcd: string = "";
   curSTime: number;
 
@@ -182,7 +175,6 @@ export class IDEState {
   }
 
   constructor() {
-    this.consoleStore = useConsoleStore();
   }
   /** Сохраняет только состояние IDE, не сохраняет файлы! */
   saveToLocalStorage() {
@@ -282,22 +274,22 @@ export class IDEState {
     validate(this.activeProject, this);
   }
   finishCompilation(result: ValidationResultFromServer) {
-    console.log("asdfaddfsafadsfsdafsdafdsaafds");
+    const console = useConsoleStore();
     if (result !== undefined) {
       if (result.success) {
-        this.consoleStore.clearConsole();
+        console.clearConsole();
         this.addToastMessage({
           type: "success",
           title: "Compilation successful",
         });
       } else {
-        this.consoleStore.setConsoleText(result.errors.join("\n"));
+        console.setConsoleText(result.errors.join("\n"));
         this.addToastMessage({
           type: "error",
           title: "Compilation error",
           buttonText: "Open console",
           buttonCallback: () => {
-            this.consoleStore.openConsole();
+            console.openConsole();
           },
         });
       }
@@ -347,8 +339,7 @@ export class IDEState {
       this
     );
   }
-  finishSimulation(data: any) {
-    console.log(data);
+  finishSimulation(data: { vcd: string }) {
     this.vcd = data.vcd;
     this.activeScreen = "waveform";
   }

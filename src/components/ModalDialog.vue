@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DefineProps, defineEmits } from "vue";
+import { defineEmits } from "vue";
 import {
   DialogClose,
   DialogContent,
@@ -8,11 +8,11 @@ import {
   DialogPortal,
   DialogRoot,
   DialogTitle,
-  DialogTrigger,
 } from "radix-vue";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Button from "./ui/button/Button.vue";
+
 export type ModalDialogState = {
   isOpened: boolean;
   title: string;
@@ -48,9 +48,9 @@ const clickCallback = () => {
         </DialogTitle>
         <DialogDescription class="mt-[10px] mb-5 text-[15px] leading-normal">
           <Alert
+            v-if="dialogState.type == 'yesno'"
             variant="destructive"
-            class="flex flex-row gap-4"
-            v-if="dialogState.type == 'yesno'">
+            class="flex flex-row gap-4">
             <i class="bi-x-circle text-4xl"></i>
             <div>
               <AlertTitle>Be careful!</AlertTitle>
@@ -60,16 +60,16 @@ const clickCallback = () => {
         </DialogDescription>
 
         <Input
-          v-model="dialogState.inputValue"
           v-if="dialogState.type == 'input'"
-          @keyup.enter="clickCallback"
-          class="mb-8" />
+          v-model="dialogState.inputValue"
+          class="mb-8"
+          @keyup.enter="clickCallback" />
 
         <div class="mt-2 flex justify-end gap-5">
           <DialogClose>
             <Button
-              @click="clickCallback"
-              :variant="dialogState.type == 'yesno' ? 'destructive' : ''">
+              :variant="dialogState.type == 'yesno' ? 'destructive' : ''"
+              @click="clickCallback">
               <i class="bi-check-lg font-bold mr-1"></i>Ok
             </Button>
           </DialogClose>

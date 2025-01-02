@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from "vue";
 import FileTree from "@/components/FileTree.vue";
 import {
   ResizableHandle,
@@ -28,8 +27,12 @@ const ide_state = defineModel<IDEState>({ required: true });
         <Button @click="ide_state.discardAll()">Discard changes</Button>
         <Button @click="ide_state.compile()">Compile</Button>
         <Button
-          @click="()=>{ide_state.consoleStore.openConsole()}"
           :disabled="!consoleStore.isConsoleAvailable"
+          @click="
+            () => {
+              consoleStore.openConsole();
+            }
+          "
           >Console</Button
         >
         <div><FileTree v-model="ide_state" /></div>

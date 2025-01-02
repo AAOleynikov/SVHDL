@@ -16,10 +16,12 @@ export const useConsoleStore = defineStore("console", {
       this.isConsoleOpened = false;
     },
     clearConsole() {
+      this.consoleText = "";
       this.isConsoleAvailable = false;
     },
     openConsole() {
       this.isConsoleOpened = true;
+      console.log("Opening console!", this);
     },
   },
 });

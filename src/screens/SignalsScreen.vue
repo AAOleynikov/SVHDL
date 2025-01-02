@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref } from "vue";
 import SignalWizard from "@/components/SignalWizard.vue";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import TimeInput from "@/components/TimeInput.vue";
-import { ParsedVhdlFile } from "@/lib/parsedFile";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -36,10 +33,11 @@ const firstStepTime = ref<Time>({ mantissa: 100, exponent: "ns" });
       <TableBody>
         <template v-if="ide_state.stymulusState.stymulusList !== undefined">
           <template
-            v-for="entry of ide_state.stymulusState.stymulusList.entries()">
+            v-for="entry of ide_state.stymulusState.stymulusList.entries()"
+            :key="entry[0]">
             <TableRow>
-              <TableCell className="font-medium">in</TableCell>
-              <TableCell className="font-medium">{{ entry[0] }}</TableCell>
+              <TableCell class-name="font-medium">in</TableCell>
+              <TableCell class-name="font-medium">{{ entry[0] }}</TableCell>
               <TableCell>std_logic</TableCell>
               <TableCell
                 ><SignalWizard
