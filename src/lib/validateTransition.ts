@@ -1,6 +1,6 @@
 /** Определить, имеет ли право пользователь переходить между вкладками. Выдать ошибку, если не имеет */
 
-import { useConsoleStore } from "@/stores/console";
+import { useUIStore } from "@/stores/ui";
 import { IDEState, Screen } from "./ideState";
 
 /** @returns экран, на который перебросить пользователя */
@@ -56,14 +56,14 @@ export function validateTransition(
       });
       return "vhdl";
     }
-    if (useConsoleStore().isConsoleAvailable === true) {
+    if (useUIStore().console.isConsoleAvailable === true) {
       ide_state.addToastMessage({
         title: "Compilation failed",
         type: "error",
         text: "Before setting up stymulus, compilation should be successful",
         buttonText: "Open console",
         buttonCallback: () => {
-          useConsoleStore().openConsole();
+          useUIStore().openConsole();
         },
       });
       return "vhdl";

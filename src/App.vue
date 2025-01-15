@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useConsoleStore } from "./stores/console";
+import { useUIStore } from "./stores/ui";
 
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());
@@ -35,7 +35,7 @@ ide_state.activeScreen = validateTransition(
   ide_state.activeScreen
 );
 
-const consoleStore = useConsoleStore();
+const consoleStore = useUIStore();
 </script>
 
 <template>

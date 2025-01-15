@@ -9,9 +9,9 @@ import Button from "@/components/ui/button/Button.vue";
 import Editor from "@/components/Editor.vue";
 import { IDEState } from "@/lib/ideState";
 
-import { useConsoleStore } from "@/stores/console";
+import { useUIStore } from "@/stores/ui";
 
-const consoleStore = useConsoleStore();
+const consoleStore = useUIStore();
 
 const ide_state = defineModel<IDEState>({ required: true });
 </script>

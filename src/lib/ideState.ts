@@ -1,11 +1,16 @@
 import { ProjectStorage, Project, ProjectFile } from "./projectSystem";
-import { ParsedVhdlFile, ParsedEntity, ParsedProject } from "./parsedFile";
+import {
+  ParsedVhdlFile,
+  ParsedEntity,
+  ParsedProject,
+  ParsedFileJson,
+} from "./parsedFile";
 import { ParsedVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
 import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
 import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
-import { useConsoleStore } from "@/stores/console";
+import { useUIStore } from "@/stores/ui";
 import {
   CodeGeneratorData,
   GeneratorStymulus,
@@ -14,16 +19,16 @@ import {
 
 export type Screen = "vhdl" | "stymulus" | "waveform";
 
-export class ToastMessage {
+export interface ToastMessage {
   title: string;
   text?: string;
-  type: "warning" | "error" | "success" | "info" = "info";
+  type: "warning" | "error" | "success" | "info";
   buttonText?: string;
   buttonCallback?: () => void;
 }
 
 type StymulusConfigJson = {
-  parsingResult: any;
+  parsingResult: ParsedFileJson[];
   topLevelFileName?: string;
   topLevelEntityName?: string;
   isOutdated: boolean;
@@ -141,16 +146,10 @@ export class StymulusConfig {
 }
 
 /** Состояние симуляции */
-export class SimulationState {
+export interface SimulationState {
   waveform: ParsedVCD;
   currentTime: number;
-  hotkeyEvents: any[];
-  static loadFromLocalStorage(
-    projectStorage: ProjectStorage,
-    projectName: string
-  ): SimulationState | undefined {
-    return undefined;
-  }
+  hotkeyEvents: unknown[];
 }
 
 export class IDEState {
@@ -174,8 +173,7 @@ export class IDEState {
     );
   }
 
-  constructor() {
-  }
+  constructor() {}
   /** Сохраняет только состояние IDE, не сохраняет файлы! */
   saveToLocalStorage() {
     localStorage.setItem(
@@ -208,12 +206,10 @@ export class IDEState {
     return ide_state;
   }
   setProjectActive(projectName: string) {
-    this.activeProject = this.projectStorage.getProjectByName(projectName);
-    this.simulationState = SimulationState.loadFromLocalStorage(
-      this.projectStorage,
-      projectName
-    );
-    this.stymulusState = new StymulusConfig(this, this.activeProject);
+    const proj = this.projectStorage.projects.find((a) => {
+      return a.name === projectName;
+    });
+    this.activeProject = proj;
   }
   addToastMessage(message: ToastMessage) {
     const data: any = {};
@@ -244,7 +240,7 @@ export class IDEState {
       });
   }
   discardAll() {
-    this.projectStorage = ProjectStorage.loadFromLocalStorage();
+    this.projectStorage = new ProjectStorage();
     const activeFileName = this.activeFile.name;
     this.setProjectActive(this.activeProject.name);
     this.setActiveFile(activeFileName);
@@ -253,7 +249,6 @@ export class IDEState {
   }
   setActiveFile(name: string) {
     this.activeFile = this.activeProject.getFileByName(name);
-    console.log(this.activeFile);
   }
   compile() {
     if (!this.isEverythingSaved()) {
@@ -274,7 +269,7 @@ export class IDEState {
     validate(this.activeProject, this);
   }
   finishCompilation(result: ValidationResultFromServer) {
-    const console = useConsoleStore();
+    const console = useUIStore();
     if (result !== undefined) {
       if (result.success) {
         console.clearConsole();

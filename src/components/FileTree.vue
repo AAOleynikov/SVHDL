@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, defineProps, reactive, watch, ref, computed } from "vue";
-import { Project, ProjectFile, ProjectStorage } from "@/lib/projectSystem";
+import { reactive, computed } from "vue";
+import { Project, ProjectFile } from "@/lib/projectSystem";
 import { IDEState } from "@/lib/ideState";
 import Tree, { MenuAction, TreeData } from "./Tree.vue";
 import ModalDialog, { DialogParams, ModalDialogState } from "./ModalDialog.vue";
@@ -64,7 +64,7 @@ const treeData = computed<TreeData>(() => {
     icon: "bi-archive",
     children: [],
   };
-  for (let proj of ide_state.value.projectStorage.projects) {
+  for (const proj of ide_state.value.projectStorage.projects) {
     const projectData: TreeData = {
       title: proj.name,
       key: { type: "project", assocObj: proj },
@@ -72,7 +72,7 @@ const treeData = computed<TreeData>(() => {
     if (proj == ide_state.value.activeProject) {
       projectData.isBold = true;
       projectData.children = [];
-      for (let file of proj.files) {
+      for (const file of proj.files) {
         const fileData: TreeData = {
           title: file.name,
           key: { type: "file", assocObj: file },
@@ -82,37 +82,42 @@ const treeData = computed<TreeData>(() => {
         fileData.icon = "bi-file-earmark";
         if (file == ide_state.value.activeFile) {
           fileData.badges.push("bi-pen");
-          const parsedAnalog =
-            ide_state.value.stymulusState.parsingResult.vhdlFiles.find((a) => {
-              return a.fileName == file.name;
-            });
-          if (parsedAnalog) {
-            fileData.children = [];
-            for (let entity of parsedAnalog.entities) {
-              const entityData: TreeData = {
-                title: entity.name,
-                key: { type: "entity", assocObj: entity },
-                icon: "bi-explicit",
-              };
-              console.log("ide_state", ide_state.value);
-              if (
-                ide_state.value.stymulusState &&
-                ide_state.value.stymulusState.topLevelFile &&
-                entity.fileName ==
-                  ide_state.value.stymulusState.topLevelFile.fileName &&
-                entity.name == ide_state.value.stymulusState.topLevelEntity.name
-              ) {
-                entityData.icon = "bi-explicit-fill";
+          if (ide_state.value.stymulusState !== undefined) {
+            const parsedAnalog =
+              ide_state.value.stymulusState.parsingResult.vhdlFiles.find(
+                (a) => {
+                  return a.fileName == file.name;
+                }
+              );
+            if (parsedAnalog) {
+              fileData.children = [];
+              for (const entity of parsedAnalog.entities) {
+                const entityData: TreeData = {
+                  title: entity.name,
+                  key: { type: "entity", assocObj: entity },
+                  icon: "bi-explicit",
+                };
+                console.log("ide_state", ide_state.value);
+                if (
+                  ide_state.value.stymulusState &&
+                  ide_state.value.stymulusState.topLevelFile &&
+                  entity.fileName ==
+                    ide_state.value.stymulusState.topLevelFile.fileName &&
+                  entity.name ==
+                    ide_state.value.stymulusState.topLevelEntity.name
+                ) {
+                  entityData.icon = "bi-explicit-fill";
+                }
+                fileData.children.push(entityData);
               }
-              fileData.children.push(entityData);
-            }
-            for (let arch of parsedAnalog.architectures) {
-              const entityData: TreeData = {
-                title: arch.name,
-                key: { type: "architecture", assocObj: arch },
-                icon: "bi-amazon",
-              };
-              fileData.children.push(entityData);
+              for (const arch of parsedAnalog.architectures) {
+                const entityData: TreeData = {
+                  title: arch.name,
+                  key: { type: "architecture", assocObj: arch },
+                  icon: "bi-amazon",
+                };
+                fileData.children.push(entityData);
+              }
             }
           }
         }
