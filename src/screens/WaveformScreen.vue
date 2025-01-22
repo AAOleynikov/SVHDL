@@ -152,24 +152,24 @@ watch(x, () => {
         </div>
         <div class="max-width-0">
           <div
-            class="fixed w-[3px] min-w-[3px] bg-gray-700 h-screen cursor-ew-resize"
-            ref="labelsResizeGrip"></div>
+            ref="labelsResizeGrip"
+            class="fixed w-[3px] min-w-[3px] bg-gray-700 h-screen cursor-ew-resize"></div>
         </div>
         <div
           class="min-h-full bg-green-200"
           style="width: 3px; min-width: 3px"></div>
         <div
-          class="min-h-full max-h-full bg-white"
           ref="plotsSection"
+          class="min-h-full max-h-full bg-white"
           :style="{ 'min-width': 300 + 'px' }">
-          <div class="overflow-x-scroll" ref="plotsScrollControlDiv">
+          <div ref="plotsScrollControlDiv" class="overflow-x-scroll">
             <div
               :style="{
                 'min-width': plotsPlaceholderWidth + 'px',
                 height: 1 + 'px',
               }"></div>
           </div>
-          <TimeScale :scaleData="scaleData" />
+          <TimeScale :scale-data="scaleData" />
         </div>
       </div>
     </div>
@@ -182,7 +182,7 @@ watch(x, () => {
           width: scaleData.labelsWidth + 'px',
           'min-width': scaleData.labelsWidth + 'px',
         }">
-        <template v-for="ddd of displayState">
+        <template v-for="(ddd, idx) of displayState" :key="idx">
           <WfLabel
             :data="ddd"
             @fold="
@@ -201,14 +201,14 @@ watch(x, () => {
       <div
         class="min-h-full max-h-full w-full bg-white"
         :style="{ 'min-width': 300 + 'px' }">
-        <template v-for="ddd of displayState">
+        <template v-for="(ddd, idx) of displayState" :key="idx">
           <div
-            class="bg-white min-h-[40px] w-full min-w-full"
-            v-if="ddd.type === 'scope'"></div>
+            v-if="ddd.type === 'scope'"
+            class="bg-white min-h-[40px] w-full min-w-full"></div>
           <WfPlot
-            :scaleData="scaleData"
-            :waveformData="ddd.data"
-            v-if="ddd.type === 'bit'" />
+            v-if="ddd.type === 'bit'"
+            :scale-data="scaleData"
+            :waveform-data="ddd.data" />
         </template>
       </div>
     </div>

@@ -1,11 +1,4 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   Popover,
   PopoverContent,
@@ -15,17 +8,16 @@ import Button from "../ui/button/Button.vue";
 import TooltipButton from "./TooltipButton.vue";
 import Separator from "../ui/separator/Separator.vue";
 import Label from "../ui/label/Label.vue";
-import Input from "../ui/input/Input.vue";
 import TimeInput from "../TimeInput.vue";
 </script>
 
 <template>
   <span>Viewport: 100ns</span>
   <Popover>
-    <PopoverTrigger asChild>
+    <PopoverTrigger as-child>
       <TooltipButton icon="bi-pencil" tooltip="Edit scale" />
     </PopoverTrigger>
-    <PopoverContent className="w-72">
+    <PopoverContent class-name="w-72">
       <div class="flex flex-col items-center align-baseline">
         <div class="flex flex-row justify-around w-full">
           <TooltipButton icon="bi-zoom-in" tooltip="Zoom in" />

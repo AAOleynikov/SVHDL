@@ -9,24 +9,19 @@ import { Toaster } from "@/components/ui/sonner";
 import { validateTransition } from "./lib/validateTransition";
 import WaveformScreen from "./screens/WaveformScreen.vue";
 import Loading from "vue-loading-overlay";
-import SimulationControl from "./components/waveform/SimulationControl.vue";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useUIStore } from "./stores/ui";
 
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());
-watch(ide_state, (newO, oldO) => {
+watch(ide_state, () => {
   if (persistencyTimerId.value === undefined) {
     persistencyTimerId.value = setTimeout(() => {
       ide_state.saveToLocalStorage();
@@ -39,19 +34,21 @@ ide_state.activeScreen = validateTransition(
   ide_state.activeScreen,
   ide_state.activeScreen
 );
+
+const consoleStore = useUIStore();
 </script>
 
 <template>
   <div
-    class="fixed z-50 w-full h-full"
     v-if="ide_state.isLoading"
+    class="fixed z-50 w-full h-full"
     style="background-color: rgba(0, 0, 0, 0.5)">
     <div class="flex justify-center items-center h-full">
       <loading :active="true" :can-cancel="true" :is-full-page="true" />
     </div>
   </div>
   <div class="h-screen max-h-screen flex flex-col">
-    <NavBar v-model="ide_state" :persTimer="persistencyTimerId" />
+    <NavBar v-model="ide_state" :pers-timer="persistencyTimerId" />
     <div class="pt-[70px] w-full box-border h-full max-h-full">
       <template v-if="ide_state.activeScreen == 'vhdl'">
         <EditorScreen v-model="ide_state" />
@@ -64,13 +61,13 @@ ide_state.activeScreen = validateTransition(
       </template>
     </div>
   </div>
-  <Toaster richColors closeButton />
+  <Toaster rich-colors close-button />
   <Dialog
     class="w-half min-w-half"
-    :open="ide_state.consoleStore.isConsoleOpened"
+    :open="consoleStore.isConsoleOpened"
     @update:open="
       () => {
-        ide_state.consoleStore.closeConsole();
+        consoleStore.closeConsole();
       }
     ">
     <DialogContent>
@@ -82,7 +79,7 @@ ide_state.activeScreen = validateTransition(
       </DialogHeader>
       <div class="bg-black min-w-full">
         <span class="monospaceFont text-lime-400">
-          {{ ide_state.consoleStore.consoleText }}
+          {{ consoleStore.consoleText }}
         </span>
       </div>
     </DialogContent>

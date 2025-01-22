@@ -7,7 +7,7 @@ export const useNotificationStore = defineStore("notification", {
   }),
 
   actions: {
-    openDialog(text) {
+    openDialog(text: string) {
       this.isDialogOpened = true;
       this.dialogText = text;
     },

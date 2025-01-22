@@ -1,7 +1,6 @@
 /* В этом файле находятся классы персистентных состояний IDE, которые хранятся в LocalStorage и влияют
 на результат симуляции (потеря которых будет означать потерю пользовательских данных)  */
 
-import { Stymulus } from "@/testbench_generator/stymulus";
 import { ParsedEntity, ParsedVhdlFile } from "./parsedFile";
 import { ParsedVCD } from "@/vcd_tools/vcd2json";
 import { editor } from "monaco-editor";
@@ -34,8 +33,8 @@ export class ProjectStorage {
   }
   /** Сохранить всё хранилище в LocalStorage */
   saveToLocalStorage() {
-    let data: Object = { projects: [] };
-    for (let proj of this.projects) data["projects"].push(proj.name);
+    const data: object = { projects: [] };
+    for (const proj of this.projects) data["projects"].push(proj.name);
     localStorage.setItem("projectLibrary", JSON.stringify(data));
     for (let proj of this.projects) proj.saveToLocalStorage();
     this.projectSetUpdated = false;
@@ -45,11 +44,11 @@ export class ProjectStorage {
     let ret = false;
     if (this.projectSetUpdated) {
       ret = true;
-      let data: Object = { projects: [] };
+      const data: object = { projects: [] };
       for (let proj of this.projects) data["projects"].push(proj.name);
       localStorage.setItem("projectLibrary", JSON.stringify(data));
     }
-    for (let proj of this.projects) {
+    for (const proj of this.projects) {
       if (proj.isUnsaved) {
         proj.saveToLocalStorage();
         ret = true;
@@ -67,7 +66,7 @@ export class ProjectStorage {
   newProject(name: string) {
     if (
       !this.projects.some((a: Project) => {
-        a.name == name;
+        return a.name === name;
       })
     ) {
       // Если проекта с таким именем не существует
@@ -89,7 +88,7 @@ export class ProjectStorage {
     }
   }
   deleteAllProjects() {
-    for (let proj of this.projects) this.deleteProject(proj.name);
+    for (const proj of this.projects) this.deleteProject(proj.name);
     this.projects = [];
     this.projectSetUpdated = true;
     this.hasUnsavedChanges = true;

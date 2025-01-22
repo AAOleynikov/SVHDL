@@ -24,7 +24,6 @@ import {
   PinInputInput,
 } from "@/components/ui/pin-input";
 import { computed, defineModel } from "vue";
-import { IDEState } from "@/lib/ideState";
 import { ref, watch, reactive } from "vue";
 import TimeInput from "./TimeInput.vue";
 import { Time } from "@/lib/measureUnits";

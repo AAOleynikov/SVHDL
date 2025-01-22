@@ -7,8 +7,8 @@ const props = defineProps<{
   waveformData: VCDSignal;
 }>();
 
-let leftIndex = ref(0); // Индекс последнего события, у которого timestamp не больше props.scaleData.leftBorder
-let rightIndex = ref(props.waveformData.events.length - 1); // Индекс первого события, у которого timestamp не меньше props.scaleData.rightBorder
+const leftIndex = ref(0); // Индекс последнего события, у которого timestamp не больше props.scaleData.leftBorder
+const rightIndex = ref(props.waveformData.events.length - 1); // Индекс первого события, у которого timestamp не меньше props.scaleData.rightBorder
 
 function updateIndex() {
   if (props.waveformData.events.length < 2) {
@@ -82,12 +82,14 @@ const renderData = computed<RenderDataType>(() => {
     } else {
       rightFs = props.waveformData.events[i + 1].timestamp;
     }
+
     const leftX = Math.round((leftFs - props.scaleData.leftBorder) * scale);
     const rightX = Math.round((rightFs - props.scaleData.leftBorder) * scale);
     out.lines.push({ x_from: leftX, x_to: rightX, type: value });
     if (prevEvent != undefined && prevEvent.value != value) {
       out.lineChanges.push({ x_center: rightX });
     }
+
     const textLeftX = Math.max(leftX, 0);
     const textRightX = Math.min(rightX, props.scaleData.plotsSectionWidth);
     if (textRightX - textLeftX > 40) {

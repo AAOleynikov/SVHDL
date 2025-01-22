@@ -7,7 +7,7 @@ import { Time } from "@/lib/measureUnits";
 
 export type ValueType = "0" | "1";
 
-var process_id: number = 0;
+let process_id: number = 0;
 
 export type GeneratorStymulus =
   | GeneratorClockStymulus
@@ -51,7 +51,7 @@ export interface CodeGeneratorData {
   architectures: {
     name: string;
     of: string;
-    signals: any[];
+    signals: unknown[];
   }[];
   stimulus: GeneratorStymulus[];
   preferred_arch_name: string;
@@ -92,12 +92,12 @@ export class TestbenchGenerator {
   }
 
   private generateHeader(): string {
-    let TBH = `-- This VHDL TESTBENCH code is generated automatically by\n-- ${metaDataForHeader}\n\n${this.config.header_declaration}\n\n`;
+    const TBH = `-- This VHDL TESTBENCH code is generated automatically by\n-- ${metaDataForHeader}\n\n${this.config.header_declaration}\n\n`;
     return TBH;
   }
 
   private generateEntity(): string {
-    let TBE = `entity ${this.config.entity.name}_tb is\nend ${this.config.entity.name}_tb;\n\n`;
+    const TBE = `entity ${this.config.entity.name}_tb is\nend ${this.config.entity.name}_tb;\n\n`;
     return TBE;
   }
 
@@ -105,7 +105,7 @@ export class TestbenchGenerator {
     let TBA = `architecture TB_ARCHITECTURE of ${this.config.entity.name}_tb is\n\n`;
     TBA += `-- Component declaration of the tested unit\n\tcomponent ${this.config.entity.name}\n\t\tport (\n`;
     // Объединение портов
-    this.config.entity.ports.forEach((port, index) => {
+    this.config.entity.ports.forEach((port) => {
       TBA += `\t\t\t${port.name} : ${port.sub_type} ${port.type};\n`;
     });
     // Удаление последнего символа ";"
@@ -217,7 +217,7 @@ export class TestbenchGenerator {
       let SHK = `-- HotKey stimulus for ${port.name}\n`;
       SHK += `\tanton${process_id++}_process: process\n`;
       SHK += `\tbegin\n`;
-      stim.time_line.forEach((time_line, index) => {
+      stim.time_line.forEach((time_line) => {
         //опасный момент - если несоблюден порядок по неубыванию времени в записях об изменении time_line, то
         //при вычислении задержки в очередном wait будет получено отрицательное значение и невозмножность отработать
 
