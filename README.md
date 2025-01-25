@@ -1,13 +1,10 @@
-<div style="text-align: center;">
+<div>
     <img src="https://github.com/AAOleynikov/MVHDL/assets/157613831/19e7d8c5-7ebb-46ea-9561-be825d3d8943" alt="RK6" width="200" style="display:inline-block; margin: 5px;">
     <img src="https://github.com/user-attachments/assets/4ed0606c-ab9b-41ca-9151-772399b2e51d" alt="Image 2" width="200" style="display:inline-block; margin: 5px;">
-    <img src="https://github.com/user-attachments/assets/dd397784-c4b8-41d7-855c-de774b87fd15" alt="Image 2" width="355" style="display:inline-block; margin: 5px;">
+    <img src="https://github.com/user-attachments/assets/dd397784-c4b8-41d7-855c-de774b87fd15" alt="Image 3" width="355" style="display:inline-block; margin: 5px;">
 </div>
 
-<div style="text-align: center;" markdown="1">
 # SVHDL - simple web VHDL runner for RK6 electrical engineering course
-</div>
-
 
 ## Основные возможности SVHDL:
 
@@ -59,23 +56,21 @@
 
 `npm run dev`
 
-<div style="text-align: center;" markdown="1">
 # Протокод развития SVHDL
-</div>
 
 ## Глобальные части, которые необходимо реализовать в обязательном порядке:
     
 - [x] Редактор кода.
-- [] Wave-form viewer.
-- [] Сохранение и загрузка проектов.
+- [ ] Wave-form viewer.
+- [ ] Сохранение и загрузка проектов.
 - Testbench генератор:
-	- [] ANTLR4 парсер сущностей и их архитектур.
-	- [] Выбор сущности.
-	- [] Задание входных сигналов.
+	- [ ] ANTLR4 парсер сущностей и их архитектур.
+	- [ ] Выбор сущности.
+	- [ ] Задание входных сигналов.
 
 ## Глобальные части, которые желательно реализовать:
-- [] Подсветка синтаксиса в редакторе кода.
+- [ ] Подсветка синтаксиса в редакторе кода.
 
 ## Пожелания на будущее по реализации:
-- [] Портировать движок nvc на фронт.
-- [] Написать движок на JS для симулирования.
+- [ ] Портировать движок nvc на фронт.
+- [ ] Написать движок на JS для симулирования.
