@@ -4,7 +4,7 @@
     <img src="https://github.com/user-attachments/assets/dd397784-c4b8-41d7-855c-de774b87fd15" alt="Image 3" width="355" style="display:inline-block; margin: 5px;">
 </div>
 
-# SVHDL - simple web VHDL runner for RK6 electrical engineering course
+# SVHDL - Simple web VHDL runner for RK6 electrical engineering course
 
 ## Основные возможности SVHDL:
 
@@ -19,7 +19,7 @@
 - Vue (фронтенд);
 - Monaco Editor (в качетве редактора кода, тот же самый, что и в VS Code);
 - ANTLR4 + Java (в качестве парсеров);
-- GHDL;
+- [GHDL](https://github.com/ghdl/ghdl.git)
 
 ## Как происходит запуск VHDL-кода
 
