@@ -3,7 +3,6 @@ import { defineProps, defineEmits } from "vue";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Button from "../ui/button/Button.vue";

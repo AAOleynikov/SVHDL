@@ -1,19 +1,29 @@
+// Подробнее о формате VCD:
+// https://en.wikipedia.org/wiki/Value_change_dump - VCD
+// https://vc.drom.io/?github=AdoobII/idea_21s/main/vhdl/idea.vcd
+// https://github.com/wavedrom/wavedrom
+// https://gtkwave.sourceforge.net/ - десктоп приложение для просмотра waveforms
+// https://zipcpu.com/blog/2017/07/31/vcd.html
+
 /** Событие присвоения сигналу значения в какой-то момент времени */
-export class VCDAssignment {
-  public timestamp: number;
-  public value: "1" | "0" | "u" | "z";
+export interface VCDSignalAssignment {
+  timestamp: number;
+  value: "1" | "0" | "u" | "z";
+}
+
+export interface VCDVectorAssignment {
+  timestamp: number;
+  value: string;
 }
 
 export class VCDSignal {
-  events: VCDAssignment[]; //Список событий, упорядоченный по их временной метке
+  events: VCDSignalAssignment[]; //Список событий, упорядоченный по их временной метке
   name: string;
   identifier: string;
-  size: number;
   scope: VCDScope;
 
-  constructor(name: string, identifier: string, size: number, scope: VCDScope) {
+  constructor(name: string, identifier: string, scope: VCDScope) {
     this.name = name;
-    this.size = size;
     this.scope = scope;
     this.identifier = identifier;
     this.events = [];
@@ -21,33 +31,59 @@ export class VCDSignal {
 
   addEvent(timestamp: number, value: "1" | "0" | "u" | "z") {
     this.events.push({ timestamp, value });
-    this.events.sort((a, b) => a.timestamp - b.timestamp);
   }
 }
 
-export class VCDScope {
+export class VCDVector {
+  events: VCDVectorAssignment[]; //Список событий, упорядоченный по их временной метке
   name: string;
-  childScopes: VCDScope[] = [];
-  signals: VCDSignal[] = [];
+  identifier: string;
+  size: number;
+  scope: VCDScope;
+  signals: VCDSignal[];
 
-  constructor(name: string) {
+  constructor(name: string, identifier: string, size: number, scope: VCDScope) {
     this.name = name;
+    this.size = size;
+    this.scope = scope;
+    this.identifier = identifier;
+    this.events = [];
+    this.signals = Array.from(Array(size).keys()).map((key) => {
+      return new VCDSignal(`${name}[${key}]`, "", scope);
+    });
   }
 
-  addSignal(signal: VCDSignal) {
-    this.signals.push(signal);
+  addEvent(timestamp: number, value: string) {
+    this.events.push({ timestamp, value });
+    this.signals.forEach((signal, idx) => {
+      signal.addEvent(timestamp, value[idx] as "1" | "0" | "z" | "u");
+    });
   }
 }
 
-export class ParsedVCD {
+export interface VCDScope {
+  name: string;
+  childScopes: VCDScope[];
+  signals: (VCDSignal | VCDVector)[];
+}
+
+export interface ParsedVCD {
   scopes: VCDScope[];
   timescale: number;
   timescaleUnits: string;
-  constructor() {
-    this.scopes = [];
-  }
-  addAssignment(timestamp: number, identifier: string) {}
 }
+
+const sortTimestamp = (scope: VCDScope) => {
+  scope.childScopes.map(sortTimestamp);
+  scope.signals.forEach((sig) => {
+    if (sig instanceof VCDVector) {
+      sig.signals.forEach((subsig) => {
+        subsig.events.sort((a, b) => a.timestamp - b.timestamp);
+      });
+    }
+    sig.events.sort((a, b) => a.timestamp - b.timestamp);
+  });
+};
 
 function captureTimeScale(input: string): string {
   return input.match(/\$timescale\s*([\s\S]*?)\s*\$end/)[1];
@@ -74,7 +110,7 @@ export function parseVCD(vcdString: string): ParsedVCD {
   const timeScaleSection = captureTimeScale(vcdString); // TODO разобраться с ней
   const scopeSection = captureScopeSection(vcdString).split("\n");
   const changesSection = captureChanges(vcdString);
-  const ret = new ParsedVCD();
+  const ret: ParsedVCD = { scopes: [], timescale: 1, timescaleUnits: 1 };
   const codes_to_signals: Map<string, VCDSignal> = new Map();
   /** Разбор секции scope */
   const scopeStack: VCDScope[] = [];
@@ -118,8 +154,12 @@ export function parseVCD(vcdString: string): ParsedVCD {
       if (assig.startsWith(" ") || assig.length < 2) {
         continue;
       } else if (assig.startsWith("b")) {
-        //TODO вектор
-        throw "Not Implemented";
+        const [vectorValue, vectorIdent] = assig.slice(1).split(" ");
+        if (vectorValue === undefined || vectorIdent === undefined) {
+          throw new Error("Error in VCD");
+        }
+        codes_to_signals.get(vectorIdent)?.addEvent(time, vectorValue);
+        console.warn("Vectors are not implemented yet!");
       } else {
         const raw_val = assig.charAt(0).toLowerCase();
         if (
@@ -133,10 +173,13 @@ export function parseVCD(vcdString: string): ParsedVCD {
           codes_to_signals.get(ident).addEvent(time, value);
         } else {
           console.error("Value is: ", raw_val);
-          throw "Error in VCD";
+          throw new Error("Error in VCD");
         }
       }
     }
   }
+  /** Сортировка всех дампов по временной метке */
+  sortTimestamp(ret);
+  console.log("Parsed VCD: ", ret);
   return ret;
 }

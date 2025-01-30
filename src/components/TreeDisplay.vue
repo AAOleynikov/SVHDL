@@ -5,7 +5,7 @@
  Также в каждом действии должны быть иконка и колбэк. В списке может быть также строка "---", которая является разделителем меню.
  */
 
-import { DefineProps, onMounted, watch } from "vue";
+import { onMounted, watch } from "vue";
 import { JQueryUIIcon } from "./jqueryuiicons"; // Иконки из jquery-ui
 
 import $ from "jquery";
@@ -17,22 +17,24 @@ import "jquery.fancytree/dist/modules/jquery.fancytree.edit";
 import "jquery.fancytree/dist/modules/jquery.fancytree.filter";
 import { createTree } from "jquery.fancytree"; // На ошибку typescript похуй
 
-export type TreeData = {
+type Callback = (key: unknown) => void;
+
+export interface TreeData {
   title: string;
   icon?: string;
   badges?: string[];
   isBold?: boolean;
-  key: any;
+  key: unknown;
   children?: TreeData[];
-};
+}
 
-export type MenuAction = {
-  callback?: Function;
+export interface MenuAction {
+  callback?: Callback;
   text: string;
   icon?: JQueryUIIcon;
-};
+}
 
-export type GetMenuFunction = (key: any) => (MenuAction | "---")[];
+export type GetMenuFunction = (key: unknown) => (MenuAction | "---")[];
 
 type InternalTreeElem = {
   title: string;
@@ -49,20 +51,22 @@ type InternalMenuAction = {
   uiIcon?: JQueryUIIcon;
 };
 
-var realTree: InternalTreeElem[] = []; // Значение дерева
+let realTree: InternalTreeElem[] = []; // Значение дерева
 
 let keyMap: Map<number, any> = new Map();
-var callbackMap: Map<number, Function> = new Map();
+let callbackMap: Map<number, Callback> = new Map();
+
+let tree = undefined;
 
 const props = defineProps<{
   data: TreeData;
   getMenuFunction: GetMenuFunction;
-  selectCallback: Function;
+  selectCallback: Callback;
 }>();
 
 watch(
   () => props.data,
-  (newData) => {
+  () => {
     fullyReloadTree();
   }
 );
@@ -90,7 +94,7 @@ function loadTreeInternal(data: TreeData, loadTo: InternalTreeElem[]) {
     newData.folder = true;
     newData.expanded = true;
     newData.children = [];
-    for (let child of data.children) {
+    for (const child of data.children) {
       loadTreeInternal(child, newData.children);
     }
   }
@@ -103,7 +107,7 @@ function fullyReloadTree() {
   keyMap = new Map();
   loadTreeInternal(props.data, realTree);
 
-  if (tree != undefined) {
+  if (tree !== undefined) {
     tree.reload();
   }
 }
@@ -131,7 +135,7 @@ const chooseMenuForElement = (event, ui) => {
 
   callbackMap = new Map();
   const normalMenu: InternalMenuAction[] = [];
-  for (let menuItem of menu) {
+  for (const menuItem of menu) {
     if (menuItem === "---") normalMenu.push({ title: "----" });
     else {
       const callbackId = callbackMap.size;
@@ -153,8 +157,6 @@ const onSelectTreeElement = (event, data) => {
   props.selectCallback(keyReal);
 };
 
-var tree;
-
 // Когда компонент Vue смонтирован, замутить дерево
 onMounted(() => {
   tree = createTree("#tree", {
@@ -164,6 +166,7 @@ onMounted(() => {
     },
     click: onSelectTreeElement,
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   +$("#tree").on("nodeCommand", menuEvent);
   import("jquery.fancytree/dist/skin-win7/ui.fancytree.css");
 
@@ -172,11 +175,10 @@ onMounted(() => {
     menu: [],
     beforeOpen: chooseMenuForElement,
     select: function (event, ui) {
-      var that = this;
       // delay the event, so the menu can close and the click event does
       // not interfere with the edit control
-      setTimeout(function () {
-        $(that).trigger("nodeCommand", { cmd: ui.cmd });
+      setTimeout(() => {
+        $(this).trigger("nodeCommand", { cmd: ui.cmd });
       }, 100);
     },
   });

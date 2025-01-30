@@ -2,8 +2,6 @@
  (c) Oleynikov A. A, 2024
 */
 
-import { ProjectFile } from "@/lib/projectSystem";
-
 export type ParsedProjectJson = ParsedFileJson[];
 
 export type ParsedFileJson = {
@@ -36,18 +34,19 @@ type ParsedPortJson = {
 export class ParsedProject {
   vhdlFiles: ParsedVhdlFile[] = [];
   constructor(data: ParsedProjectJson = []) {
-    for (let rawFile of data) {
+    data.forEach((rawFile) => {
       this.addFile(new ParsedVhdlFile(rawFile));
-    }
+    });
   }
   addFile(file: ParsedVhdlFile) {
     this.vhdlFiles.push(file);
   }
   toJson(): ParsedProjectJson {
     const data: ParsedProjectJson = [];
-    for (let file of this.vhdlFiles) {
+    this.vhdlFiles.forEach((file) => {
       data.push(file.toJson());
-    }
+    });
+
     return data;
   }
 }
@@ -69,7 +68,7 @@ export class ParsedEntity {
   ports: ParsedPortJson[] = [];
   constructor(name: string, fileName: string) {
     this.name = name;
-    this.fileName=fileName
+    this.fileName = fileName;
   }
   appendPort(
     port_name: string,
@@ -131,16 +130,16 @@ export class ParsedVhdlFile {
     } else {
       this.fileName = data.fileName;
       this.header_declaration = data.headerDeclaration;
-      for (let entity of data.entities) {
+      for (const entity of data.entities) {
         const newEntity = new ParsedEntity(entity.name, this.fileName);
-        for (let port of entity.ports) {
+        for (const port of entity.ports) {
           newEntity.appendPort(port.name, port.type, port.mode);
         }
         this.addEntity(newEntity);
       }
-      for (let arch of data.architectures) {
+      for (const arch of data.architectures) {
         const newArch = new ParsedArchitecture(arch.name, arch.nameOfEntity);
-        for (let signal of arch.signals) {
+        for (const signal of arch.signals) {
           newArch.appendSignal(signal.name, signal.type);
         }
         this.appendArchitecture(newArch);

@@ -5,7 +5,7 @@ import {
   ParsedProject,
   ParsedFileJson,
 } from "./parsedFile";
-import { ParsedVCD } from "@/vcd_tools/vcd2json";
+import { ParsedVCD, parseVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
 import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
@@ -16,8 +16,6 @@ import {
   GeneratorStymulus,
   TestbenchGenerator,
 } from "@/testbench_generator/gen";
-
-export type Screen = "vhdl" | "stymulus" | "waveform";
 
 export interface ToastMessage {
   title: string;
@@ -162,7 +160,6 @@ export class IDEState {
   projectStorage: ProjectStorage;
   stymulusState?: StymulusConfig;
   simulationState?: SimulationState;
-  isLoading: boolean = false;
   vcd: string = "";
   curSTime: number;
 
@@ -192,7 +189,6 @@ export class IDEState {
     const data = JSON.parse(localStorage.getItem("IDEState") || "{}");
 
     ide_state.activeScreen = data.activeScreen ?? "vhdl";
-    if (ide_state.activeScreen === "waveform") ide_state.activeScreen = "vhdl";
 
     if (data.activeProjectName) {
       ide_state.setProjectActive(data.activeProjectName);
@@ -310,7 +306,7 @@ export class IDEState {
             sub_type: a.mode,
             type: a.type
               .replace("to", " to ")
-              .replace("downto", " downto ")
+              .replace("down to ", " downto ")
               .replace("std_logic_vec to r", "std_logic_vector"),
           };
         }),
@@ -336,6 +332,16 @@ export class IDEState {
   }
   finishSimulation(data: { vcd: string }) {
     this.vcd = data.vcd;
-    this.activeScreen = "waveform";
+    try {
+      this.simulationState = {
+        currentTime: 0,
+        hotkeyEvents: [],
+        waveform: parseVCD(this.vcd),
+      };
+    } catch (e) {
+      console.error(e);
+    }
+    const ui = useUIStore();
+    ui.activeScreen = "waveform";
   }
 }

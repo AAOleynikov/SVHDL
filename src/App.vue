@@ -35,12 +35,12 @@ ide_state.activeScreen = validateTransition(
   ide_state.activeScreen
 );
 
-const consoleStore = useUIStore();
+const ui = useUIStore();
 </script>
 
 <template>
   <div
-    v-if="ide_state.isLoading"
+    v-if="ui.isLoading"
     class="fixed z-50 w-full h-full"
     style="background-color: rgba(0, 0, 0, 0.5)">
     <div class="flex justify-center items-center h-full">
@@ -50,13 +50,13 @@ const consoleStore = useUIStore();
   <div class="h-screen max-h-screen flex flex-col">
     <NavBar v-model="ide_state" :pers-timer="persistencyTimerId" />
     <div class="pt-[70px] w-full box-border h-full max-h-full">
-      <template v-if="ide_state.activeScreen == 'vhdl'">
+      <template v-if="ui.activeScreen == 'vhdl'">
         <EditorScreen v-model="ide_state" />
       </template>
-      <template v-if="ide_state.activeScreen == 'stymulus'">
+      <template v-if="ui.activeScreen == 'stymulus'">
         <SignalsScreen v-model="ide_state" />
       </template>
-      <template v-if="ide_state.activeScreen == 'waveform'">
+      <template v-if="ui.activeScreen == 'waveform'">
         <WaveformScreen v-model="ide_state" />
       </template>
     </div>
@@ -64,10 +64,10 @@ const consoleStore = useUIStore();
   <Toaster rich-colors close-button />
   <Dialog
     class="w-half min-w-half"
-    :open="consoleStore.isConsoleOpened"
+    :open="ui.console.isConsoleOpened"
     @update:open="
       () => {
-        consoleStore.closeConsole();
+        ui.closeConsole();
       }
     ">
     <DialogContent>
@@ -79,7 +79,7 @@ const consoleStore = useUIStore();
       </DialogHeader>
       <div class="bg-black min-w-full">
         <span class="monospaceFont text-lime-400">
-          {{ consoleStore.consoleText }}
+          {{ ui.console.consoleText }}
         </span>
       </div>
     </DialogContent>

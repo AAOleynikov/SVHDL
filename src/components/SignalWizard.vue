@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
 import {
   Popover,
   PopoverContent,
@@ -23,15 +22,11 @@ import {
   PinInputGroup,
   PinInputInput,
 } from "@/components/ui/pin-input";
-import { computed, defineModel } from "vue";
-import { ref, watch, reactive } from "vue";
+import { computed } from "vue";
+import { ref, watch } from "vue";
 import TimeInput from "./TimeInput.vue";
 import { Time } from "@/lib/measureUnits";
-import {
-  CodeGeneratorData,
-  GeneratorStymulus,
-  ValueType,
-} from "@/testbench_generator/gen";
+import { GeneratorStymulus, ValueType } from "@/testbench_generator/gen";
 
 const props = defineProps<{ modelValue: GeneratorStymulus }>();
 const emit = defineEmits(["update:modelValue"]);
@@ -77,7 +72,7 @@ watch(allVars, () => {
     } else throw "Error: types unaligned";
   } else if (stymulusType.value === "hotkey") {
     if (signal_stymulus.value.stimulus_type === "HotKey") {
-      signal_stymulus.value;
+      //TODO сделать прокидывание параметров
     } else throw "Error: types unaligned";
   }
 });
@@ -88,7 +83,7 @@ const cyrillicKeys = "йцукенгшщзфывапролдячсмить";
 const signal_stymulus = ref<GeneratorStymulus>(props.modelValue);
 
 watch(signal_stymulus, (newValue) => {
-  emit("update:modelValue", signal_stymulus.value);
+  emit("update:modelValue", newValue);
 });
 
 const description = computed(() => {
@@ -147,10 +142,10 @@ watch(stymulusType, (newType, oldType) => {
 
 <template>
   <Popover>
-    <PopoverTrigger asChild>
+    <PopoverTrigger as-child>
       <Button variant="outline">{{ description }}</Button>
     </PopoverTrigger>
-    <PopoverContent className="w-96">
+    <PopoverContent class-name="w-96">
       <Tabs v-model="stymulusType">
         <TabsList>
           <TabsTrigger value="const"> Const </TabsTrigger>

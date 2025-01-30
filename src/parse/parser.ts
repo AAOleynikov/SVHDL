@@ -39,7 +39,12 @@
 */
 
 //Подключение заголовочных файлов, связанных c antlr4
-import { ParseTreeListener, ParseTreeWalker, CommonTokenStream, InputStream} from "antlr4";
+import {
+  ParseTreeListener,
+  ParseTreeWalker,
+  CommonTokenStream,
+  InputStream,
+} from "antlr4";
 import vhdlLexer from "./build/vhdlLexer";
 import vhdlParser from "./build/vhdlParser";
 import vhdlParserListener from "./build/vhdlParserListener";
@@ -50,7 +55,10 @@ import {
 } from "@/lib/parsedFile";
 
 //перегружаем стандартные методы класса Listener для обработки
-export default class SVHDLListener extends vhdlParserListener implements ParseTreeListener {
+export default class SVHDLListener
+  extends vhdlParserListener
+  implements ParseTreeListener
+{
   vhdlFileTop: ParsedVhdlFile;
   constructor(_vhdlFileTop) {
     super();
@@ -161,20 +169,19 @@ export default class SVHDLListener extends vhdlParserListener implements ParseTr
 }
 
 export function processCode(input: string, fileName: string) {
-  //В этот объект будет записана вся распаршенная информация
+  console.log("Processing code! ", { input, fileName });
+  // В этот объект будет записана вся распаршенная информация
   const vhdlFileTop = new ParsedVhdlFile(fileName);
 
   const chars = new InputStream(input, true);
   const lexer = new vhdlLexer(chars);
   const tokens = new CommonTokenStream(lexer);
   const parser = new vhdlParser(tokens);
+  console.log("tokens: ", tokens);
   parser.buildParseTrees = true;
   const tree = parser.design_file();
   const listener = new SVHDLListener(vhdlFileTop);
-  ParseTreeWalker.DEFAULT.walk(listener, tree); // На ошибку похуй
-
-  // //установка стимулятора в виде частотного генератора для сигнала K
-  // vhdlFileTop.setStimulusClock("K", 10, 0, 1, "low_value", 50);
+  ParseTreeWalker.DEFAULT.walk(listener, tree);
 
   return vhdlFileTop;
 }

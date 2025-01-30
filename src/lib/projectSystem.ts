@@ -1,19 +1,6 @@
 /* В этом файле находятся классы персистентных состояний IDE, которые хранятся в LocalStorage и влияют
 на результат симуляции (потеря которых будет означать потерю пользовательских данных)  */
 
-import { ParsedEntity, ParsedVhdlFile } from "./parsedFile";
-import { ParsedVCD } from "@/vcd_tools/vcd2json";
-import { editor } from "monaco-editor";
-
-/* Настройки пользователя для Stymulus.
-Они обновляются, когда:
-1) Происходит перекомпиляция
-Тогда обновляются список архитектур для каждого файла, конфигурация сигналов для TopLevel-архитектуры и результат парсинга;
-2) Пользователь выбирает TopLevel-сущность
-Тогда изменяются список доступных входных сигналов для TopLevel-сущности и сбрасывается конфигурация сигналов для TopLevel-сущности;
-3) Пользователь задаёт Stymulus для какого-то из входных сигналов
-Тогда изменяется конфигурация сигналов для TopLevel-сущности */
-
 /** Хранилище проектов */
 export class ProjectStorage {
   projects: Project[] = [];
@@ -36,7 +23,7 @@ export class ProjectStorage {
     const data: object = { projects: [] };
     for (const proj of this.projects) data["projects"].push(proj.name);
     localStorage.setItem("projectLibrary", JSON.stringify(data));
-    for (let proj of this.projects) proj.saveToLocalStorage();
+    for (const proj of this.projects) proj.saveToLocalStorage();
     this.projectSetUpdated = false;
   }
   /** Записать только изменения */
@@ -45,7 +32,7 @@ export class ProjectStorage {
     if (this.projectSetUpdated) {
       ret = true;
       const data: object = { projects: [] };
-      for (let proj of this.projects) data["projects"].push(proj.name);
+      for (const proj of this.projects) data["projects"].push(proj.name);
       localStorage.setItem("projectLibrary", JSON.stringify(data));
     }
     for (const proj of this.projects) {

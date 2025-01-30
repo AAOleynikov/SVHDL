@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import "@/assets/css/index.css";
 import { IDEState } from "@/lib/ideState";
-import { defineProps, defineEmits, ref, watch } from "vue";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { defineProps, ref, watch } from "vue";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { validateTransition } from "@/lib/validateTransition";
+import { Screen, useUIStore } from "@/stores/ui";
 
 const ide_state = defineModel<IDEState>();
 const props = defineProps(["persTimer"]);
@@ -28,19 +29,21 @@ const decryptions = [
 ];
 const thisDecryption = ref("S");
 
-const screen = ref(ide_state.value.activeScreen);
+const ui = useUIStore();
+const screen = ref<Screen>(ui.activeScreen);
 
 watch(screen, (newValue, oldValue) => {
   const newScr = validateTransition(ide_state.value, oldValue, newValue);
   screen.value = newScr;
-  if (ide_state.value.activeScreen !== newScr)
-    ide_state.value.activeScreen = newScr;
+  if (ui.activeScreen !== newScr) {
+    ui.activeScreen = newScr;
+  }
 });
 
 watch(
-  () => ide_state.value.activeScreen,
+  () => ui.activeScreen,
   () => {
-    screen.value = ide_state.value.activeScreen;
+    screen.value = ui.activeScreen;
   }
 );
 </script>
@@ -86,14 +89,14 @@ watch(
       </div>
 
       <Tabs
-        activationMode="manual"
-        defaultValue="account"
-        className="w-[600px]"
-        v-model:model-value="screen">
-        <TabsList className="grid w-full grid-cols-3 h-full">
-          <TabsTrigger value="vhdl"
-            ><i class="bi-code-slash pr-2"></i> VHDL code editing</TabsTrigger
-          >
+        v-model:model-value="screen"
+        activation-mode="manual"
+        default-value="account"
+        class-name="w-[600px]">
+        <TabsList class-name="grid w-full grid-cols-3 h-full">
+          <TabsTrigger value="vhdl">
+            <i class="bi-code-slash pr-2"></i> VHDL code editing
+          </TabsTrigger>
           <TabsTrigger value="stymulus">
             <i class="bi-yelp pr-2"></i> Signal Setting
           </TabsTrigger>

@@ -104,7 +104,7 @@ const renderData = computed<RenderDataType>(() => {
   <div
     class="w-full min-w-full h-[40px] bg-slate-200 px-5 flex flex-row align-baseline">
     <svg width="10000" height="24" class="py-[8px] h-full">
-      <template v-for="line of renderData.lines">
+      <template v-for="(line, idx) of renderData.lines" :key="idx">
         <template v-if="line.type === 'u'">
           <line
             :x1="line.x_from"
@@ -160,7 +160,7 @@ const renderData = computed<RenderDataType>(() => {
             stroke="red"></line>
         </template>
       </template>
-      <template v-for="change of renderData.lineChanges">
+      <template v-for="(change, idx) of renderData.lineChanges" :key="idx">
         <line
           :x1="change.x_center"
           :x2="change.x_center"
@@ -168,7 +168,7 @@ const renderData = computed<RenderDataType>(() => {
           :y2="22"
           stroke="black"></line>
       </template>
-      <template v-for="text of renderData.texts">
+      <template v-for="(text, idx) of renderData.texts" :key="idx">
         <text
           :x="text.x"
           y="16"

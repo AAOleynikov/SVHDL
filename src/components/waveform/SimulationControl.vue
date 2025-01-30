@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Button from "../ui/button/Button.vue";
-import Separator from "../ui/separator/Separator.vue";
 import TooltipButton from "./TooltipButton.vue";
 import TimeInput from "../TimeInput.vue";
 import ScaleWizard from "./ScaleWizard.vue";

@@ -1,3 +1,4 @@
+import { useUIStore } from "@/stores/ui";
 import { IDEState } from "./ideState";
 import { Project } from "./projectSystem";
 import axios from "axios";
@@ -25,21 +26,22 @@ export interface SimulationResultFromServer {
 }
 
 export function validate(proj: Project, ide_state: IDEState) {
+  const ui = useUIStore();
   const reqData: ProjectToServer = {
     files: proj.files.map((a) => {
       return { fileName: a.name, fileContent: a.code };
     }),
     topLevelEntity: "",
   };
-  ide_state.isLoading = true;
-  const request = instance
+  ui.isLoading = true;
+  instance
     .post("/validate", { data: reqData })
     .then((resp) => {
-      ide_state.isLoading = false;
+      ui.isLoading = false;
       ide_state.finishCompilation(resp.data);
     })
     .catch(() => {
-      ide_state.isLoading = false;
+      ui.isLoading = false;
     });
 }
 
@@ -51,14 +53,15 @@ export function simulate(
   },
   ide_state: IDEState
 ) {
-  ide_state.isLoading = true;
-  const request = instance
+  const ui = useUIStore();
+  ui.isLoading = true;
+  instance
     .post("/simulate", { data: filesToServak })
     .then((resp) => {
-      ide_state.isLoading = false;
+      ui.isLoading = false;
       ide_state.finishSimulation(resp.data);
     })
     .catch(() => {
-      ide_state.isLoading = false;
+      ui.isLoading = false;
     });
 }

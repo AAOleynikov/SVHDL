@@ -46,7 +46,7 @@ watch(
 </script>
 
 <template>
-  <div class="w-full min-w-full h-[40px]" ref="container">
+  <div ref="container" class="w-full min-w-full h-[40px]">
     <svg height="40px" class="select-none" :width="scaleWidth">
       <line
         x1="0"
@@ -55,7 +55,7 @@ watch(
         y2="1"
         width="2"
         stroke="black"></line>
-      <template v-for="bin of binsX">
+      <template v-for="(bin, idx) of binsX" :key="idx">
         <line
           :x1="bin.x"
           y1="1"

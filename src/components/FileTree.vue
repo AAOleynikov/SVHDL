@@ -2,10 +2,13 @@
 import { reactive, computed } from "vue";
 import { Project, ProjectFile } from "@/lib/projectSystem";
 import { IDEState } from "@/lib/ideState";
-import Tree, { MenuAction, TreeData } from "./Tree.vue";
+import Tree, { MenuAction, TreeData } from "./TreeDisplay.vue";
 import ModalDialog, { DialogParams, ModalDialogState } from "./ModalDialog.vue";
 import JSZip from "jszip";
 import { ParsedEntity } from "@/lib/parsedFile";
+
+const alpha = 228;
+const beta: string = alpha;
 
 const ide_state = defineModel<IDEState>();
 
@@ -17,7 +20,7 @@ const dialogState = reactive<ModalDialogState>({
 
 type IKey = {
   type: "architecture" | "entity" | "file" | "project" | "storage";
-  assocObj?: any;
+  assocObj?: unknown;
 };
 
 // Скачать Blob
@@ -135,21 +138,21 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
   if (key.type == "architecture") {
     menu.push({ text: "Just architecture" }, { text: "Nothin' more" });
   } else if (key.type == "entity") {
-    const entity: ParsedEntity = key.assocObj;
+    const entity = key.assocObj as ParsedEntity;
     menu.push({
       text: "Set Entity as Top-Level",
       icon: "ui-icon-star",
-      callback: (key: IKey) => {
+      callback: () => {
         ide_state.value.stymulusState.setTopLevelEntity(entity);
       },
     });
   } else if (key.type == "file") {
-    const file: ProjectFile = key.assocObj;
+    const file: ProjectFile = key.assocObj as ProjectFile;
     menu.push(
       {
         text: "Rename",
         icon: "ui-icon-pencil",
-        callback: (key: IKey) => {
+        callback: () => {
           openDialog({
             title: "Name of this file",
             type: "input",
@@ -236,7 +239,7 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
         text: "Download as ZIP",
         icon: "ui-icon-disk",
         callback: (key: IKey) => {
-          var zip = new JSZip();
+          const zip = new JSZip();
           key.assocObj.files.forEach(function (file) {
             zip.file(file.name, file.code);
           });
