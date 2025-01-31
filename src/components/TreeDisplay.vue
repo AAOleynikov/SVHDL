@@ -186,5 +186,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="tree" style="height: 100%"></div>
+  <div>
+    <div id="tree" style="height: 100%"></div>
+  </div>
 </template>

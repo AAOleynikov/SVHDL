@@ -51,8 +51,8 @@ const ide_state = defineModel<IDEState>({ required: true });
             width="200"
             height="250"
             xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="200" r="50" fill="gray" />
-            <circle cx="150" cy="200" r="50" fill="gray" />
+            <!-- <circle cx="50" cy="200" r="50" fill="gray" />
+            <circle cx="150" cy="200" r="50" fill="gray" /> -->
             <circle cx="100" cy="50" r="50" fill="gray" />
             <rect x="50" y="50" width="100" height="150" fill="gray" />
           </svg>

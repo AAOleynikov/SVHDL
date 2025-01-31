@@ -107,10 +107,11 @@ function captureChanges(input: string): string[] {
 }
 
 export function parseVCD(vcdString: string): ParsedVCD {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const timeScaleSection = captureTimeScale(vcdString); // TODO разобраться с ней
   const scopeSection = captureScopeSection(vcdString).split("\n");
   const changesSection = captureChanges(vcdString);
-  const ret: ParsedVCD = { scopes: [], timescale: 1, timescaleUnits: 1 };
+  const ret: ParsedVCD = { scopes: [], timescale: 1, timescaleUnits: "fs" };
   const codes_to_signals: Map<string, VCDSignal> = new Map();
   /** Разбор секции scope */
   const scopeStack: VCDScope[] = [];
@@ -119,7 +120,11 @@ export function parseVCD(vcdString: string): ParsedVCD {
     // $scope module andgate_tb $end
     if (scopeLine.startsWith("$scope")) {
       const scopeName = splittedLine[2];
-      const newScope = new VCDScope(scopeName);
+      const newScope: VCDScope = {
+        name: scopeName,
+        childScopes: [],
+        signals: [],
+      };
       if (scopeStack.length === 0) {
         ret.scopes.push(newScope);
       } else {
@@ -130,15 +135,15 @@ export function parseVCD(vcdString: string): ParsedVCD {
     // $var reg 1 ! x $end
     else if (scopeLine.startsWith("$var")) {
       const varName = splittedLine[4];
-      const varSize = parseInt(splittedLine[2]);
+      // const varSize = parseInt(splittedLine[2]);
       const varCode = splittedLine[3];
       const newVar = new VCDSignal(
         varName,
         varCode,
-        varSize,
         scopeStack[scopeStack.length - 1]
       );
-      scopeStack[scopeStack.length - 1].addSignal(newVar);
+
+      scopeStack[scopeStack.length - 1].signals.push(newVar);
       codes_to_signals.set(varCode, newVar);
     }
     // $upscope $end
@@ -170,7 +175,7 @@ export function parseVCD(vcdString: string): ParsedVCD {
         ) {
           const value: "1" | "0" | "u" | "z" = raw_val;
           const ident: string = assig.slice(1, assig.length);
-          codes_to_signals.get(ident).addEvent(time, value);
+          codes_to_signals.get(ident)?.addEvent(time, value);
         } else {
           console.error("Value is: ", raw_val);
           throw new Error("Error in VCD");
@@ -179,7 +184,9 @@ export function parseVCD(vcdString: string): ParsedVCD {
     }
   }
   /** Сортировка всех дампов по временной метке */
-  sortTimestamp(ret);
+  ret.scopes.forEach((scope) => {
+    sortTimestamp(scope);
+  });
   console.log("Parsed VCD: ", ret);
   return ret;
 }
