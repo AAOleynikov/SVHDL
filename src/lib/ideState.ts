@@ -5,7 +5,7 @@ import {
   ParsedProject,
   ParsedFileJson,
 } from "./parsedFile";
-import { ParsedVCD, parseVCD } from "@/vcd_tools/vcd2json";
+import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
 import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
@@ -360,12 +360,16 @@ export class IDEState {
     );
   }
   finishSimulation(data: { vcd: string }) {
+    console.log("Stimulus config:", this.stymulusState);
     this.vcd = data.vcd;
     try {
       this.simulationState = {
         currentTime: 0,
         hotkeyEvents: [],
-        waveform: parseVCD(this.vcd),
+        waveform: enrichParsedVCD(
+          parseVCD(this.vcd),
+          this.stymulusState as StymulusConfig
+        ),
         hotkeyMap: new Map(),
       };
     } catch (e) {

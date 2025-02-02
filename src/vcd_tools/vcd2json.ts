@@ -5,6 +5,9 @@
 // https://gtkwave.sourceforge.net/ - десктоп приложение для просмотра waveforms
 // https://zipcpu.com/blog/2017/07/31/vcd.html
 
+import { StymulusConfig } from "@/lib/ideState";
+import { GeneratorStymulus } from "@/testbench_generator/gen";
+
 /** Событие присвоения сигналу значения в какой-то момент времени */
 export interface VCDSignalAssignment {
   timestamp: number;
@@ -61,16 +64,18 @@ export class VCDVector {
   }
 }
 
+export type VCDVariable = VCDSignal | VCDVector;
+
 export interface VCDScope {
   name: string;
   childScopes: VCDScope[];
-  signals: (VCDSignal | VCDVector)[];
+  signals: VCDVariable[];
 }
 
 export interface ParsedVCD {
   scopes: VCDScope[];
-  timescale: number;
-  timescaleUnits: string;
+  inputSignals: { var: VCDVariable; stimulus: GeneratorStymulus }[];
+  outputSignals: VCDVariable[];
 }
 
 const sortTimestamp = (scope: VCDScope) => {
@@ -110,12 +115,12 @@ function captureChanges(input: string): string[] {
   return matches || [];
 }
 
-export function parseVCD(vcdString: string): ParsedVCD {
+export function parseVCD(vcdString: string): VCDScope {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const timeScaleSection = captureTimeScale(vcdString); // TODO разобраться с ней
+  const timeScaleSection = captureTimeScale(vcdString); // TODO сделать коррекцию на TimeScale
   const scopeSection = captureScopeSection(vcdString).split("\n");
   const changesSection = captureChanges(vcdString);
-  const ret: ParsedVCD = { scopes: [], timescale: 1, timescaleUnits: "fs" };
+  const ret: VCDScope = { childScopes: [], signals: [], name: "" };
   const codes_to_signals: Map<string, VCDSignal> = new Map();
   /** Разбор секции scope */
   const scopeStack: VCDScope[] = [];
@@ -130,7 +135,7 @@ export function parseVCD(vcdString: string): ParsedVCD {
         signals: [],
       };
       if (scopeStack.length === 0) {
-        ret.scopes.push(newScope);
+        ret.childScopes.push(newScope);
       } else {
         scopeStack[scopeStack.length - 1].childScopes.push(newScope);
       }
@@ -188,20 +193,53 @@ export function parseVCD(vcdString: string): ParsedVCD {
     }
   }
   /** Сортировка всех дампов по временной метке */
-  ret.scopes.forEach((scope) => {
+  ret.childScopes.forEach((scope) => {
     sortTimestamp(scope);
   });
   return ret;
 }
 
 /** Удалить из VCD лишние Scopes, которые были добавлены генератором */
-export function sanitizeParsedVCD(initial: ParsedVCD): ParsedVCD {
-  // const uutScopes = initial.scopes
-  //   .find((scope) => scope.name == "top_level_tb")
-  //   ?.childScopes.find((scope) => scope.name == "uut")?.childScopes;
-  // if (!uutScopes) {
-  //   throw new Error("Troubles with scopes");
-  // }
-  // return { ...initial, scopes: uutScopes };
-  return initial;
+export function enrichParsedVCD(
+  initial: VCDScope,
+  stimConfig: StymulusConfig
+): ParsedVCD {
+  let uutScope: VCDScope;
+  if (initial.childScopes.find((a) => a.name === "uut") !== undefined) {
+    uutScope = initial;
+  } else {
+    const tlScope = initial.childScopes.find((scope) =>
+      scope.name.endsWith("_tb")
+    );
+    if (tlScope === undefined) {
+      throw new Error("Troubles with scopes");
+    }
+    uutScope = tlScope;
+  }
+
+  const newScope = uutScope.childScopes.find((scope) => scope.name === "uut");
+  if (newScope === undefined) {
+    console.log("Scope: ", initial);
+    throw new Error("Troubles with scopes");
+  }
+  uutScope = newScope;
+
+  const inputSignals: { var: VCDVariable; stimulus: GeneratorStymulus }[] = [];
+  const outputSignals: VCDVariable[] = [];
+
+  uutScope.signals.forEach((variable) => {
+    console.log("Real stim config: ", stimConfig);
+    const stim = stimConfig.stymulusList.get(variable.name);
+    if (stim !== undefined) {
+      inputSignals.push({ var: variable, stimulus: stim });
+    } else {
+      outputSignals.push(variable);
+    }
+  });
+
+  return {
+    scopes: uutScope.childScopes,
+    inputSignals,
+    outputSignals,
+  };
 }

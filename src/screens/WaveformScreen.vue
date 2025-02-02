@@ -9,14 +9,14 @@ import {
   WaveFormData,
 } from "@/components/waveform/WfTypes";
 import { ref, reactive, computed, onMounted, watch } from "vue";
-import { VCDScope, parseVCD, sanitizeParsedVCD } from "@/vcd_tools/vcd2json";
+import { VCDScope, ParsedVCD } from "@/vcd_tools/vcd2json";
 import { usePointerSwipe, useScroll } from "@vueuse/core";
 
 import { IDEState } from "@/lib/ideState";
 
 const ide_state = defineModel<IDEState>({ required: true });
-const vcdDataRaw = parseVCD(ide_state.value.vcd);
-const vcdData = sanitizeParsedVCD(vcdDataRaw);
+const vcdData: ParsedVCD = ide_state.value.simulationState
+  ?.waveform as ParsedVCD;
 
 const vcdState = reactive<WaveFormData[]>([]);
 
@@ -39,6 +39,17 @@ function recursiveLoadVcdState(
   }
   where.push(newFolder);
 }
+// for (const inp of vcdData.inputSignals) {
+//   vcdState.push({
+//     type: "var",
+//     "data":inp.var,
+//     "name":inp.var.name,
+//   }
+//   );
+// }
+// for (const out of vcdData.outputSignals) {
+//   vcdState.push(out);
+// }
 for (const scope of vcdData.scopes) {
   recursiveLoadVcdState(vcdState, scope);
 }

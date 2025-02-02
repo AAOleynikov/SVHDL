@@ -14,6 +14,7 @@ export default defineConfig({
     }),
     checker({
       typescript: true,
+      vueTsc: true,
     }),
   ],
   postcss: {

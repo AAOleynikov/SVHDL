@@ -5,6 +5,7 @@ import EditorScreen from "@/screens/EditorScreen.vue";
 import SignalsScreen from "@/screens/SignalsScreen.vue";
 import NavBar from "@/components/NavBar.vue";
 import { IDEState } from "./lib/ideState";
+// @ts-expect-error: Shadcn-Vue не даёт декларации типов
 import { Toaster } from "@/components/ui/sonner";
 import { validateTransition } from "./lib/validateTransition";
 import WaveformScreen from "./screens/WaveformScreen.vue";
@@ -16,8 +17,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  // @ts-expect-error: Shadcn-Vue не даёт декларации типов
 } from "@/components/ui/dialog";
 import { useUIStore } from "./stores/ui";
+import { Time } from "./lib/measureUnits";
 
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());
@@ -53,8 +56,10 @@ const ui = useUIStore();
       <template v-if="ui.activeScreen == 'vhdl'">
         <EditorScreen v-model="ide_state" />
       </template>
-      <template v-if="ui.activeScreen == 'stymulus'">
-        <SignalsScreen v-model="ide_state" />
+      <template v-if="ui.activeScreen == 'stymulus' && ide_state.stymulusState">
+        <SignalsScreen
+          v-model="ide_state.stymulusState"
+          :start-simulation="(firstStepSize: Time)=>{ide_state.startSimulation(firstStepSize)}" />
       </template>
       <template v-if="ui.activeScreen == 'waveform'">
         <WaveformScreen v-model="ide_state" />

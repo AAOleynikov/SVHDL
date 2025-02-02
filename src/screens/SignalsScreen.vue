@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import SignalWizard from "@/components/SignalWizard.vue";
+// @ts-expect-error: Shadcn-vue не предоставляет деклараций типов
 import { Button } from "@/components/ui/button";
+// @ts-expect-error: Shadcn-vue не предоставляет деклараций типов
 import { Label } from "@/components/ui/label";
 import TimeInput from "@/components/TimeInput.vue";
 import {
@@ -11,11 +13,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  // @ts-expect-error: Shadcn-vue не предоставляет деклараций типов
 } from "@/components/ui/table";
-import { IDEState } from "@/lib/ideState";
+import { StymulusConfig } from "@/lib/ideState";
 import { Time } from "@/lib/measureUnits";
 
-const ide_state = defineModel<IDEState>({ required: true });
+const stymulusState = defineModel<StymulusConfig>({ required: true });
+const { startSimulation } = defineProps<{
+  startSimulation: (firstStepTime: Time) => void;
+}>();
 const firstStepTime = ref<Time>({ mantissa: 100, exponent: "ns" });
 </script>
 
@@ -31,9 +37,9 @@ const firstStepTime = ref<Time>({ mantissa: 100, exponent: "ns" });
         </TableRow>
       </TableHeader>
       <TableBody>
-        <template v-if="ide_state.stymulusState.stymulusList !== undefined">
+        <template v-if="stymulusState.stymulusList !== undefined">
           <template
-            v-for="entry of ide_state.stymulusState.stymulusList.entries()"
+            v-for="entry of stymulusState.stymulusList.entries()"
             :key="entry[0]">
             <TableRow>
               <TableCell class-name="font-medium">in</TableCell>
@@ -44,10 +50,7 @@ const firstStepTime = ref<Time>({ mantissa: 100, exponent: "ns" });
                   :modelValue="entry[1]"
                   @update:modelValue="
                     ($event) => {
-                      ide_state.stymulusState.stymulusList.set(
-                        entry[0],
-                        $event
-                      );
+                      stymulusState.stymulusList.set(entry[0], $event);
                     }
                   "
               /></TableCell>
@@ -58,7 +61,7 @@ const firstStepTime = ref<Time>({ mantissa: 100, exponent: "ns" });
     </Table>
     <div class="flex flex-row gap-2 items-center">
       <Label>First step time</Label><TimeInput v-model="firstStepTime" /><Button
-        @click="ide_state.startSimulation(firstStepTime)"
+        @click="startSimulation(firstStepTime)"
         >Simulate!</Button
       >
     </div>
