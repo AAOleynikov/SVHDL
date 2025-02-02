@@ -20,8 +20,8 @@ export class ProjectStorage {
   }
   /** Сохранить всё хранилище в LocalStorage */
   saveToLocalStorage() {
-    const data: object = { projects: [] };
-    for (const proj of this.projects) data["projects"].push(proj.name);
+    const data: any = { projects: [] };
+    for (const proj of this.projects) data.projects.push(proj.name);
     localStorage.setItem("projectLibrary", JSON.stringify(data));
     for (const proj of this.projects) proj.saveToLocalStorage();
     this.projectSetUpdated = false;
@@ -31,8 +31,8 @@ export class ProjectStorage {
     let ret = false;
     if (this.projectSetUpdated) {
       ret = true;
-      const data: object = { projects: [] };
-      for (const proj of this.projects) data["projects"].push(proj.name);
+      const data: any = { projects: [] };
+      for (const proj of this.projects) data.projects.push(proj.name);
       localStorage.setItem("projectLibrary", JSON.stringify(data));
     }
     for (const proj of this.projects) {
@@ -82,7 +82,7 @@ export class ProjectStorage {
   }
   renameProject(from: string, to: string): boolean {
     if (!this.projects.some((a) => a.name === to)) {
-      this.projects.find((a) => a.name === from).rename(to);
+      this.projects.find((a) => a.name === from)?.rename(to);
       this.projectSetUpdated = true;
       this.hasUnsavedChanges = true;
       return true;
@@ -108,13 +108,13 @@ export class Project {
     this.name = name;
     this.storage = storage;
     if (localStorage.getItem(`project_${name}`) != null) {
-      const rawProj = localStorage.getItem(`project_${name}`);
+      const rawProj = localStorage.getItem(`project_${name}`) as string;
       const proj = JSON.parse(rawProj);
-      const files: Object[] = proj ?? [];
+      const files: any[] = proj ?? [];
       this.files = [];
-      for (let file of files) {
-        this.files.push(new ProjectFile(this, file["name"], file["code"]));
-      }
+      files.forEach((file) => {
+        this.files.push(new ProjectFile(this, file.name, file.code));
+      });
       this.isUnsaved = false;
     } else {
       this.files = [];
@@ -123,14 +123,14 @@ export class Project {
     }
   }
   saveToLocalStorage() {
-    let ser = [];
-    for (let file of this.files) {
+    const ser: any[] = [];
+    this.files.forEach((file) => {
       file.isUnsaved = false;
       ser.push({
         name: file.name,
         code: file.code,
       });
-    }
+    });
     localStorage.setItem(`project_${this.name}`, JSON.stringify(ser));
     this.isUnsaved = false;
   }
@@ -141,6 +141,9 @@ export class Project {
   }
   renameFile(from: string, to: string): boolean {
     const file = this.files.find((a) => a.name == from);
+    if (file === undefined) {
+      return false;
+    }
     if (!this.files.some((a) => a.name == to)) {
       file.name = to;
       file.setUnsaved();
@@ -170,7 +173,7 @@ export class ProjectFile {
   code: string;
   name: string;
   isUnsaved: boolean = false;
-  isExpanded: false; // Развёрнут ли файл в дереве (видны ли сущности в нём)
+  isExpanded: boolean = false; // Развёрнут ли файл в дереве (видны ли сущности в нём)
 
   constructor(proj: Project, name: string, code?: string) {
     if (code == undefined)

@@ -2,14 +2,14 @@
 
 import { useUIStore } from "@/stores/ui";
 import { IDEState } from "./ideState";
-import { Screen } from "@/stores/ui";
+import { UiScreen } from "@/stores/ui";
 
 /** @returns экран, на который перебросить пользователя */
 export function validateTransition(
   ide_state: IDEState,
-  screenFrom: Screen,
-  screenTo: Screen
-): Screen {
+  screenFrom: UiScreen,
+  screenTo: UiScreen
+): UiScreen {
   if (screenTo == "vhdl") return screenTo;
 
   if (ide_state.isEverythingSaved() == false) {

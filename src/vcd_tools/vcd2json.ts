@@ -86,9 +86,13 @@ const sortTimestamp = (scope: VCDScope) => {
 };
 
 function captureTimeScale(input: string): string {
-  return input.match(/\$timescale\s*([\s\S]*?)\s*\$end/)[1];
+  const match = input.match(/\$timescale\s*([\s\S]*?)\s*\$end/);
+  if (match === null) {
+    throw new Error("Error in VCD");
+  }
+  return match[1];
 }
-function captureScopeSection(input: string): string | null {
+function captureScopeSection(input: string): string {
   // Регулярное выражение для захвата строк, начинающихся с $scope и заканчивающихся на последнем $upscope $end
   const regex = /(^\$scope[\s\S]*\$upscope\s+\$end)/gm;
   const match = input.match(regex);
@@ -97,7 +101,7 @@ function captureScopeSection(input: string): string | null {
     // Возвращаем первый элемент из найденных совпадений
     return match[0];
   }
-  return null;
+  throw new Error("Error in VCD");
 }
 function captureChanges(input: string): string[] {
   // Регулярное выражение для захвата всех частей начиная с '#' в начале строки и до следующего '#' или конца файла
@@ -163,8 +167,8 @@ export function parseVCD(vcdString: string): ParsedVCD {
         if (vectorValue === undefined || vectorIdent === undefined) {
           throw new Error("Error in VCD");
         }
-        codes_to_signals.get(vectorIdent)?.addEvent(time, vectorValue);
-        console.warn("Vectors are not implemented yet!");
+        codes_to_signals.get(vectorIdent)?.addEvent(time, vectorValue as "0");
+        console.warn("Vectors are not well tested yet!");
       } else {
         const raw_val = assig.charAt(0).toLowerCase();
         if (
@@ -187,6 +191,17 @@ export function parseVCD(vcdString: string): ParsedVCD {
   ret.scopes.forEach((scope) => {
     sortTimestamp(scope);
   });
-  console.log("Parsed VCD: ", ret);
   return ret;
+}
+
+/** Удалить из VCD лишние Scopes, которые были добавлены генератором */
+export function sanitizeParsedVCD(initial: ParsedVCD): ParsedVCD {
+  // const uutScopes = initial.scopes
+  //   .find((scope) => scope.name == "top_level_tb")
+  //   ?.childScopes.find((scope) => scope.name == "uut")?.childScopes;
+  // if (!uutScopes) {
+  //   throw new Error("Troubles with scopes");
+  // }
+  // return { ...initial, scopes: uutScopes };
+  return initial;
 }

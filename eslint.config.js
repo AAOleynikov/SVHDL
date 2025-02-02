@@ -22,7 +22,7 @@ export default typescriptEslint.config(
       },
     },
     rules: {
-      // your rules
+      "@typescript-eslint/no-explicit-any": "warn",
     },
   },
   eslintConfigPrettier

@@ -4,14 +4,16 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  // @ts-expect-error: shadcn-модуль
 } from "@/components/ui/resizable";
+// @ts-expect-error: shadcn-модуль
 import Button from "@/components/ui/button/Button.vue";
-import Editor from "@/components/Editor.vue";
+import Editor from "@/components/MonacoEditor.vue";
 import { IDEState } from "@/lib/ideState";
 
 import { useUIStore } from "@/stores/ui";
 
-const consoleStore = useUIStore();
+const ui = useUIStore();
 
 const ide_state = defineModel<IDEState>({ required: true });
 </script>
@@ -27,10 +29,10 @@ const ide_state = defineModel<IDEState>({ required: true });
         <Button @click="ide_state.discardAll()">Discard changes</Button>
         <Button @click="ide_state.compile()">Compile</Button>
         <Button
-          :disabled="!consoleStore.isConsoleAvailable"
+          :disabled="!ui.console.isConsoleAvailable"
           @click="
             () => {
-              consoleStore.openConsole();
+              ui.openConsole();
             }
           "
           >Console</Button

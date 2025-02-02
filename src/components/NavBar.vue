@@ -4,7 +4,7 @@ import { IDEState } from "@/lib/ideState";
 import { defineProps, ref, watch } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { validateTransition } from "@/lib/validateTransition";
-import { Screen, useUIStore } from "@/stores/ui";
+import { UiScreen, useUIStore } from "@/stores/ui";
 
 const ide_state = defineModel<IDEState>();
 const props = defineProps(["persTimer"]);
@@ -30,7 +30,7 @@ const decryptions = [
 const thisDecryption = ref("S");
 
 const ui = useUIStore();
-const screen = ref<Screen>(ui.activeScreen);
+const screen = ref<UiScreen>(ui.activeScreen);
 
 watch(screen, (newValue, oldValue) => {
   const newScr = validateTransition(ide_state.value, oldValue, newValue);

@@ -32,6 +32,8 @@ export type DisplayBit = {
   level: number; // Уровень отступа (вложенность Scope относительно корневого Scope)
   name: string;
   events: { timeFs: number; toValue: "0" | "1" | "x" | "z" }[];
+  hotkey: string | undefined;
+  isActive: boolean | undefined;
 };
 export type DisplayScope = {
   type: "scope";
@@ -49,5 +51,5 @@ export type ScaleData = {
   currentSimTime: number;
   plotsSectionWidth: number;
   mode: "cursor" | "move";
-  step:Time;
+  step: Time;
 };

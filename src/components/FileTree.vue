@@ -2,13 +2,10 @@
 import { reactive, computed } from "vue";
 import { Project, ProjectFile } from "@/lib/projectSystem";
 import { IDEState } from "@/lib/ideState";
-import Tree, { MenuAction, TreeData } from "./TreeDisplay.vue";
+import Tree, { IKey, MenuAction, TreeData } from "./TreeDisplay.vue";
 import ModalDialog, { DialogParams, ModalDialogState } from "./ModalDialog.vue";
 import JSZip from "jszip";
 import { ParsedEntity } from "@/lib/parsedFile";
-
-const alpha = 228;
-const beta: string = alpha;
 
 const ide_state = defineModel<IDEState>();
 
@@ -17,11 +14,6 @@ const dialogState = reactive<ModalDialogState>({
   title: "No dialog should be shown",
   type: "yesno",
 });
-
-type IKey = {
-  type: "architecture" | "entity" | "file" | "project" | "storage";
-  assocObj?: unknown;
-};
 
 // Скачать Blob
 const saveAs = (content: BlobPart, name: string) => {
@@ -100,7 +92,6 @@ const treeData = computed<TreeData>(() => {
                   key: { type: "entity", assocObj: entity },
                   icon: "bi-explicit",
                 };
-                console.log("ide_state", ide_state.value);
                 if (
                   ide_state.value.stymulusState &&
                   ide_state.value.stymulusState.topLevelFile &&
@@ -166,7 +157,7 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
       {
         text: "Delete",
         icon: "ui-icon-trash",
-        callback: (key: IKey) => {
+        callback: () => {
           openDialog({
             title: "Remove file " + file.name + "?",
             callback: () => {

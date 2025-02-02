@@ -8,6 +8,7 @@
 import { onMounted, watch } from "vue";
 import { JQueryUIIcon } from "./jqueryuiicons"; // Иконки из jquery-ui
 
+// @ts-expect-error: легаси JQuery
 import $ from "jquery";
 import "jquery-ui/themes/base/all.css";
 import "jquery-ui/dist/jquery-ui";
@@ -15,9 +16,15 @@ import "ui-contextmenu/jquery.ui-contextmenu.min";
 import "jquery.fancytree/dist/skin-lion/ui.fancytree.less";
 import "jquery.fancytree/dist/modules/jquery.fancytree.edit";
 import "jquery.fancytree/dist/modules/jquery.fancytree.filter";
-import { createTree } from "jquery.fancytree"; // На ошибку typescript похуй
+// @ts-expect-error: легаси модуль
+import { createTree } from "jquery.fancytree";
 
-type Callback = (key: unknown) => void;
+export type IKey = {
+  type: "architecture" | "entity" | "file" | "project" | "storage";
+  assocObj?: unknown;
+};
+
+export type Callback = (key: IKey) => void;
 
 export interface TreeData {
   title: string;
@@ -38,7 +45,7 @@ export type GetMenuFunction = (key: unknown) => (MenuAction | "---")[];
 
 type InternalTreeElem = {
   title: string;
-  icon: string;
+  icon: string | undefined;
   folder: boolean;
   key: string;
   children?: InternalTreeElem[];
@@ -56,7 +63,7 @@ let realTree: InternalTreeElem[] = []; // Значение дерева
 let keyMap: Map<number, any> = new Map();
 let callbackMap: Map<number, Callback> = new Map();
 
-let tree = undefined;
+let tree: any = undefined;
 
 const props = defineProps<{
   data: TreeData;
@@ -102,7 +109,6 @@ function loadTreeInternal(data: TreeData, loadTo: InternalTreeElem[]) {
 }
 
 function fullyReloadTree() {
-  console.log("Tree reload");
   realTree = [];
   keyMap = new Map();
   loadTreeInternal(props.data, realTree);
@@ -116,9 +122,12 @@ function fullyReloadTree() {
 fullyReloadTree();
 
 // Обработка нажатия пользователем пункта в контекстном меню
-const menuEvent = (event, data) => {
+const menuEvent = (event: any, data: { cmd: string }) => {
   const command = data.cmd;
   const callback = callbackMap.get(parseInt(command));
+  if (callback === undefined) {
+    throw new Error("Callback is undefined");
+  }
   const node = tree.getActiveNode();
   const keyRaw = node.key;
   const keyReal = keyMap.get(parseInt(keyRaw));
@@ -126,7 +135,7 @@ const menuEvent = (event, data) => {
 };
 
 // Функция выбирает меню, которое будет открываться при ПКМ на элемент дерева
-const chooseMenuForElement = (event, ui) => {
+const chooseMenuForElement = (event: any, ui: { target: any }) => {
   const node = $.ui.fancytree.getNode(ui.target);
   node.setActive();
   const keyRaw = node.key;
@@ -139,7 +148,9 @@ const chooseMenuForElement = (event, ui) => {
     if (menuItem === "---") normalMenu.push({ title: "----" });
     else {
       const callbackId = callbackMap.size;
-      callbackMap.set(callbackId, menuItem.callback);
+      if (menuItem.callback) {
+        callbackMap.set(callbackId, menuItem.callback);
+      }
       normalMenu.push({
         title: menuItem.text,
         cmd: callbackId.toString(),
@@ -151,7 +162,7 @@ const chooseMenuForElement = (event, ui) => {
 };
 
 // При выборе элемента дерева
-const onSelectTreeElement = (event, data) => {
+const onSelectTreeElement = (event: any, data: { node: { key: any } }) => {
   const keyRaw = data.node.key;
   const keyReal = keyMap.get(parseInt(keyRaw));
   props.selectCallback(keyReal);
@@ -161,20 +172,21 @@ const onSelectTreeElement = (event, data) => {
 onMounted(() => {
   tree = createTree("#tree", {
     selectMode: 3,
-    source: function (event, data) {
+    source: () => {
       return realTree;
     },
     click: onSelectTreeElement,
   });
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   +$("#tree").on("nodeCommand", menuEvent);
+  // @ts-expect-error: легаси
   import("jquery.fancytree/dist/skin-win7/ui.fancytree.css");
 
   $("#tree").contextmenu({
     delegate: "span.fancytree-node",
     menu: [],
     beforeOpen: chooseMenuForElement,
-    select: function (event, ui) {
+    select: function (event: any, ui: { cmd: string }) {
       // delay the event, so the menu can close and the click event does
       // not interfere with the edit control
       setTimeout(() => {

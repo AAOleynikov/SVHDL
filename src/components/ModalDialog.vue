@@ -16,7 +16,7 @@ export type ModalDialogState = {
   isOpened: boolean;
   title: string;
   type: "yesno" | "input";
-  callback?: Function;
+  callback?: () => void;
   inputValue?: string;
 };
 
@@ -24,7 +24,7 @@ export type DialogParams = {
   title: string;
   text?: string;
   type: "yesno" | "input";
-  callback?: Function;
+  callback?: () => void;
   inputValue?: string;
 };
 

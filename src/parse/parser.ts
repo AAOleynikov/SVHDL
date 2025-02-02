@@ -1,52 +1,20 @@
 /*******************************************************************
  * VHDL SIGNAL OF ARCHITECTURE && PORTS OF ENTITY && HEADER PARSER *
- * V0.1.4														   *
+ *                                                                 *
  * 2024.05.01 Oleynikov Anton 	https://github.com/AAOleynikov	   *
  * ****************************************************************/
 
-//Пример распаршенного объекта
-/*
-{
-   "header_declaration":"library IEEE ; use IEEE.STD_LOGIC_1164.all ; ",
-   "entity":{
-      "name":"jk_with_polar_control",
-      "ports":[
-         {
-            "name":"not_S",
-            "type":"inout",
-            "subtype":"STD_LOGIC"
-         },
-         {
-            "name":"K",
-            "sub_type":"in",
-            "subtype":"STD_LOGIC",
-         }
-      ]
-   }
-   "architectures":[
-      {
-         "name":"jk_with_polar_control",
-         "of":"jk_with_polar_control",
-         "signals":[
-            {
-               "name":"Q1",
-               "type":"STD_LOGIC"
-            }, ...
-         ]
-      }
-   ]
-}
-*/
-
-//Подключение заголовочных файлов, связанных c antlr4
 import {
   ParseTreeListener,
   ParseTreeWalker,
   CommonTokenStream,
   InputStream,
 } from "antlr4";
+// @ts-expect-error: сгенерированный код
 import vhdlLexer from "./build/vhdlLexer";
+// @ts-expect-error: сгенерированный код
 import vhdlParser from "./build/vhdlParser";
+// @ts-expect-error: сгенерированный код
 import vhdlParserListener from "./build/vhdlParserListener";
 import {
   ParsedVhdlFile,
@@ -60,69 +28,53 @@ export default class SVHDLListener
   implements ParseTreeListener
 {
   vhdlFileTop: ParsedVhdlFile;
-  constructor(_vhdlFileTop) {
+  constructor(_vhdlFileTop: ParsedVhdlFile) {
     super();
     this.vhdlFileTop = _vhdlFileTop;
   }
 
-  exitEntity_declaration(ctx) {
+  exitEntity_declaration(ctx: any) {
     const new_entity = new ParsedEntity(
       ctx.children[1].getText(),
       this.vhdlFileTop.fileName
     ); //entity decl with entity decl
-    const count_of_ports_strings = ctx
+    ctx
       .port_clause()
       .port_list()
       .interface_list()
-      .interface_element().length;
-    for (let i = 0; i < count_of_ports_strings; i++) {
-      const count_of_ports_in_string = ctx
-        .port_clause()
-        .port_list()
-        .interface_list()
-        .interface_element()
-        [i].interface_declaration()
-        .interface_object_declaration()
-        .interface_signal_declaration()
-        .identifier_list().children.length;
-      for (let j = 0; j < count_of_ports_in_string; j += 2) {
-        const port_name = ctx
-          .port_clause()
-          .port_list()
-          .interface_list()
-          .interface_element()
-          [i].interface_declaration()
+      .interface_element()
+      .forEach((element: any) => {
+        const count_of_ports_in_string = element
+          .interface_declaration()
           .interface_object_declaration()
           .interface_signal_declaration()
-          .identifier_list()
-          .children[j].getText();
-        const port_mode = ctx
-          .port_clause()
-          .port_list()
-          .interface_list()
-          .interface_element()
-          [i].interface_declaration()
-          .interface_object_declaration()
-          .interface_signal_declaration()
-          .signal_mode()
-          .getText();
-        const port_type = ctx
-          .port_clause()
-          .port_list()
-          .interface_list()
-          .interface_element()
-          [i].interface_declaration()
-          .interface_object_declaration()
-          .interface_signal_declaration()
-          .subtype_indication()
-          .getText();
-        new_entity.appendPort(port_name, port_type, port_mode);
-      }
-    }
+          .identifier_list().children.length;
+        for (let j = 0; j < count_of_ports_in_string; j += 2) {
+          const port_name = element
+            .interface_declaration()
+            .interface_object_declaration()
+            .interface_signal_declaration()
+            .identifier_list()
+            .children[j].getText();
+          const port_mode = element
+            .interface_declaration()
+            .interface_object_declaration()
+            .interface_signal_declaration()
+            .signal_mode()
+            .getText();
+          const port_type = element
+            .interface_declaration()
+            .interface_object_declaration()
+            .interface_signal_declaration()
+            .subtype_indication()
+            .getText();
+          new_entity.appendPort(port_name, port_type, port_mode);
+        }
+      });
     this.vhdlFileTop.addEntity(new_entity);
   }
 
-  exitContext_item(ctx) {
+  exitContext_item(ctx: any) {
     let text_with_sep = "";
     const count_of_tokens = ctx.children[0].children.length;
     for (let i = 0; i < count_of_tokens; i++)
@@ -130,36 +82,28 @@ export default class SVHDLListener
     this.vhdlFileTop.setHeader(text_with_sep);
   }
 
-  exitArchitecture_body(ctx) {
+  exitArchitecture_body(ctx: any) {
     //KW_ARCHITECTURE identifier KW_OF name KW_IS
     const new_architecture = new ParsedArchitecture(
       ctx.children[1].getText(),
       ctx.children[3].getText()
     );
-    const count_of_gramm = ctx.block_declarative_item().length;
-    for (let i = 0; i < count_of_gramm; i++) {
+
+    ctx.block_declarative_item().forEach((item: any) => {
       if (
-        ctx
-          .block_declarative_item()
-          [i].children[0].children[0].getText()
-          .slice(0, 6)
-          .toLowerCase() == "signal"
+        item.children[0].children[0].getText().slice(0, 6).toLowerCase() ==
+        "signal"
       ) {
         const signals_count =
-          ctx.block_declarative_item()[i].children[0].children[0].children[1]
-            .children.length;
+          item.children[0].children[0].children[1].children.length;
         for (let j = 0; j < signals_count; j += 2) {
           new_architecture.appendSignal(
-            ctx
-              .block_declarative_item()
-              [i].children[0].children[0].children[1].children[j].getText(),
-            ctx
-              .block_declarative_item()
-              [i].children[0].children[0].children[3].getText()
+            item.children[0].children[0].children[1].children[j].getText(),
+            item.children[0].children[0].children[3].getText()
           );
         }
       }
-    }
+    });
     this.vhdlFileTop.appendArchitecture(new_architecture);
   }
   visitTerminal() {}
@@ -169,7 +113,6 @@ export default class SVHDLListener
 }
 
 export function processCode(input: string, fileName: string) {
-  console.log("Processing code! ", { input, fileName });
   // В этот объект будет записана вся распаршенная информация
   const vhdlFileTop = new ParsedVhdlFile(fileName);
 

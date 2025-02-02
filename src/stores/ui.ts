@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-export type Screen = "vhdl" | "stymulus" | "waveform";
+export type UiScreen = "vhdl" | "stymulus" | "waveform";
 
 interface UIState {
   console: {
@@ -9,7 +9,7 @@ interface UIState {
     consoleText: string;
   };
   isLoading: boolean;
-  activeScreen: Screen;
+  activeScreen: UiScreen;
 }
 
 export const useUIStore = defineStore("userInterface", {

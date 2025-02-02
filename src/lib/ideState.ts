@@ -10,7 +10,7 @@ import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
 import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
 import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
-import { useUIStore } from "@/stores/ui";
+import { UiScreen, useUIStore } from "@/stores/ui";
 import {
   CodeGeneratorData,
   GeneratorStymulus,
@@ -44,6 +44,7 @@ export class StymulusConfig {
     this.ide_state = ide_state;
     this.project = project;
     this.parsingResult = new ParsedProject();
+    this.stymulusList = new Map();
 
     const rawData: string | null = localStorage.getItem(
       `stymulus_${project.name}`
@@ -77,34 +78,38 @@ export class StymulusConfig {
         ? this.topLevelFile.fileName
         : undefined,
     };
-    console.log("serialized data", data);
     const serializedData = JSON.stringify(data);
     localStorage.setItem("stymulus_" + this.project.name, serializedData);
   }
+  /**
+   * Обновляет результат парсинга и, если возможно, сохраняет старые настройки сигналов
+   */
   updateParsing() {
     this.parsingResult = new ParsedProject();
-    for (const file of this.project.files) {
+    this.project.files.forEach((file) => {
       this.parsingResult.addFile(processCode(file.code, file.name));
-    }
-    try {
-      // Проверка на то, остался ли файл верхнего уровня и осталась ли top-level сущность после обновления парсинга
-      const fileAnalog = this.parsingResult.vhdlFiles.find((a) => {
-        return a.fileName == this.topLevelFile.fileName;
-      });
-      const entityAnalog = fileAnalog.entities.find((a) => {
-        return a.name == this.topLevelEntity.name;
-      });
-      if (entityAnalog.name.length) {
+    });
+    const oldTopLevelFileName = this.topLevelFile?.fileName;
+    const oldTopLevelEntityName = this.topLevelEntity?.name;
+
+    this.topLevelFile = undefined;
+    this.topLevelEntity = undefined;
+
+    const fileAnalog = this.parsingResult.vhdlFiles.find(
+      (a) => a.fileName === oldTopLevelFileName
+    );
+
+    if (fileAnalog) {
+      const entityAnalog = fileAnalog.entities.find(
+        (a) => a.name === oldTopLevelEntityName
+      );
+
+      if (entityAnalog && entityAnalog.name.length > 0) {
         this.topLevelFile = fileAnalog;
         this.topLevelEntity = entityAnalog;
-      } else {
-        this.topLevelFile = undefined;
-        this.topLevelEntity = undefined;
       }
-    } catch {
-      this.topLevelFile = undefined;
-      this.topLevelEntity = undefined;
     }
+
     this.save();
     this.isOutdated = false;
   }
@@ -147,11 +152,12 @@ export class StymulusConfig {
 export interface SimulationState {
   waveform: ParsedVCD;
   currentTime: number;
+  hotkeyMap: Map<string, boolean>;
   hotkeyEvents: unknown[];
 }
 
 export class IDEState {
-  activeScreen: Screen;
+  activeScreen: UiScreen;
   activeProject?: Project;
   activeFile?: ProjectFile;
   editorLine?: number;
@@ -161,7 +167,7 @@ export class IDEState {
   stymulusState?: StymulusConfig;
   simulationState?: SimulationState;
   vcd: string = "";
-  curSTime: number;
+  curSTime: number = 0;
 
   isEverythingSaved() {
     return (
@@ -170,7 +176,10 @@ export class IDEState {
     );
   }
 
-  constructor() {}
+  constructor() {
+    this.projectStorage = ProjectStorage.loadFromLocalStorage();
+    this.activeScreen = "vhdl";
+  }
   /** Сохраняет только состояние IDE, не сохраняет файлы! */
   saveToLocalStorage() {
     localStorage.setItem(
@@ -193,9 +202,9 @@ export class IDEState {
     if (data.activeProjectName) {
       ide_state.setProjectActive(data.activeProjectName);
       if (data.activeFileName) {
-        ide_state.activeFile = ide_state.activeProject.getFileByName(
-          data.activeFileName
-        );
+        ide_state.activeFile = (
+          ide_state.activeProject as Project
+        ).getFileByName(data.activeFileName);
         ide_state.editorLine = data.editorLine ?? 0;
       }
     }
@@ -237,6 +246,9 @@ export class IDEState {
   }
   discardAll() {
     this.projectStorage = new ProjectStorage();
+    if (this.activeFile === undefined || this.activeProject === undefined) {
+      return;
+    }
     const activeFileName = this.activeFile.name;
     this.setProjectActive(this.activeProject.name);
     this.setActiveFile(activeFileName);
@@ -244,9 +256,15 @@ export class IDEState {
     this.updateStymulusState();
   }
   setActiveFile(name: string) {
+    if (this.activeProject === undefined) {
+      return;
+    }
     this.activeFile = this.activeProject.getFileByName(name);
   }
   compile() {
+    if (this.activeProject === undefined) {
+      return;
+    }
     if (!this.isEverythingSaved()) {
       this.addToastMessage({
         title: "Save first",
@@ -260,8 +278,8 @@ export class IDEState {
       return;
     }
     this.updateStymulusState();
-    this.stymulusState.updateParsing();
-    this.stymulusState.updateStymulusList();
+    (this.stymulusState as StymulusConfig).updateParsing();
+    (this.stymulusState as StymulusConfig).updateStymulusList();
     validate(this.activeProject, this);
   }
   finishCompilation(result: ValidationResultFromServer) {
@@ -287,15 +305,26 @@ export class IDEState {
     }
   }
   updateStymulusState() {
-    this.stymulusState = new StymulusConfig(this, this.activeProject);
+    if (this.activeProject !== undefined) {
+      this.stymulusState = new StymulusConfig(this, this.activeProject);
+    }
   }
   startSimulation(firstStepSize: Time) {
+    if (
+      this.stymulusState === undefined ||
+      this.stymulusState.topLevelEntity === undefined ||
+      this.activeProject === undefined
+    ) {
+      throw new Error("No top level entity defined");
+    }
+
     this.curSTime = timeToFs(firstStepSize);
     const stims: GeneratorStymulus[] = [];
     this.stymulusState.stymulusList.forEach((a) => {
       stims.push(a);
     });
     console.log(stims);
+
     const genData: CodeGeneratorData = {
       header_declaration: "library ieee;\nuse ieee.std_logic_1164.all;",
       entity: {
@@ -337,6 +366,7 @@ export class IDEState {
         currentTime: 0,
         hotkeyEvents: [],
         waveform: parseVCD(this.vcd),
+        hotkeyMap: new Map(),
       };
     } catch (e) {
       console.error(e);
