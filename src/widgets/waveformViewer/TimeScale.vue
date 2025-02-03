@@ -9,6 +9,9 @@ const numBins = ref<number>(5);
 const scaleWidth = ref<number>(9999); // Ширина шкалы
 const container = ref<InstanceType<typeof HTMLDivElement> | null>(null); // DOM основного div'а шкалы
 function updateSizes() {
+  if (container.value === null) {
+    throw new Error("");
+  }
   numBins.value = Math.ceil((container.value.clientWidth - 100) / 100);
   scaleWidth.value = container.value.clientWidth;
 }

@@ -4,8 +4,8 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import Button from "../ui/button/Button.vue";
+} from "@/shared/components/ui/tooltip";
+import Button from "@/shared/components/ui/button/Button.vue";
 const props = defineProps<{
   icon: string;
   tooltip: string;

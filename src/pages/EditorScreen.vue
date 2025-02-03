@@ -7,8 +7,8 @@ import {
   // @ts-expect-error: shadcn-модуль
 } from "@/components/ui/resizable";
 // @ts-expect-error: shadcn-модуль
-import Button from "@/components/ui/button/Button.vue";
-import Editor from "@/components/MonacoEditor.vue";
+import Button from "@/shared/components/ui/button/Button.vue";
+import Editor from "@/widgets/monaco/MonacoEditor.vue";
 import { IDEState } from "@/lib/ideState";
 
 import { useUIStore } from "@/stores/ui";

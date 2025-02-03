@@ -24,7 +24,7 @@ export type DialogParams = {
   title: string;
   text?: string;
   type: "yesno" | "input";
-  callback?: () => void;
+  callback?: (val: any) => void;
   inputValue?: string;
 };
 

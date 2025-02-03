@@ -3,12 +3,12 @@
 import { ref, reactive, watch } from "vue";
 import EditorScreen from "@/screens/EditorScreen.vue";
 import SignalsScreen from "@/screens/SignalsScreen.vue";
-import NavBar from "@/components/NavBar.vue";
+import NavBar from "@/widgets/navbar/NavBar.vue";
 import { IDEState } from "./lib/ideState";
 // @ts-expect-error: Shadcn-Vue не даёт декларации типов
 import { Toaster } from "@/components/ui/sonner";
 import { validateTransition } from "./lib/validateTransition";
-import WaveformScreen from "./screens/WaveformScreen.vue";
+import WaveformScreen from "@/pages/WaveformScreen.vue";
 import Loading from "vue-loading-overlay";
 
 import {

@@ -1,4 +1,5 @@
-<script setup>
+<!-- eslint-disable vue/multi-word-component-names -->
+<script setup lang="ts">
 import { Primitive } from "radix-vue";
 import { buttonVariants } from ".";
 import { cn } from "@/lib/utils";
@@ -16,8 +17,7 @@ const props = defineProps({
   <Primitive
     :as="as"
     :as-child="asChild"
-    :class="cn(buttonVariants({ variant, size }), props.class)"
-  >
+    :class="cn(buttonVariants({ variant, size }), props.class)">
     <slot />
   </Primitive>
 </template>

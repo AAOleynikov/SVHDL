@@ -3,12 +3,12 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import Button from "../ui/button/Button.vue";
+} from "@/shared/components/ui/popover";
+import Button from "@/shared/components/ui/button/Button.vue";
 import TooltipButton from "./TooltipButton.vue";
-import Separator from "../ui/separator/Separator.vue";
-import Label from "../ui/label/Label.vue";
-import TimeInput from "../TimeInput.vue";
+import Separator from "@/shared/components/ui/separator/Separator.vue";
+import Label from "@/shared/components/ui/label/Label.vue";
+import TimeInput from "@/shared/components/TimeInput.vue";
 </script>
 
 <template>
