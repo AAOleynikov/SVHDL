@@ -5,7 +5,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 import { loader } from "@guolao/vue-monaco-editor";
 import * as monaco from "monaco-editor";
-import { vhdl_lang } from "./assets/vhdl_monarch";
+import { vhdl_lang } from "../assets/vhdl_monarch";
 import { createPinia } from "pinia";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";

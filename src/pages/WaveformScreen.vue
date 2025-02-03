@@ -9,7 +9,7 @@ import {
   WaveFormData,
 } from "@/components/waveform/WfTypes";
 import { ref, reactive, computed, onMounted, watch } from "vue";
-import { VCDScope, ParsedVCD } from "@/features/vcdParser/vcdParser";
+import { VCDScope, ParsedVCD } from "@/features/vcdParser";
 import { usePointerSwipe, useScroll } from "@vueuse/core";
 
 import { IDEState } from "@/lib/ideState";

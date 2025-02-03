@@ -5,17 +5,17 @@ import {
   ParsedProject,
   ParsedFileJson,
 } from "./parsedFile";
-import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/features/vcdParser/vcdParser";
+import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/features/vcdParser";
 import { toast } from "vue-sonner";
 import { processCode } from "@/features/parser/parser";
 import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
 import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
-import { UiScreen, useUIStore } from "@/stores/ui";
+import { UiScreen, useUIStore } from "@/app/stores/ui";
 import {
   CodeGeneratorData,
   GeneratorStymulus,
   TestbenchGenerator,
-} from "@/features/testbenchGenerator/gen";
+} from "@/features/testbenchGenerator";
 
 export interface ToastMessage {
   title: string;

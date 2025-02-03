@@ -1,4 +1,4 @@
-import { useUIStore } from "@/stores/ui";
+import { useUIStore } from "@/app/stores/ui";
 import { IDEState } from "./ideState";
 import { Project } from "./projectSystem";
 import axios from "axios";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, defineProps, ref, watch } from "vue";
-import { ScaleData } from "../../shared/components/waveform/WfTypes";
-import { VCDSignal } from "@/features/vcdParser/vcdParser";
+import { ScaleData } from "@/entities/waveform";
+import { VCDSignal } from "@/features/vcdParser";
 const props = defineProps<{
   scaleData: ScaleData;
   waveformData: VCDSignal;

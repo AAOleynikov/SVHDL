@@ -11,7 +11,7 @@ import Button from "@/shared/components/ui/button/Button.vue";
 import Editor from "@/widgets/monaco/MonacoEditor.vue";
 import { IDEState } from "@/lib/ideState";
 
-import { useUIStore } from "@/stores/ui";
+import { useUIStore } from "@/app/stores/ui";
 
 const ui = useUIStore();
 

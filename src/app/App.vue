@@ -4,10 +4,10 @@ import { ref, reactive, watch } from "vue";
 import EditorScreen from "@/screens/EditorScreen.vue";
 import SignalsScreen from "@/screens/SignalsScreen.vue";
 import NavBar from "@/widgets/navbar/NavBar.vue";
-import { IDEState } from "./lib/ideState";
+import { IDEState } from "../lib/ideState";
 // @ts-expect-error: Shadcn-Vue не даёт декларации типов
 import { Toaster } from "@/components/ui/sonner";
-import { validateTransition } from "./lib/validateTransition";
+import { validateTransition } from "../lib/validateTransition";
 import WaveformScreen from "@/pages/WaveformScreen.vue";
 import Loading from "vue-loading-overlay";
 
@@ -20,7 +20,7 @@ import {
   // @ts-expect-error: Shadcn-Vue не даёт декларации типов
 } from "@/components/ui/dialog";
 import { useUIStore } from "./stores/ui";
-import { Time } from "./lib/measureUnits";
+import { Time } from "../lib/measureUnits";
 
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());

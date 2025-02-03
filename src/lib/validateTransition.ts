@@ -1,8 +1,8 @@
 /** Определить, имеет ли право пользователь переходить между вкладками. Выдать ошибку, если не имеет */
 
-import { useUIStore } from "@/stores/ui";
+import { useUIStore } from "@/app/stores/ui";
 import { IDEState } from "./ideState";
-import { UiScreen } from "@/stores/ui";
+import { UiScreen } from "@/app/stores/ui";
 
 /** @returns экран, на который перебросить пользователя */
 export function validateTransition(

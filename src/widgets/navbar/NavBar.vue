@@ -4,7 +4,7 @@ import { IDEState } from "@/lib/ideState";
 import { defineProps, ref, watch } from "vue";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { validateTransition } from "@/lib/validateTransition";
-import { UiScreen, useUIStore } from "@/stores/ui";
+import { UiScreen, useUIStore } from "@/app/stores/ui";
 
 const ide_state = defineModel<IDEState>();
 const props = defineProps(["persTimer"]);
