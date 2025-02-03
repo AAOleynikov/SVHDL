@@ -20,6 +20,7 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
+  <!-- @vue-expect-error: неидеальная библиотека -->
   <Separator
     v-bind="delegatedProps"
     :class="

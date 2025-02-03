@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { SplitterResizeHandle, useForwardPropsEmits } from "radix-vue";
 import { DragHandleDots2Icon } from "@radix-icons/vue";
@@ -25,6 +25,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
 <template>
+  <!-- @vue-expect-error: неидеальная библиотека -->
   <SplitterResizeHandle
     v-bind="forwarded"
     :class="

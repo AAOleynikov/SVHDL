@@ -1,4 +1,5 @@
-<script setup>
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+<script setup lang="ts">
 import { computed } from "vue";
 import { SplitterGroup, useForwardPropsEmits } from "radix-vue";
 import { cn } from "@/shared/tailwind";
@@ -24,6 +25,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
 <template>
+  <!-- @vue-expect-error: неидеальная библиотека -->
   <SplitterGroup
     v-bind="forwarded"
     :class="
@@ -31,8 +33,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
         'flex h-full w-full data-[panel-group-direction=vertical]:flex-col',
         props.class
       )
-    "
-  >
+    ">
     <slot />
   </SplitterGroup>
 </template>

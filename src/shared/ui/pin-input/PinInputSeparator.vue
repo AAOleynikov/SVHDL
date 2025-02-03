@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Primitive, useForwardProps } from "radix-vue";
 import { DashIcon } from "@radix-icons/vue";
 

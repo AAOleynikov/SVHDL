@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import SimulationControl from "@/components/waveform/SimulationControl.vue";
-import WfLabel from "@/components/waveform/WfLabel.vue";
-import WfPlot from "@/widgets/waveformViewer/WfPlot.vue";
+import { SimulationControl } from "@/widgets/simulationControlBar";
+import { WfPlot, WfLabel } from "@/widgets/waveformViewer";
 import TimeScale from "@/shared/components/TimeScale.vue";
 import { ScaleData, DisplayData, WaveFormData } from "@/entities/waveform";
 import { ref, reactive, computed, onMounted, watch } from "vue";

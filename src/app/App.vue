@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /* Экран IDE с навигацией и состояниями редактора */
 import { ref, reactive, watch } from "vue";
-import EditorScreen from "@/screens/EditorScreen.vue";
-import SignalsScreen from "@/screens/SignalsScreen.vue";
+import EditorScreen from "@/pages/EditorScreen.vue";
+import SignalsScreen from "@/pages/SignalsScreen.vue";
 import NavBar from "@/widgets/navbar/NavBar.vue";
 import { IDEState } from "../lib/ideState";
-// @ts-expect-error: Shadcn-Vue не даёт декларации типов
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/shared/ui/sonner";
 import { validateTransition } from "../lib/validateTransition";
 import WaveformScreen from "@/pages/WaveformScreen.vue";
 import Loading from "vue-loading-overlay";
@@ -17,8 +16,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  // @ts-expect-error: Shadcn-Vue не даёт декларации типов
-} from "@/components/ui/dialog";
+} from "@/shared/ui/dialog";
 import { useUIStore } from "./stores/ui";
 import { Time } from "../lib/measureUnits";
 

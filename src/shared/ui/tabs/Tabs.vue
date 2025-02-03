@@ -16,6 +16,7 @@ const forwarded = useForwardPropsEmits(props, emits);
 </script>
 
 <template>
+  <!-- @vue-expect-error: неидеальная библиотека -->
   <TabsRoot v-bind="forwarded">
     <slot />
   </TabsRoot>

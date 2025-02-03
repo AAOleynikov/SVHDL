@@ -47,6 +47,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 
 <template>
   <PopoverPortal>
+    <!-- @vue-expect-error: неидеальная библиотека -->
     <PopoverContent
       v-bind="{ ...forwarded, ...$attrs }"
       :class="

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import {
   DialogClose,
@@ -50,7 +50,7 @@ cn(
         @pointer-down-outside="
           (event) => {
             const originalEvent = event.detail.originalEvent;
-            const target = originalEvent.target;
+            const target = originalEvent.target as Element;
             if (
               originalEvent.offsetX > target.clientWidth ||
               originalEvent.offsetY > target.clientHeight

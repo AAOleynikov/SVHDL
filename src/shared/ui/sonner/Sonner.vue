@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Toaster as Sonner } from "vue-sonner";
 
 const props = defineProps({
@@ -25,6 +25,7 @@ const props = defineProps({
 </script>
 
 <template>
+  <!-- @vue-expect-error: неидеальная библиотека -->
   <Sonner
     class="toaster group"
     v-bind="props"
@@ -39,6 +40,5 @@ const props = defineProps({
         cancelButton:
           'group-[.toast]:bg-slate-100 group-[.toast]:text-slate-500 dark:group-[.toast]:bg-slate-800 dark:group-[.toast]:text-slate-400',
       },
-    }"
-  />
+    }" />
 </template>

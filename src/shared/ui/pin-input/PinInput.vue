@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { PinInputRoot, useForwardPropsEmits } from "radix-vue";
 import { cn } from "@/shared/tailwind";
@@ -30,10 +30,10 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
 <template>
+  <!-- @vue-expect-error: неидеальная библиотека -->
   <PinInputRoot
     v-bind="forwarded"
-    :class="cn('flex gap-2 items-center', props.class)"
-  >
+    :class="cn('flex gap-2 items-center', props.class)">
     <slot />
   </PinInputRoot>
 </template>

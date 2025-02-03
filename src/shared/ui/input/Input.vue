@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useVModel } from "@vueuse/core";
 import { cn } from "@/shared/tailwind";
 
