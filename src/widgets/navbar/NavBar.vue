@@ -2,7 +2,7 @@
 import "@/assets/css/index.css";
 import { IDEState } from "@/lib/ideState";
 import { defineProps, ref, watch } from "vue";
-import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { validateTransition } from "@/lib/validateTransition";
 import { UiScreen, useUIStore } from "@/app/stores/ui";
 
@@ -33,6 +33,9 @@ const ui = useUIStore();
 const screen = ref<UiScreen>(ui.activeScreen);
 
 watch(screen, (newValue, oldValue) => {
+  if (ide_state.value === undefined) {
+    throw new Error("ide_state is undefined");
+  }
   const newScr = validateTransition(ide_state.value, oldValue, newValue);
   screen.value = newScr;
   if (ui.activeScreen !== newScr) {

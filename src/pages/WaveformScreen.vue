@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import SimulationControl from "@/components/waveform/SimulationControl.vue";
 import WfLabel from "@/components/waveform/WfLabel.vue";
-import WfPlot from "@/components/waveform/WfPlot.vue";
-import TimeScale from "@/components/waveform/TimeScale.vue";
-import {
-  ScaleData,
-  DisplayData,
-  WaveFormData,
-} from "@/components/waveform/WfTypes";
+import WfPlot from "@/widgets/waveformViewer/WfPlot.vue";
+import TimeScale from "@/shared/components/TimeScale.vue";
+import { ScaleData, DisplayData, WaveFormData } from "@/entities/waveform";
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { VCDScope, ParsedVCD } from "@/features/vcdParser";
 import { usePointerSwipe, useScroll } from "@vueuse/core";

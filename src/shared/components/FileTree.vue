@@ -53,6 +53,9 @@ const openDialog = (params: DialogParams) => {
 };
 
 const treeData = computed<TreeData>(() => {
+  if (ide_state.value === undefined) {
+    throw new Error("ide_state is undefined");
+  }
   const data: TreeData = {
     title: "SVHDL Projects",
     key: { type: "storage" },
@@ -64,7 +67,7 @@ const treeData = computed<TreeData>(() => {
       title: proj.name,
       key: { type: "project", assocObj: proj },
     };
-    if (proj == ide_state.value.activeProject) {
+    if (proj === ide_state.value.activeProject) {
       projectData.isBold = true;
       projectData.children = [];
       for (const file of proj.files) {
@@ -72,10 +75,10 @@ const treeData = computed<TreeData>(() => {
           title: file.name,
           key: { type: "file", assocObj: file },
           badges: [],
+          icon: "bi-file-earmark",
         };
         if (file.isUnsaved) fileData.badges.push("bi-dot");
-        fileData.icon = "bi-file-earmark";
-        if (file == ide_state.value.activeFile) {
+        if (file === ide_state.value.activeFile) {
           fileData.badges.push("bi-pen");
           if (ide_state.value.stymulusState !== undefined) {
             const parsedAnalog =
@@ -173,7 +176,8 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
         text: "Download file",
         icon: "ui-icon-arrowthick-1-s",
         callback: (key: IKey) => {
-          saveAs(key.assocObj.code, key.assocObj.name);
+          const assocObj = key.assocObj as ProjectFile;
+          saveAs(assocObj.code, assocObj.name);
         },
       }
     );

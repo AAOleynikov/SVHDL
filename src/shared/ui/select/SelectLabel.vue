@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { SelectLabel } from "radix-vue";
 import { cn } from "@/shared/tailwind";
 

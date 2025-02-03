@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
-import Button from "@/shared/components/ui/button/Button.vue";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/tooltip";
+import { Button } from "@/shared/ui/button";
 const props = defineProps<{
   icon: string;
   tooltip: string;

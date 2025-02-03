@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { SelectScrollUpButton, useForwardProps } from "radix-vue";
 import { ChevronUpIcon } from "@radix-icons/vue";

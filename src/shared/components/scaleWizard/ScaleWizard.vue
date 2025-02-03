@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
-import Button from "@/shared/components/ui/button/Button.vue";
-import TooltipButton from "../../shared/ui/tooltip-button/TooltipButton.vue";
-import Separator from "@/shared/components/ui/separator/Separator.vue";
-import { Label } from "@/shared/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
+import Button from "@/shared/ui/button/Button.vue";
+import { TooltipButton } from "@/shared/ui/tooltip-button";
+import { Separator } from "@/shared/ui/separator";
+import { Label } from "@/shared/ui/label";
 import TimeInput from "@/shared/components/TimeInput.vue";
 import { noop } from "@vueuse/core";
 </script>

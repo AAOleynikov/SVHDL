@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { SelectIcon, SelectTrigger, useForwardProps } from "radix-vue";
 import { CaretSortIcon } from "@radix-icons/vue";
