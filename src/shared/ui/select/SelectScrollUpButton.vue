@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { SelectScrollUpButton, useForwardProps } from "radix-vue";
 import { ChevronUpIcon } from "@radix-icons/vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   asChild: { type: Boolean, required: false },

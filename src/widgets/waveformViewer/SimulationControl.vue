@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import TooltipButton from "./TooltipButton.vue";
+import TooltipButton from "../../shared/ui/tooltip-button/TooltipButton.vue";
 import TimeInput from "@/shared/components/TimeInput.vue";
 import ScaleWizard from "./ScaleWizard.vue";
 import { ScaleData } from "@/entities/waveform";

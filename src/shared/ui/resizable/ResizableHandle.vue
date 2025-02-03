@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { SplitterResizeHandle, useForwardPropsEmits } from "radix-vue";
 import { DragHandleDots2Icon } from "@radix-icons/vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   id: { type: String, required: false },

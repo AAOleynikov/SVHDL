@@ -1,6 +1,6 @@
 <script setup>
 import { SelectLabel } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   for: { type: String, required: false },

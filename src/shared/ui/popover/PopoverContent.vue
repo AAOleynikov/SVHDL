@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { PopoverContent, PopoverPortal, useForwardPropsEmits } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 defineOptions({
   inheritAttrs: false,

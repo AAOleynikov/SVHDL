@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { Primitive } from "radix-vue";
 import { buttonVariants } from ".";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   variant: { type: null, required: false },

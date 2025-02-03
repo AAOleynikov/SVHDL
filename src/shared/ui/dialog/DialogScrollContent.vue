@@ -7,7 +7,7 @@ import {
   DialogPortal,
   useForwardPropsEmits,
 } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   forceMount: { type: Boolean, required: false },

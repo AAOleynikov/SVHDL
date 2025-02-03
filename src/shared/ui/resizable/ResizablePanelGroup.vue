@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { SplitterGroup, useForwardPropsEmits } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   id: { type: [String, null], required: false },

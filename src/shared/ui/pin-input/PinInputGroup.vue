@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { Primitive, useForwardProps } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   asChild: { type: Boolean, required: false },

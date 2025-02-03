@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import TableRow from "./TableRow.vue";
 import TableCell from "./TableCell.vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   class: { type: null, required: false },

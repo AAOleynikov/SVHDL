@@ -7,7 +7,7 @@ import {
   useForwardProps,
 } from "radix-vue";
 import { CheckIcon } from "@radix-icons/vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   value: { type: String, required: true },

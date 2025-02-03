@@ -3,6 +3,8 @@
 import { Time } from "@/lib/measureUnits";
 import { VCDSignal } from "@/features/vcdParser";
 
+export type BitValue = "0" | "1" | "x" | "z";
+
 // Scope - чисто папка vcd
 export type WaveFormScope = {
   type: "scope";
@@ -31,7 +33,7 @@ export type DisplayBit = {
   data: VCDSignal;
   level: number; // Уровень отступа (вложенность Scope относительно корневого Scope)
   name: string;
-  events: { timeFs: number; toValue: "0" | "1" | "x" | "z" }[];
+  events: { timeFs: number; toValue: BitValue }[];
   hotkey: string | undefined;
   isActive: boolean | undefined;
 };

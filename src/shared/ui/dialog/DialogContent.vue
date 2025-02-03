@@ -8,7 +8,7 @@ import {
   useForwardPropsEmits,
 } from "radix-vue";
 import { Cross2Icon } from "@radix-icons/vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   forceMount: { type: Boolean, required: false },

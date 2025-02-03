@@ -7,7 +7,7 @@ import {
   SliderTrack,
   useForwardPropsEmits,
 } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   name: { type: String, required: false },

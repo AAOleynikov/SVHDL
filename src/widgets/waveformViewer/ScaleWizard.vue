@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
 import Button from "@/shared/components/ui/button/Button.vue";
-import TooltipButton from "./TooltipButton.vue";
+import TooltipButton from "../../shared/ui/tooltip-button/TooltipButton.vue";
 import Separator from "@/shared/components/ui/separator/Separator.vue";
 import { Label } from "@/shared/components/ui/label";
 import TimeInput from "@/shared/components/TimeInput.vue";

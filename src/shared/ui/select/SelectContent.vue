@@ -7,7 +7,7 @@ import {
   useForwardPropsEmits,
 } from "radix-vue";
 import { SelectScrollDownButton, SelectScrollUpButton } from ".";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 defineOptions({
   inheritAttrs: false,

@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { SwitchRoot, SwitchThumb, useForwardPropsEmits } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   defaultChecked: { type: Boolean, required: false },

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { TabsTrigger, useForwardProps } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   value: { type: String, required: true },

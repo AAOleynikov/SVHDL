@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { SelectIcon, SelectTrigger, useForwardProps } from "radix-vue";
 import { CaretSortIcon } from "@radix-icons/vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   disabled: { type: Boolean, required: false },

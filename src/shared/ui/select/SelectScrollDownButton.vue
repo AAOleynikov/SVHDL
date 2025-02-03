@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { SelectScrollDownButton, useForwardProps } from "radix-vue";
 import { ChevronDownIcon } from "@radix-icons/vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   asChild: { type: Boolean, required: false },

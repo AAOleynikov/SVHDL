@@ -3,38 +3,10 @@
  * 2024.06.11 Oleynikov Anton 	https://github.com/AAOleynikov	   *
  * ****************************************************************/
 
+import { GeneratorClockStymulus, GeneratorConstStymulus, GeneratorHotkeyStymulus, GeneratorStymulus } from "@/entities/stimulus";
 import { Time } from "@/lib/measureUnits";
 
-export type ValueType = "0" | "1";
-
 let process_id: number = 0;
-
-export type GeneratorStymulus =
-  | GeneratorClockStymulus
-  | GeneratorHotkeyStymulus
-  | GeneratorConstStymulus;
-
-export interface GeneratorClockStymulus {
-  nameOfTarget: string;
-  stimulus_type: "Clock";
-  low_value: ValueType;
-  high_value: ValueType;
-  starts_with: "low_value" | "high_value";
-  duty_cycle: number;
-  period: Time;
-}
-
-export interface GeneratorHotkeyStymulus {
-  nameOfTarget: string;
-  stimulus_type: "HotKey";
-  time_line: { time: Time; value: ValueType }[];
-}
-
-export interface GeneratorConstStymulus {
-  nameOfTarget: string;
-  stimulus_type: "Const";
-  value: ValueType;
-}
 
 export interface GeneratorPort {
   name: string;
@@ -252,7 +224,3 @@ export class TestbenchGenerator {
 /* end Stimulus declaration */
 
 /* end TestbenchGenerator declaration */
-
-// const data = JSON.parse(jsonExample);
-//let TB = new TestbenchGenerator(jsonExample);
-//console.log(TB.vhdl);

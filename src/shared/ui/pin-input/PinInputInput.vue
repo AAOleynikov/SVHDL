@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { PinInputInput, useForwardProps } from "radix-vue";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/tailwind";
 
 const props = defineProps({
   index: { type: Number, required: true },
