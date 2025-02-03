@@ -1,7 +1,7 @@
 /** Промежуточные модели для отображения */
 
 import { Time } from "@/lib/measureUnits";
-import { VCDSignal } from "@/vcd_tools/vcd2json";
+import { VCDSignal } from "@/features/vcdParser/vcdParser";
 
 // Scope - чисто папка vcd
 export type WaveFormScope = {

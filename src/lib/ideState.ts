@@ -5,7 +5,7 @@ import {
   ParsedProject,
   ParsedFileJson,
 } from "./parsedFile";
-import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/vcd_tools/vcd2json";
+import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/features/vcdParser/vcdParser";
 import { toast } from "vue-sonner";
 import { processCode } from "@/features/parser/parser";
 import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
