@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { DisplayData } from "./WfTypes";
+import { DisplayData } from "../../shared/components/waveform/WfTypes";
 
 const props = defineProps<{ data: DisplayData }>();
 const emit = defineEmits(["fold", "unfold"]);

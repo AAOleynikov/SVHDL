@@ -2,8 +2,8 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TooltipButton from "./TooltipButton.vue";
 import TimeInput from "../TimeInput.vue";
-import ScaleWizard from "../../../widgets/waveformViewer/ScaleWizard.vue";
-import { ScaleData } from "./WfTypes";
+import ScaleWizard from "./ScaleWizard.vue";
+import { ScaleData } from "../../shared/components/waveform/WfTypes";
 
 const scaleData = defineModel<ScaleData>({ required: true });
 </script>
