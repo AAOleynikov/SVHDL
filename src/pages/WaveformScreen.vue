@@ -21,7 +21,18 @@ function recursiveLoadVcdState(
 ): undefined {
   const newChildren: WaveFormData[] = [];
   for (const variable of what.signals) {
-    newChildren.push({ type: "var", name: variable.name, data: variable });
+    if (variable.type === "bit") {
+      newChildren.push({ type: "var", name: variable.name, data: variable });
+    } else {
+      newChildren.push({
+        type: "vector",
+        expanded: false,
+        size: variable.size,
+        children: variable.signals.map((bit, idx) => {
+          return { data: bit, name: variable.name + idx, type: "var" };
+        }),
+      });
+    }
   }
   const newFolder: WaveFormData = {
     type: "scope",
@@ -79,6 +90,8 @@ function recursiveLoadDisplayState(
       name: what.name,
       level,
       events: [],
+      hotkey: undefined, // TODO исправить
+      isActive: false,
     });
   }
 }

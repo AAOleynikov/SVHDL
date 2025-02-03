@@ -20,7 +20,7 @@ import {
 import { useUIStore } from "./stores/ui";
 import { Time } from "@/entities/time";
 
-const persistencyTimerId = ref(undefined);
+const persistencyTimerId = ref<number | undefined>(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());
 watch(ide_state, () => {
   if (persistencyTimerId.value === undefined) {

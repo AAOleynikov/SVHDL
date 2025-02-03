@@ -12,10 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import { StymulusConfig } from "@/lib/ideState";
+import { StimulusConfig } from "@/lib/ideState";
 import { Time } from "@/entities/time";
 
-const stymulusState = defineModel<StymulusConfig>({ required: true });
+const stymulusState = defineModel<StimulusConfig>({ required: true });
 const { startSimulation } = defineProps<{
   startSimulation: (firstStepTime: Time) => void;
 }>();

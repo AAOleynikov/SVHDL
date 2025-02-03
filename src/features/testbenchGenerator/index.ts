@@ -3,8 +3,12 @@
  * 2024.06.11 Oleynikov Anton 	https://github.com/AAOleynikov	   *
  * ****************************************************************/
 
-import { GeneratorClockStymulus, GeneratorConstStymulus, GeneratorHotkeyStymulus, GeneratorStymulus } from "@/entities/stimulus";
-import { Time } from "@/lib/measureUnits";
+import {
+  GeneratorClockStymulus,
+  GeneratorConstStymulus,
+  GeneratorHotkeyStymulus,
+  GeneratorStymulus,
+} from "@/entities/stimulus";
 
 let process_id: number = 0;
 

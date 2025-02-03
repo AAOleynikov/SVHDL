@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import FileTree from "@/components/FileTree.vue";
+import FileTree from "@/shared/components/FileTree.vue";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-  // @ts-expect-error: shadcn-модуль
-} from "@/components/ui/resizable";
-// @ts-expect-error: shadcn-модуль
-import Button from "@/shared/components/ui/button/Button.vue";
-import Editor from "@/widgets/monaco/MonacoEditor.vue";
+} from "@/shared/ui/resizable";
+import { Button } from "@/shared/ui/button";
+import Editor from "@/shared/components/MonacoEditor.vue";
 import { IDEState } from "@/lib/ideState";
 
 import { useUIStore } from "@/app/stores/ui";

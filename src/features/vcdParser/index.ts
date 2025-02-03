@@ -5,7 +5,7 @@
 // https://gtkwave.sourceforge.net/ - десктоп приложение для просмотра waveforms
 // https://zipcpu.com/blog/2017/07/31/vcd.html
 
-import { StymulusConfig } from "@/lib/ideState";
+import { StimulusConfig } from "@/lib/ideState";
 import { GeneratorStymulus } from "@/entities/stimulus";
 
 /** Событие присвоения сигналу значения в какой-то момент времени */
@@ -20,6 +20,7 @@ export interface VCDVectorAssignment {
 }
 
 export class VCDSignal {
+  type = "bit" as const;
   events: VCDSignalAssignment[]; //Список событий, упорядоченный по их временной метке
   name: string;
   identifier: string;
@@ -38,6 +39,7 @@ export class VCDSignal {
 }
 
 export class VCDVector {
+  type = "vector" as const;
   events: VCDVectorAssignment[]; //Список событий, упорядоченный по их временной метке
   name: string;
   identifier: string;
@@ -202,7 +204,7 @@ export function parseVCD(vcdString: string): VCDScope {
 /** Удалить из VCD лишние Scopes, которые были добавлены генератором */
 export function enrichParsedVCD(
   initial: VCDScope,
-  stimConfig: StymulusConfig
+  stimConfig: StimulusConfig
 ): ParsedVCD {
   let uutScope: VCDScope;
   if (initial.childScopes.find((a) => a.name === "uut") !== undefined) {

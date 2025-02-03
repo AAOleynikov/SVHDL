@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, computed } from "vue";
 import { Project, ProjectFile } from "@/lib/projectSystem";
-import { IDEState, StymulusConfig } from "@/lib/ideState";
+import { IDEState, StimulusConfig } from "@/lib/ideState";
 import TreeDisplay, { IKey, MenuAction, TreeData } from "./TreeDisplay.vue";
 import ModalDialog, { DialogParams, ModalDialogState } from "./ModalDialog.vue";
 // @ts-expect-error: библиотека для commonjs
@@ -147,7 +147,7 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
         if (ide_state.value === undefined) {
           throw new Error("ide_state.value===undefined");
         }
-        (ide_state.value.stymulusState as StymulusConfig).setTopLevelEntity(
+        (ide_state.value.stymulusState as StimulusConfig).setTopLevelEntity(
           entity
         );
       },

@@ -25,14 +25,14 @@ export interface ToastMessage {
   buttonCallback?: () => void;
 }
 
-type StymulusConfigJson = {
+type StimulusConfigJson = {
   parsingResult: ParsedFileJson[];
   topLevelFileName?: string;
   topLevelEntityName?: string;
   isOutdated: boolean;
 };
 
-export class StymulusConfig {
+export class StimulusConfig {
   ide_state: IDEState;
   project: Project;
   parsingResult: ParsedProject;
@@ -50,7 +50,7 @@ export class StymulusConfig {
       `stymulus_${project.name}`
     );
     if (rawData !== null) {
-      const data: StymulusConfigJson = JSON.parse(rawData);
+      const data: StimulusConfigJson = JSON.parse(rawData);
       console.log("data", data);
       this.isOutdated = data.isOutdated;
       this.parsingResult = new ParsedProject(data.parsingResult);
@@ -68,7 +68,7 @@ export class StymulusConfig {
     }
   }
   save() {
-    const data: StymulusConfigJson = {
+    const data: StimulusConfigJson = {
       parsingResult: this.parsingResult.toJson(),
       isOutdated: this.isOutdated,
       topLevelEntityName: this.topLevelEntity
@@ -164,7 +164,7 @@ export class IDEState {
   valResult?: ValidationResultFromServer;
   activeProjectNeedsRecompilation: boolean = true;
   projectStorage: ProjectStorage;
-  stymulusState?: StymulusConfig;
+  stymulusState?: StimulusConfig;
   simulationState?: SimulationState;
   vcd: string = "";
   curSTime: number = 0;
@@ -278,8 +278,8 @@ export class IDEState {
       return;
     }
     this.updateStymulusState();
-    (this.stymulusState as StymulusConfig).updateParsing();
-    (this.stymulusState as StymulusConfig).updateStymulusList();
+    (this.stymulusState as StimulusConfig).updateParsing();
+    (this.stymulusState as StimulusConfig).updateStymulusList();
     validate(this.activeProject, this);
   }
   finishCompilation(result: ValidationResultFromServer) {
@@ -306,7 +306,7 @@ export class IDEState {
   }
   updateStymulusState() {
     if (this.activeProject !== undefined) {
-      this.stymulusState = new StymulusConfig(this, this.activeProject);
+      this.stymulusState = new StimulusConfig(this, this.activeProject);
     }
   }
   startSimulation(firstStepSize: Time) {
@@ -368,7 +368,7 @@ export class IDEState {
         hotkeyEvents: [],
         waveform: enrichParsedVCD(
           parseVCD(this.vcd),
-          this.stymulusState as StymulusConfig
+          this.stymulusState as StimulusConfig
         ),
         hotkeyMap: new Map(),
       };

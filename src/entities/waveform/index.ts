@@ -1,23 +1,25 @@
 /** Промежуточные модели для отображения */
 
-import { Time } from "@/lib/measureUnits";
 import { VCDSignal } from "@/features/vcdParser";
+import { Time } from "../time";
 
 export type BitValue = "0" | "1" | "x" | "z";
 
 // Scope - чисто папка vcd
-export type WaveFormScope = {
+export interface WaveFormScope {
   type: "scope";
   expanded: boolean;
   name: string;
   children: WaveFormData[];
-};
+}
+
 // VCD bit - один бит, только 4 возможных значения
 export type WaveFormBit = {
   type: "var";
   name: string;
   data: VCDSignal;
 };
+
 // Вектор из нескольких битов VCD
 export type WaveFormVector = {
   type: "vector";
