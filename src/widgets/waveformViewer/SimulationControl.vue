@@ -3,7 +3,7 @@ import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import TooltipButton from "./TooltipButton.vue";
 import TimeInput from "@/shared/components/TimeInput.vue";
 import ScaleWizard from "./ScaleWizard.vue";
-import { ScaleData } from "@/shared/components/waveform/WfTypes";
+import { ScaleData } from "@/entities/waveform";
 
 const scaleData = defineModel<ScaleData>({ required: true });
 </script>

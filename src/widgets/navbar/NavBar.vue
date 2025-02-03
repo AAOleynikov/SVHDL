@@ -2,7 +2,7 @@
 import "@/assets/css/index.css";
 import { IDEState } from "@/lib/ideState";
 import { defineProps, ref, watch } from "vue";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { validateTransition } from "@/lib/validateTransition";
 import { UiScreen, useUIStore } from "@/app/stores/ui";
 

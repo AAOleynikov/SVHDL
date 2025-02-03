@@ -7,8 +7,9 @@ import {
 import Button from "@/shared/components/ui/button/Button.vue";
 import TooltipButton from "./TooltipButton.vue";
 import Separator from "@/shared/components/ui/separator/Separator.vue";
-import Label from "@/shared/components/ui/label";
+import { Label } from "@/shared/components/ui/label";
 import TimeInput from "@/shared/components/TimeInput.vue";
+import { noop } from "@vueuse/core";
 </script>
 
 <template>
@@ -30,11 +31,15 @@ import TimeInput from "@/shared/components/TimeInput.vue";
         <div class="flex flex-col justify-around w-full">
           <div>
             <Label>Left Border</Label>
-            <TimeInput />
+            <TimeInput
+              :model-value="{ mantissa: 10, exponent: 'ns' }"
+              @update:model-value="noop" />
           </div>
           <div>
             <Label>Right Border</Label>
-            <TimeInput />
+            <TimeInput
+              :model-value="{ mantissa: 10, exponent: 'ns' }"
+              @update:model-value="noop" />
           </div>
           <Button><i class="bi-check-lg"></i> Apply</Button>
         </div>
@@ -42,11 +47,15 @@ import TimeInput from "@/shared/components/TimeInput.vue";
         <div class="flex flex-col justify-around w-full">
           <div>
             <Label>Cursor Position</Label>
-            <TimeInput />
+            <TimeInput
+              :model-value="{ mantissa: 10, exponent: 'ns' }"
+              @update:model-value="noop" />
           </div>
           <div>
             <Label>ViewPort width</Label>
-            <TimeInput />
+            <TimeInput
+              :model-value="{ mantissa: 10, exponent: 'ns' }"
+              @update:model-value="noop" />
           </div>
           <Button><i class="bi-check-lg"></i> Apply</Button>
         </div>
