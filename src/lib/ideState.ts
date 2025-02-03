@@ -7,7 +7,7 @@ import {
 } from "./parsedFile";
 import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
-import { processCode } from "@/parse/parser";
+import { processCode } from "@/features/parser/parser";
 import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
 import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
 import { UiScreen, useUIStore } from "@/stores/ui";
