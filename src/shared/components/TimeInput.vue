@@ -7,9 +7,9 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/ui/select";
 import { computed, ref, watch } from "vue";
-import { Time, timeToFs } from "@/lib/measureUnits";
+import { Time, timeToFs } from "@/entities/time";
 
 const value = defineModel<Time>({ required: true });
 

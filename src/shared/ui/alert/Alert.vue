@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { alertVariants } from ".";
 import { cn } from "@/shared/tailwind";
 

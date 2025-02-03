@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
 import {
   Select,
   SelectContent,
@@ -16,17 +12,13 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  PinInput,
-  PinInputGroup,
-  PinInputInput,
-} from "@/components/ui/pin-input";
+} from "@/shared/ui/select";
+import { PinInput, PinInputGroup, PinInputInput } from "@/shared/ui/pin-input";
 import { computed } from "vue";
 import { ref, watch } from "vue";
 import TimeInput from "./TimeInput.vue";
-import { Time } from "@/lib/measureUnits";
-import { GeneratorStymulus, ValueType } from "@/features/testbenchGenerator";
+import { Time } from "@/entities/time";
+import { GeneratorStymulus, ValueType } from "@/entities/stimulus";
 
 const props = defineProps<{ modelValue: GeneratorStymulus }>();
 const emit = defineEmits(["update:modelValue"]);

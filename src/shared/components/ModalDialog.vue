@@ -8,9 +8,9 @@ import {
   DialogRoot,
   DialogTitle,
 } from "radix-vue";
-import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Button from "./ui/button/Button.vue";
+import { Input } from "@/shared/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert";
+import {Button} from "@/shared/ui/button";
 
 export type ModalDialogState = {
   isOpened: boolean;

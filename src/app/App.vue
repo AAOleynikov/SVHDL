@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { useUIStore } from "./stores/ui";
-import { Time } from "../lib/measureUnits";
+import { Time } from "@/entities/time";
 
 const persistencyTimerId = ref(undefined);
 const ide_state = reactive<IDEState>(IDEState.loadFromLocalStorage());

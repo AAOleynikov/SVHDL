@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineProps, onMounted, ref, computed, watch } from "vue";
-import { generateBins, toEngineeringNotation } from "@/lib/measureUnits";
+import { generateBins } from "@/lib/measureUnits";
+import { toEngineeringNotation } from "@/entities/time";
 import { ScaleData } from "@/entities/waveform";
 
 const props = defineProps<{ scaleData: ScaleData }>();

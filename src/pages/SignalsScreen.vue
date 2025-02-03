@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import SignalWizard from "@/components/SignalWizard.vue";
-// @ts-expect-error: Shadcn-vue не предоставляет деклараций типов
-import { Button } from "@/components/ui/button";
-// @ts-expect-error: Shadcn-vue не предоставляет деклараций типов
-import { Label } from "@/components/ui/label";
-import TimeInput from "@/components/TimeInput.vue";
+import SignalWizard from "@/shared/components/SignalWizard.vue";
+import { Button } from "@/shared/ui/button";
+import { Label } from "@/shared/ui/label";
+import TimeInput from "@/shared/components/TimeInput.vue";
 import {
   Table,
   TableBody,
@@ -13,10 +11,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  // @ts-expect-error: Shadcn-vue не предоставляет деклараций типов
-} from "@/components/ui/table";
+} from "@/shared/ui/table";
 import { StymulusConfig } from "@/lib/ideState";
-import { Time } from "@/lib/measureUnits";
+import { Time } from "@/entities/time";
 
 const stymulusState = defineModel<StymulusConfig>({ required: true });
 const { startSimulation } = defineProps<{

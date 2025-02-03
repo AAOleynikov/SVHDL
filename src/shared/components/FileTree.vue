@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { reactive, computed } from "vue";
 import { Project, ProjectFile } from "@/lib/projectSystem";
-import { IDEState } from "@/lib/ideState";
-import Tree, { IKey, MenuAction, TreeData } from "./TreeDisplay.vue";
+import { IDEState, StymulusConfig } from "@/lib/ideState";
+import TreeDisplay, { IKey, MenuAction, TreeData } from "./TreeDisplay.vue";
 import ModalDialog, { DialogParams, ModalDialogState } from "./ModalDialog.vue";
+// @ts-expect-error: библиотека для commonjs
 import JSZip from "jszip";
 import { ParsedEntity } from "@/lib/parsedFile";
 
@@ -77,9 +78,9 @@ const treeData = computed<TreeData>(() => {
           badges: [],
           icon: "bi-file-earmark",
         };
-        if (file.isUnsaved) fileData.badges.push("bi-dot");
+        if (file.isUnsaved) (fileData.badges as string[]).push("bi-dot");
         if (file === ide_state.value.activeFile) {
-          fileData.badges.push("bi-pen");
+          (fileData.badges as string[]).push("bi-pen");
           if (ide_state.value.stymulusState !== undefined) {
             const parsedAnalog =
               ide_state.value.stymulusState.parsingResult.vhdlFiles.find(
@@ -101,7 +102,10 @@ const treeData = computed<TreeData>(() => {
                   entity.fileName ==
                     ide_state.value.stymulusState.topLevelFile.fileName &&
                   entity.name ==
-                    ide_state.value.stymulusState.topLevelEntity.name
+                    (
+                      ide_state.value.stymulusState
+                        .topLevelEntity as ParsedEntity
+                    ).name
                 ) {
                   entityData.icon = "bi-explicit-fill";
                 }
@@ -121,13 +125,16 @@ const treeData = computed<TreeData>(() => {
         projectData.children.push(fileData);
       }
     }
-    data.children.push(projectData);
+    (data.children as TreeData[]).push(projectData);
   }
 
   return data;
 });
 
 const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
+  if (ide_state.value === undefined) {
+    throw new Error("ide_state.value===undefined");
+  }
   const menu: (MenuAction | "---")[] = [];
   if (key.type == "architecture") {
     menu.push({ text: "Just architecture" }, { text: "Nothin' more" });
@@ -137,7 +144,12 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
       text: "Set Entity as Top-Level",
       icon: "ui-icon-star",
       callback: () => {
-        ide_state.value.stymulusState.setTopLevelEntity(entity);
+        if (ide_state.value === undefined) {
+          throw new Error("ide_state.value===undefined");
+        }
+        (ide_state.value.stymulusState as StymulusConfig).setTopLevelEntity(
+          entity
+        );
       },
     });
   } else if (key.type == "file") {
@@ -182,7 +194,7 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
       }
     );
   } else if (key.type == "project") {
-    const project: Project = key.assocObj;
+    const project: Project = key.assocObj as Project;
     if (key.assocObj == ide_state.value.activeProject) {
       // Активный проект
       menu.push(
@@ -193,7 +205,7 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
         {
           text: "New File",
           icon: "ui-icon-plus",
-          callback: (key: IKey) => {
+          callback: () => {
             openDialog({
               title: "Name for new file",
               type: "input",
@@ -210,7 +222,9 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
         text: "Set Project as Active",
         icon: "ui-icon-power",
         callback: (key: IKey) => {
-          ide_state.value.setProjectActive(key.assocObj.name);
+          (ide_state.value as IDEState).setProjectActive(
+            (key.assocObj as Project).name
+          );
         },
       });
     }
@@ -220,11 +234,13 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
       {
         text: "Delete Project",
         icon: "ui-icon-trash",
-        callback: (key: IKey) => {
+        callback: () => {
           openDialog({
             title: "Remove project " + project.name + "?",
             callback: () => {
-              ide_state.value.projectStorage.deleteProject(project.name);
+              (ide_state.value as IDEState).projectStorage.deleteProject(
+                project.name
+              );
             },
             type: "yesno",
           });
@@ -235,11 +251,11 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
         icon: "ui-icon-disk",
         callback: (key: IKey) => {
           const zip = new JSZip();
-          key.assocObj.files.forEach(function (file) {
+          (key.assocObj as Project).files.forEach(function (file) {
             zip.file(file.name, file.code);
           });
-          zip.generateAsync({ type: "blob" }).then(function (content) {
-            saveAs(content, `${key.assocObj.name}.zip`);
+          zip.generateAsync({ type: "blob" }).then((content: BlobPart) => {
+            saveAs(content, `${(key.assocObj as Project).name}.zip`);
           });
         },
       }
@@ -255,7 +271,9 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
             title: "Name for new project",
             type: "input",
             callback: (projectName: string) => {
-              ide_state.value.projectStorage.newProject(projectName);
+              (ide_state.value as IDEState).projectStorage.newProject(
+                projectName
+              );
             },
           });
         },
@@ -263,11 +281,13 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
       {
         text: "Remove ALL PROJECTS",
         icon: "ui-icon-cancel",
-        callback: (key: IKey) => {
+        callback: () => {
           openDialog({
-            title: `Remove ${ide_state.value.projectStorage.count()} projects from SVHDL?`,
+            title: `Remove ${(
+              ide_state.value as IDEState
+            ).projectStorage.count()} projects from SVHDL?`,
             callback: () => {
-              ide_state.value.projectStorage.deleteAllProjects();
+              (ide_state.value as IDEState).projectStorage.deleteAllProjects();
             },
             type: "yesno",
           });
@@ -280,8 +300,11 @@ const getMenuFunction = (key: IKey): (MenuAction | "---")[] => {
 };
 
 const selectCallback = (key: IKey) => {
+  if (ide_state.value === undefined) {
+    throw new Error("ide_state.value===undefined");
+  }
   if (key.type == "file") {
-    ide_state.value.activeFile = key.assocObj;
+    ide_state.value.activeFile = key.assocObj as ProjectFile;
   } else if (key.type == "project" || key.type == "storage") {
     ide_state.value.activeFile = undefined;
   }
@@ -290,7 +313,7 @@ const selectCallback = (key: IKey) => {
 
 <template>
   <ModalDialog v-model="dialogState" />
-  <Tree
+  <TreeDisplay
     :data="treeData"
     :get-menu-function="getMenuFunction"
     :select-callback="selectCallback" />

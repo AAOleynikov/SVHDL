@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { cn } from "@/shared/tailwind";
 
 const props = defineProps({

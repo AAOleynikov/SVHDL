@@ -41,7 +41,7 @@ export interface MenuAction {
   icon?: JQueryUIIcon;
 }
 
-export type GetMenuFunction = (key: unknown) => (MenuAction | "---")[];
+export type GetMenuFunction = (key: IKey) => (MenuAction | "---")[];
 
 type InternalTreeElem = {
   title: string;

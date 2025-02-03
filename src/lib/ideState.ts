@@ -8,14 +8,14 @@ import {
 import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/features/vcdParser";
 import { toast } from "vue-sonner";
 import { processCode } from "@/features/parser/parser";
-import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
+import { Time, parseRange, timeToFs } from "@/entities/time";
 import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
 import { UiScreen, useUIStore } from "@/app/stores/ui";
 import {
   CodeGeneratorData,
-  GeneratorStymulus,
   TestbenchGenerator,
 } from "@/features/testbenchGenerator";
+import { GeneratorStymulus } from "@/entities/stimulus";
 
 export interface ToastMessage {
   title: string;

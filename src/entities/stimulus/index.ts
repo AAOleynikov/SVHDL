@@ -1,3 +1,5 @@
+//TODO разобраться с нарушением FSD
+import { Time } from "@/entities/time";
 export type ValueType = "0" | "1";
 
 export type GeneratorStymulus =

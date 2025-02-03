@@ -122,7 +122,7 @@ const plotsPlaceholderWidth = computed(() => {
 });
 
 onMounted(() => {
-  scaleData.plotsSectionWidth = plotsSection.value.clientWidth;
+  scaleData.plotsSectionWidth = (plotsSection.value as Element).clientWidth;
 });
 const _useScrollPlots = useScroll(plotsScrollControlDiv, {});
 const x = _useScrollPlots.x;

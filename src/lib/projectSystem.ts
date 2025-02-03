@@ -183,6 +183,10 @@ export class ProjectFile {
     this.proj = proj;
     this.name = name;
   }
+  setCode(newCode: string) {
+    this.code = newCode;
+    this.setUnsaved();
+  }
   setUnsaved() {
     this.isUnsaved = true;
     this.proj.setUnsaved();
