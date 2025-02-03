@@ -26,7 +26,7 @@ import { computed } from "vue";
 import { ref, watch } from "vue";
 import TimeInput from "./TimeInput.vue";
 import { Time } from "@/lib/measureUnits";
-import { GeneratorStymulus, ValueType } from "@/testbench_generator/gen";
+import { GeneratorStymulus, ValueType } from "@/features/testbenchGenerator/gen";
 
 const props = defineProps<{ modelValue: GeneratorStymulus }>();
 const emit = defineEmits(["update:modelValue"]);

@@ -6,7 +6,7 @@
 // https://zipcpu.com/blog/2017/07/31/vcd.html
 
 import { StymulusConfig } from "@/lib/ideState";
-import { GeneratorStymulus } from "@/testbench_generator/gen";
+import { GeneratorStymulus } from "@/features/testbenchGenerator/gen";
 
 /** Событие присвоения сигналу значения в какой-то момент времени */
 export interface VCDSignalAssignment {

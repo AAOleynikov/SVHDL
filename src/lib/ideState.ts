@@ -15,7 +15,7 @@ import {
   CodeGeneratorData,
   GeneratorStymulus,
   TestbenchGenerator,
-} from "@/testbench_generator/gen";
+} from "@/features/testbenchGenerator/gen";
 
 export interface ToastMessage {
   title: string;
