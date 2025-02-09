@@ -4,7 +4,7 @@ import { WfPlot, WfLabel } from "@/widgets/waveformViewer";
 import TimeScale from "@/shared/components/TimeScale.vue";
 import { ScaleData, DisplayData, WaveFormData } from "@/entities/waveform";
 import { ref, reactive, computed, onMounted, watch } from "vue";
-import { VCDScope, ParsedVCD } from "@/features/vcdParser";
+import { VCDScope, ParsedVCD } from "@/entities/parsedVcd";
 import { usePointerSwipe, useScroll } from "@vueuse/core";
 
 import { IDEState } from "@/lib/ideState";
@@ -26,8 +26,8 @@ function recursiveLoadVcdState(
     } else {
       newChildren.push({
         type: "vector",
+        name: variable.name,
         expanded: false,
-        size: variable.size,
         children: variable.signals.map((bit, idx) => {
           return { data: bit, name: variable.name + idx, type: "var" };
         }),
@@ -45,17 +45,38 @@ function recursiveLoadVcdState(
   }
   where.push(newFolder);
 }
-// for (const inp of vcdData.inputSignals) {
-//   vcdState.push({
-//     type: "var",
-//     "data":inp.var,
-//     "name":inp.var.name,
-//   }
-//   );
-// }
-// for (const out of vcdData.outputSignals) {
-//   vcdState.push(out);
-// }
+for (const inp of vcdData.inputSignals) {
+  if (inp.var.type === "bit") {
+    vcdState.push({
+      type: "var",
+      data: inp.var,
+      name: inp.var.name,
+    });
+  } else {
+    vcdState.push({
+      type: "vector",
+      name: inp.var.name,
+      children: inp.var.signals.map((bit, idx) => {
+        return { data: bit, name: inp.var.name + idx, type: "var" };
+      }),
+      expanded: false,
+    });
+  }
+}
+for (const out of vcdData.outputSignals) {
+  if (out.type === "bit") {
+    vcdState.push({ type: "var", name: out.name, data: out });
+  } else {
+    vcdState.push({
+      type: "vector",
+      name: out.name,
+      children: out.signals.map((bit, idx) => {
+        return { data: bit, name: out.name + idx, type: "var" };
+      }),
+      expanded: false,
+    });
+  }
+}
 for (const scope of vcdData.scopes) {
   recursiveLoadVcdState(vcdState, scope);
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, defineProps, ref, watch } from "vue";
-import { ScaleData } from "@/entities/waveform";
-import { VCDSignal } from "@/features/vcdParser";
+import { BitValue, ScaleData } from "@/entities/waveform";
+import { VCDSignal } from "@/entities/parsedVcd";
 const props = defineProps<{
   scaleData: ScaleData;
   waveformData: VCDSignal;
@@ -52,9 +52,9 @@ watch(props.scaleData, () => {
   updateIndex();
 });
 
-type LineType = { x_from: number; x_to: number; type: "0" | "1" | "u" | "z" };
+type LineType = { x_from: number; x_to: number; type: BitValue };
 type LineChangeType = { x_center: number };
-type HintTextType = { x: number; value: "0" | "1" | "u" | "z" };
+type HintTextType = { x: number; value: BitValue };
 
 type RenderDataType = {
   lines: LineType[];

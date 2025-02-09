@@ -1,6 +1,5 @@
 /** Промежуточные модели для отображения */
-
-import { VCDSignal } from "@/features/vcdParser";
+import { VCDSignal } from "@/entities/parsedVcd";
 import { Time } from "../time";
 
 export type BitValue = "0" | "1" | "x" | "z";
@@ -23,8 +22,8 @@ export type WaveFormBit = {
 // Вектор из нескольких битов VCD
 export type WaveFormVector = {
   type: "vector";
+  name: string;
   expanded: boolean;
-  size: number;
   children: WaveFormBit[];
 };
 export type WaveFormData = WaveFormScope | WaveFormBit | WaveFormVector;

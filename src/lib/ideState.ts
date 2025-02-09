@@ -5,7 +5,7 @@ import {
   ParsedProject,
   ParsedFileJson,
 } from "./parsedFile";
-import { enrichParsedVCD, ParsedVCD, parseVCD } from "@/features/vcdParser";
+import { enrichParsedVCD, parseVCD } from "@/features/vcdParser";
 import { toast } from "vue-sonner";
 import { processCode } from "@/features/parser/parser";
 import { Time, parseRange, timeToFs } from "@/entities/time";
@@ -16,6 +16,7 @@ import {
   TestbenchGenerator,
 } from "@/features/testbenchGenerator";
 import { GeneratorStymulus } from "@/entities/stimulus";
+import { ParsedVCD } from "@/entities/parsedVcd";
 
 export interface ToastMessage {
   title: string;
