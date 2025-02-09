@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { computed, ref, watch } from "vue";
-import { Time, timeToFs } from "@/entities/time";
+import { Time } from "@/entities/time";
 
 const value = defineModel<Time>({ required: true });
 
@@ -38,7 +38,7 @@ const isValid = computed<boolean>(() => {
     return false;
   }
   const mantissa = parseFloat(rawMantissa);
-  const femtos = timeToFs({ mantissa, exponent: value.value.exponent });
+  const femtos = new Time(mantissa, value.value.exponent).toFs();
   if (femtos - Math.floor(femtos) > 0) return false;
   return true;
 });
@@ -50,9 +50,9 @@ const isValid = computed<boolean>(() => {
     :class="{ 'border-slate-200': isValid, 'border-red-600': !isValid }">
     <div class="min-w-20 max-w-20">
       <input
+        v-model="stringMantissa"
         style="all: unset"
-        class="w-full max-w-full"
-        v-model="stringMantissa" />
+        class="w-full max-w-full" />
     </div>
     <div class="max-w-15">
       <Select v-model="value.exponent">

@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { defineProps, onMounted, ref, computed, watch } from "vue";
-import { generateBins } from "@/lib/measureUnits";
-import { toEngineeringNotation } from "@/entities/time";
+import { generateBins } from "@/shared/utils/generateBins";
 import { ScaleData } from "@/entities/waveform";
+import { Time } from "@/entities/time";
 
 const props = defineProps<{ scaleData: ScaleData }>();
 
 const numBins = ref<number>(5);
 const scaleWidth = ref<number>(9999); // Ширина шкалы
 const container = ref<InstanceType<typeof HTMLDivElement> | null>(null); // DOM основного div'а шкалы
+
 function updateSizes() {
   if (container.value === null) {
     throw new Error("");
@@ -19,20 +20,20 @@ function updateSizes() {
 
 const bins = computed(() => {
   return generateBins(
-    props.scaleData.leftBorder,
-    props.scaleData.rightBorder,
+    props.scaleData.leftBorder.toFs(),
+    props.scaleData.rightBorder.toFs(),
     numBins.value
   );
 });
 
 const binsX = computed(() => {
   const scale =
-    (props.scaleData.rightBorder - props.scaleData.leftBorder) /
+    (props.scaleData.rightBorder.toFs() - props.scaleData.leftBorder.toFs()) /
     scaleWidth.value;
   return bins.value.map((a) => {
     return {
       value: a,
-      x: Math.ceil((a - props.scaleData.leftBorder) / scale + 0.01),
+      x: Math.ceil((a - props.scaleData.leftBorder.toFs()) / scale + 0.01),
     };
   });
 });
@@ -68,7 +69,7 @@ watch(
           width="2"
           stroke="black"></line>
         <text :x="bin.x" y="32" class="monospaceFont">
-          {{ toEngineeringNotation(bin.value) }}
+          {{ Time.fromFs(bin.value).toEngineeringNotation() }}
         </text>
       </template>
     </svg>

@@ -8,7 +8,7 @@ import {
 import { enrichParsedVCD, parseVCD } from "@/features/vcdParser";
 import { toast } from "vue-sonner";
 import { processCode } from "@/features/parser/parser";
-import { Time, parseRange, timeToFs } from "@/entities/time";
+import { Time, parseRange } from "@/entities/time";
 import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
 import { UiScreen, useUIStore } from "@/app/stores/ui";
 import {

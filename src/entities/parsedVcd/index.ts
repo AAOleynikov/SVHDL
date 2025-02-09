@@ -1,15 +1,13 @@
 import { GeneratorStymulus } from "../stimulus";
+import { BitValue, VectorValue } from "../waveform";
 
-/** Событие присвоения сигналу значения в какой-то момент времени */
-export interface VCDSignalAssignment {
-  timestamp: number;
-  value: "1" | "0" | "u" | "z";
+interface VCDAssignment<T> {
+  timestampFs: number;
+  value: T;
 }
 
-export interface VCDVectorAssignment {
-  timestamp: number;
-  value: string;
-}
+export type VCDSignalAssignment = VCDAssignment<BitValue>;
+export type VCDVectorAssignment = VCDAssignment<VectorValue>;
 
 export class VCDSignal {
   type = "bit" as const;
@@ -25,8 +23,8 @@ export class VCDSignal {
     this.events = [];
   }
 
-  addEvent(timestamp: number, value: "1" | "0" | "u" | "z") {
-    this.events.push({ timestamp, value });
+  addEvent(timestampFs: number, value: BitValue) {
+    this.events.push({ timestampFs, value });
   }
 }
 
@@ -50,10 +48,10 @@ export class VCDVector {
     });
   }
 
-  addEvent(timestamp: number, value: string) {
-    this.events.push({ timestamp, value });
+  addEvent(timestampFs: number, value: VectorValue) {
+    this.events.push({ timestampFs, value });
     this.signals.forEach((signal, idx) => {
-      signal.addEvent(timestamp, value[idx] as "1" | "0" | "z" | "u");
+      signal.addEvent(timestampFs, value[idx] as BitValue);
     });
   }
 }

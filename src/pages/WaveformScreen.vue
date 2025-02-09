@@ -249,7 +249,7 @@ watch(x, () => {
           <WfPlot
             v-if="ddd.type === 'bit'"
             :scale-data="scaleData"
-            :waveform-data="ddd.data" />
+            :plot-data="ddd.data" />
         </template>
       </div>
     </div>

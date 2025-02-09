@@ -3,6 +3,19 @@ import { VCDSignal } from "@/entities/parsedVcd";
 import { Time } from "../time";
 
 export type BitValue = "0" | "1" | "x" | "z";
+export type VectorValue = string & { __brand: "VectorValue" };
+
+export const isBitValue = (v: string): v is BitValue => {
+  return v === "0" || v === "1" || v === "x" || v === "z";
+};
+export const isVectorValue = (v: string): v is VectorValue => {
+  for (const sym of v) {
+    if (!isBitValue(sym)) {
+      return false;
+    }
+  }
+  return true;
+};
 
 // Scope - чисто папка vcd
 export interface WaveFormScope {
@@ -49,8 +62,8 @@ export type DisplayData = DisplayBit | DisplayScope;
 
 export type ScaleData = {
   labelsWidth: number; // Ширина левой части графиков (с обозначениями сигналов)
-  leftBorder: number;
-  rightBorder: number;
+  leftBorder: Time;
+  rightBorder: Time;
   currentSimTime: number;
   plotsSectionWidth: number;
   mode: "cursor" | "move";

@@ -13,16 +13,17 @@ import {
   VCDSignal,
   VCDVariable,
 } from "@/entities/parsedVcd";
+import { isBitValue } from "@/entities/waveform";
 
 const sortTimestamp = (scope: VCDScope) => {
   scope.childScopes.map(sortTimestamp);
   scope.signals.forEach((sig) => {
     if (sig.type === "vector") {
       sig.signals.forEach((subsig) => {
-        subsig.events.sort((a, b) => a.timestamp - b.timestamp);
+        subsig.events.sort((a, b) => a.timestampFs - b.timestampFs);
       });
     }
-    sig.events.sort((a, b) => a.timestamp - b.timestamp);
+    sig.events.sort((a, b) => a.timestampFs - b.timestampFs);
   });
 };
 
@@ -111,18 +112,12 @@ export function parseVCD(vcdString: string): VCDScope {
         codes_to_signals.get(vectorIdent)?.addEvent(time, vectorValue as "0");
         console.warn("Vectors are not well tested yet!");
       } else {
-        const raw_val = assig.charAt(0).toLowerCase();
-        if (
-          raw_val == "1" ||
-          raw_val == "0" ||
-          raw_val == "u" ||
-          raw_val == "z"
-        ) {
-          const value: "1" | "0" | "u" | "z" = raw_val;
+        const value = assig.charAt(0).toLowerCase();
+        if (isBitValue(value)) {
           const ident: string = assig.slice(1, assig.length);
           codes_to_signals.get(ident)?.addEvent(time, value);
         } else {
-          console.error("Value is: ", raw_val);
+          console.error("Value is: ", value);
           throw new Error("Error in VCD");
         }
       }
