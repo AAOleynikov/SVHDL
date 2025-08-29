@@ -1,16 +1,13 @@
 /** В этом файле содержатся функции для работы с единицами измерения */
 
+import { Time } from "@/types/common";
+
 /** Перевести значение в фемто-единицах в инженерную нотацию с точностью до трёх знаков
  * Примеры:
  * 1000 -> 1.00p
  * 1234567 -> 1.23n
  * 123456 -> 123p
  */
-
-export interface Time {
-  mantissa: number;
-  exponent: "s" | "ms" | "us" | "ns" | "ps" | "fs";
-}
 
 export function timeToFs(time: Time): number {
   return (

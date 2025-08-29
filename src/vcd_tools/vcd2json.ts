@@ -5,10 +5,13 @@
 // https://gtkwave.sourceforge.net/ - десктоп приложение для просмотра waveforms
 // https://zipcpu.com/blog/2017/07/31/vcd.html
 
+import { ValueType } from "@/types/common";
+import { isValueType } from "@/validations";
+
 /** Событие присвоения сигналу значения в какой-то момент времени */
 export interface VCDSignalAssignment {
   timestamp: number;
-  value: "1" | "0" | "u" | "z";
+  value: ValueType;
 }
 
 export interface VCDVectorAssignment {
@@ -29,7 +32,7 @@ export class VCDSignal {
     this.events = [];
   }
 
-  addEvent(timestamp: number, value: "1" | "0" | "u" | "z") {
+  addEvent(timestamp: number, value: ValueType) {
     this.events.push({ timestamp, value });
   }
 }
@@ -56,7 +59,7 @@ export class VCDVector {
   addEvent(timestamp: number, value: string) {
     this.events.push({ timestamp, value });
     this.signals.forEach((signal, idx) => {
-      signal.addEvent(timestamp, value[idx] as "1" | "0" | "z" | "u");
+      signal.addEvent(timestamp, value[idx] as ValueType);
     });
   }
 }
@@ -106,7 +109,7 @@ function captureChanges(input: string): string[] {
 }
 
 export function parseVCD(vcdString: string): ParsedVCD {
-  console.log("VCD string:", vcdString)
+  console.log("VCD string:", vcdString);
   const timeScaleSection = captureTimeScale(vcdString); // TODO не терять timescale
   const scopeSection = captureScopeSection(vcdString).split("\n");
   const changesSection = captureChanges(vcdString);
@@ -158,17 +161,12 @@ export function parseVCD(vcdString: string): ParsedVCD {
         if (vectorValue === undefined || vectorIdent === undefined) {
           throw new Error("Error in VCD");
         }
-        codes_to_signals.get(vectorIdent)?.addEvent(time, vectorValue);
-        console.warn("Vectors are not implemented yet!");
+        throw new Error("Vectors are not implemented yet!");
+        // codes_to_signals.get(vectorIdent)?.addEvent(time, vectorValue);
       } else {
         const raw_val = assig.charAt(0).toLowerCase();
-        if (
-          raw_val == "1" ||
-          raw_val == "0" ||
-          raw_val == "u" ||
-          raw_val == "z"
-        ) {
-          const value: "1" | "0" | "u" | "z" = raw_val;
+        if (isValueType(raw_val)) {
+          const value: ValueType = raw_val;
           const ident: string = assig.slice(1, assig.length);
           codes_to_signals.get(ident).addEvent(time, value);
         } else {
@@ -179,7 +177,7 @@ export function parseVCD(vcdString: string): ParsedVCD {
     }
   }
   /** Сортировка всех дампов по временной метке */
-  sortTimestamp(ret);
+  ret.scopes.forEach(sortTimestamp);
   console.log("Parsed VCD: ", ret);
   return ret;
 }
