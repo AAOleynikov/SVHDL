@@ -86,9 +86,9 @@ const sortTimestamp = (scope: VCDScope) => {
 };
 
 function captureTimeScale(input: string): string {
-  return input.match(/\$timescale\s*([\s\S]*?)\s*\$end/)[1];
+  return input.match(/\$timescale\s*([\s\S]*?)\s*\$end/).at(1);
 }
-function captureScopeSection(input: string): string | null {
+function captureScopeSection(input: string): string | undefined {
   // Регулярное выражение для захвата строк, начинающихся с $scope и заканчивающихся на последнем $upscope $end
   const regex = /(^\$scope[\s\S]*\$upscope\s+\$end)/gm;
   const match = input.match(regex);
@@ -97,7 +97,6 @@ function captureScopeSection(input: string): string | null {
     // Возвращаем первый элемент из найденных совпадений
     return match[0];
   }
-  return null;
 }
 function captureChanges(input: string): string[] {
   // Регулярное выражение для захвата всех частей начиная с '#' в начале строки и до следующего '#' или конца файла
@@ -107,7 +106,8 @@ function captureChanges(input: string): string[] {
 }
 
 export function parseVCD(vcdString: string): ParsedVCD {
-  const timeScaleSection = captureTimeScale(vcdString); // TODO разобраться с ней
+  console.log("VCD string:", vcdString)
+  const timeScaleSection = captureTimeScale(vcdString); // TODO не терять timescale
   const scopeSection = captureScopeSection(vcdString).split("\n");
   const changesSection = captureChanges(vcdString);
   const ret: ParsedVCD = { scopes: [], timescale: 1, timescaleUnits: 1 };
