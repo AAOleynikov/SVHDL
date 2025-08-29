@@ -3,9 +3,7 @@
  * 2024.06.11 Oleynikov Anton 	https://github.com/AAOleynikov	   *
  * ****************************************************************/
 
-import { Time } from "@/lib/measureUnits";
-
-export type ValueType = "0" | "1";
+import { InputValueType, Time } from "@/types/common";
 
 let process_id: number = 0;
 
@@ -17,8 +15,8 @@ export type GeneratorStymulus =
 export interface GeneratorClockStymulus {
   nameOfTarget: string;
   stimulus_type: "Clock";
-  low_value: ValueType;
-  high_value: ValueType;
+  low_value: InputValueType;
+  high_value: InputValueType;
   starts_with: "low_value" | "high_value";
   duty_cycle: number;
   period: Time;
@@ -27,13 +25,13 @@ export interface GeneratorClockStymulus {
 export interface GeneratorHotkeyStymulus {
   nameOfTarget: string;
   stimulus_type: "HotKey";
-  time_line: { time: Time; value: ValueType }[];
+  time_line: { time: Time; value: InputValueType }[];
 }
 
 export interface GeneratorConstStymulus {
   nameOfTarget: string;
   stimulus_type: "Const";
-  value: ValueType;
+  value: InputValueType;
 }
 
 export interface GeneratorPort {

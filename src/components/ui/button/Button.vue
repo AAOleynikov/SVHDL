@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Primitive } from "radix-vue";
 import { buttonVariants } from ".";
 import { cn } from "@/lib/utils";

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { TooltipContent, TooltipPortal, useForwardPropsEmits } from "radix-vue";
 import { cn } from "@/lib/utils";

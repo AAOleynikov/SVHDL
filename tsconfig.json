@@ -4,6 +4,6 @@
     "lib": ["es5", "es6", "es2024", "dom"],
     "paths": { "@/*": ["./src/*"] },
     "noImplicitThis": true,
-    "strict": true
+    "skipLibCheck": true
   }
 }

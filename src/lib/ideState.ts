@@ -8,7 +8,8 @@ import {
 import { ParsedVCD, parseVCD } from "@/vcd_tools/vcd2json";
 import { toast } from "vue-sonner";
 import { processCode } from "@/parse/parser";
-import { Time, parseRange, timeToFs } from "@/lib/measureUnits";
+import { parseRange, timeToFs } from "@/lib/measureUnits";
+import { Time } from "@/types/common";
 import { ValidationResultFromServer, simulate, validate } from "./serverWorks";
 import { useUIStore } from "@/stores/ui";
 import {
